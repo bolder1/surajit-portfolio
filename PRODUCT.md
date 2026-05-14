@@ -17,14 +17,15 @@ like enterprise software.
   a system, not just screens.
 
 ## Product purpose
-A portfolio in the form of a printed newspaper — the *Folio*. Three
-experiences served from a first-visit chooser:
-1. **Read** — full magazine on `/`, drop caps + pull-quotes + the 8-step
-   process spread.
-2. **Visualize · Quick** (`/visualize/quick`) — six animated scenes, ≈ 60s.
-3. **Visualize · Deep** (`/visualize/deep`) — twelve animated scenes, ≈ 5 min,
-   illustrated process, portrait, work-stack, journey, principles.
-Plus utility pages: `/work` archive, `/work/[slug]` case studies, `/about`.
+A portfolio in the form of a printed newspaper — the *Folio*. A single-scroll
+editorial home tells the story (hero → what I do → selected work → experience →
+how I work → AI toolkit → education → beyond work → contact). Deep dives live
+in dedicated routes:
+- `/` — single-scroll editorial home, recruiter-readable.
+- `/work` — filterable archive of every case study.
+- `/work/[slug]` — individual case studies, public or NDA-locked.
+- `/about` — extended biography.
+- `/hire` — engagement and contact page.
 
 ## Brand voice
 Editorial, restrained, deliberately *not* "designer-portfolio-cream." Print

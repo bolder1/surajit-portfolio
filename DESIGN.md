@@ -34,8 +34,8 @@ Never `#000` / `#fff`. The neutrals are tinted toward the paper hue.
 ## Motion
 - Easing: `[0.22, 1, 0.36, 1]` (ease-out-quart) for entrance,
   `cubic-bezier(0.65, 0.05, 0.36, 1)` for the scanning wipe.
-- Durations: 0.25s for chooser / nav, 0.55–0.7s for content reveals, 1.4–2.2s
-  for path-length animations, 14–40s for ambient loops.
+- Durations: 0.25s for nav, 0.55–0.7s for content reveals, 1.4–2.2s for
+  path-length animations, 14–40s for ambient loops.
 - No bounce / elastic.
 - Round trig coords to 2 decimals to keep server/client output identical.
 
@@ -52,23 +52,22 @@ Never `#000` / `#fff`. The neutrals are tinted toward the paper hue.
 ## Anti-patterns explicitly banned
 - Side-stripe borders on cards.
 - Gradient text. Period.
-- Glassmorphism / blurred panels (the chooser's tiny `backdrop-blur` on the
-  edition pill is the only exception).
+- Glassmorphism / blurred panels.
 - Hero-metric template (big number + small label + supporting stats with
   decorative accent line).
 - Identical card grids (each Domain card has a unique icon + meta line).
-- Modal as first thought — chooser is the only modal.
+- Modal as first thought.
 
 ## File map
 - `app/globals.css` — tokens + utilities + drop caps + section-tag corners.
 - `components/Masthead.tsx` — newspaper top bar (large + compact variants).
 - `components/Folio.tsx` — newspaper footer.
 - `components/HomeSections.tsx` — magazine page sections.
-- `components/ProcessStory.tsx` — 8-step narrative spine.
-- `components/visualize/Illustrations.tsx` — all SVG illustrations.
-- `components/visualize/Scene.tsx` — sticky-pinned scene primitive.
-- `components/visualize/QuickStory.tsx` — 6-scene composer.
-- `components/visualize/DeepStory.tsx` — 12-scene composer.
 - `components/CaseStudy.tsx` — case-study sections + placeholder tiles.
-- `components/ExperienceChooser.tsx` — first-visit modal.
-- `components/ExperienceSwitcher.tsx` — always-available switcher pill.
+- `components/CaseStudyRich.tsx` — extended case-study layouts.
+- `components/WorkArchive.tsx` — filterable archive grid on `/work`.
+- `components/Button.tsx` — buttons, status pills, tags.
+- `components/CountUp.tsx` — animated outcome counters.
+- `components/RequestAccess.tsx` — mailto request flow for locked cases.
+- `components/Reveal.tsx` — scroll-triggered fade.
+- `components/SmoothScroll.tsx` — Lenis bootstrap.

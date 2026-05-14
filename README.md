@@ -24,7 +24,7 @@ npm run dev
 # open http://localhost:3000
 ```
 
-The site has been verified to build and serve successfully — `npm run build` produces 11 static routes at ~110 KB first-load JS.
+The site has been verified to build and serve successfully — `npm run build` produces 25 static routes at ~110 KB first-load JS.
 
 ## Build
 
