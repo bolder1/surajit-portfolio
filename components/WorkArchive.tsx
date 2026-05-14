@@ -120,8 +120,8 @@ function ProjectRow({ index, project }: { index: number; project: Project }) {
   const isExternal = project.access === "external";
   /* If the figmaUrl is a same-origin path (starts with "/") we treat
      it as an internal link instead of a new-tab Figma file. Lets us
-     point an "external" project at a custom in-portfolio page like
-     /cheeese-bento without changing the underlying schema. */
+     point an "external" project at a custom in-portfolio page
+     without changing the underlying schema. */
   const isInternalRedirect =
     isExternal && (project.figmaUrl?.startsWith("/") ?? false);
   const Wrapper: React.ElementType = isExternal && !isInternalRedirect ? "a" : Link;
