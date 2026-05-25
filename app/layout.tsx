@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { Cursor } from "@/components/Cursor";
+// Custom Cursor disabled — falling back to OS default until the
+// holographic implementation is re-tuned. Component left in the repo
+// at components/Cursor.tsx for future re-enable.
+// import { Cursor } from "@/components/Cursor";
 import { HUD } from "@/components/HUD";
 import { VersionToggle } from "@/components/VersionToggle";
 import "./globals.css";
@@ -95,7 +98,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScroll />
-        <Cursor />
+        {/* <Cursor /> — disabled; OS default cursor in use */}
         <HUD />
         <VersionToggle />
         {children}
