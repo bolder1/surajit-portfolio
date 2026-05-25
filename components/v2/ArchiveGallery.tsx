@@ -211,6 +211,7 @@ export function ArchiveGallery({ projects, revealed, onPick }: ArchiveGalleryPro
       tabIndex={0}
       role="application"
       aria-label="Archive gallery — drag to pan, click to read"
+      data-cursor="drag"
       className="relative w-full h-full overflow-hidden outline-none"
       style={{
         background: "var(--v2-paper)",
@@ -235,6 +236,7 @@ export function ArchiveGallery({ projects, revealed, onPick }: ArchiveGalleryPro
               key={t.slug}
               type="button"
               data-archive-tile={t.slug}
+              data-cursor="image"
               onMouseEnter={() => setHoverSlug(t.slug)}
               onMouseLeave={() =>
                 setHoverSlug((s) => (s === t.slug ? null : s))

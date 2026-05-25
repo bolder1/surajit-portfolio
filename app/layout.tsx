@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Cursor } from "@/components/Cursor";
 import { HUD } from "@/components/HUD";
+import { VersionToggle } from "@/components/VersionToggle";
 import "./globals.css";
 
 /* Swiss Modernism — one grotesk family (Inter) for everything visible;
@@ -96,6 +97,7 @@ export default function RootLayout({
         <SmoothScroll />
         <Cursor />
         <HUD />
+        <VersionToggle />
         {children}
       </body>
     </html>
