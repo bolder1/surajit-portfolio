@@ -17,26 +17,40 @@
 import Link from "next/link";
 import { getCaseProjects, getWorkProjects } from "@/lib/projects";
 import { Button, StatusPill } from "./Button";
+import { Glitch } from "./Glitch";
+import { SerialMark, Asterisk, Plus } from "./Ornaments";
+import { ScrollNarrative } from "./ScrollNarrative";
 
 /* ──────────────────────────────────────────────────────────
-   01  HERO — short, single statement, two CTAs
+   01  HERO — matveyan-style. Glitched name on first paint,
+   big lowercase statement, cursor flips to accent on the CTAs.
    ─────────────────────────────────────────────────────── */
 export function HomeHero() {
   return (
     <section
       id="hero"
+      data-cursor="default"
       className="border-b border-[var(--rule-soft)] scroll-mt-20"
       aria-labelledby="hero-heading"
     >
       <div className="swiss-container py-14 md:py-24">
-        <p className="section-tag mb-8">01 — Lead</p>
+        <div className="flex items-center gap-3 mb-8 mono">
+          <Asterisk size={12} accent />
+          <span className="text-[var(--accent)]">01 — Lead</span>
+          <span className="text-[var(--muted)]">·</span>
+          <span className="text-[var(--muted)]">surajit.dutta@2026</span>
+        </div>
         <div className="swiss-grid items-end">
           <div className="col-span-12 md:col-span-9">
             <h2
               id="hero-heading"
               className="display text-[16vw] sm:text-[12vw] md:text-[9vw] lg:text-[136px]"
             >
-              i design product flows for it and security teams.
+              i design product flows for{" "}
+              <Glitch trigger="auto" intensity="regular">it</Glitch>{" "}
+              and{" "}
+              <Glitch trigger="hover" intensity="loud">security</Glitch>{" "}
+              teams.
             </h2>
           </div>
           <div className="col-span-12 md:col-span-3 md:pb-2">
@@ -60,68 +74,14 @@ export function HomeHero() {
 }
 
 /* ──────────────────────────────────────────────────────────
-   02  WHAT I DO — three terse columns
+   02  WHAT I DO — synapserstudio-style scroll narrative.
+   Three sticky keywords (research / systems / ai-native) reveal
+   as you scroll; their statements step through on the right.
+   On the final step everything collapses into a single shape +
+   CTA card linking to /ai.
    ─────────────────────────────────────────────────────── */
-const CAPABILITIES = [
-  {
-    label: "DOMAINS",
-    items: ["Identity & Access (IAM)", "Privileged Access (PAM)", "Identity Governance (IGA)", "Endpoint Management (UEM)"],
-  },
-  {
-    label: "STRENGTHS",
-    items: ["AI-orchestrated design", "0-to-1 discovery", "Design systems at scale", "Stakeholder synthesis · IA · QA"],
-  },
-  {
-    label: "TOOLS",
-    items: ["Figma · Figma Make AI", "Claude · ChatGPT · Cursor", "Antigravity · Lovable · Bolt", "Variables · tokens · libraries"],
-  },
-];
-
 export function HomeWhatIDo() {
-  return (
-    <section
-      id="what-i-do"
-      className="border-b border-[var(--rule-soft)] scroll-mt-20"
-      aria-labelledby="what-i-do-heading"
-    >
-      <div className="swiss-container py-14 md:py-20">
-        <div className="swiss-grid items-end mb-8">
-          <div className="col-span-12 md:col-span-8">
-            <p className="section-tag mb-5">02 — What I do</p>
-            <h2
-              id="what-i-do-heading"
-              className="display text-[10vw] md:text-[5vw] lg:text-[64px]"
-            >
-              three columns. read across.
-            </h2>
-          </div>
-        </div>
-
-        <div className="swiss-grid border-t-2 border-[var(--rule)]">
-          {CAPABILITIES.map((c, idx) => (
-            <div
-              key={c.label}
-              className={`col-span-12 md:col-span-4 py-7 md:py-9 ${
-                idx > 0 ? "md:border-l border-[var(--rule-soft)] md:pl-8" : "md:pr-8"
-              }`}
-            >
-              <div className="mono-accent mb-5">{c.label}</div>
-              <ul className="space-y-2.5">
-                {c.items.map((it) => (
-                  <li key={it} className="flex items-baseline gap-3 body-prose-sm">
-                    <span aria-hidden className="mono shrink-0 text-[var(--accent)]">
-                      ›
-                    </span>
-                    {it}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  return <ScrollNarrative />;
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -213,6 +173,7 @@ export function HomeExperience() {
   return (
     <section
       id="work-preview"
+      data-cursor="work"
       className="border-b border-[var(--rule-soft)] scroll-mt-20"
       aria-labelledby="work-preview-heading"
     >
@@ -283,6 +244,7 @@ export function HomeHowIWork() {
   return (
     <section
       id="gallery-preview"
+      data-cursor="gallery"
       className="border-b border-[var(--rule-soft)] scroll-mt-20"
       aria-labelledby="gallery-preview-heading"
     >

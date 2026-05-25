@@ -74,8 +74,8 @@ export function Button(props: Props) {
 
   const sizeClasses =
     size === "sm"
-      ? "min-h-[36px] px-3.5 py-2 text-[12px]"
-      : "min-h-[44px] px-5 py-3 text-[12px] md:text-[13px]";
+      ? "min-h-[36px] px-3.5 py-2 text-[11px]"
+      : "min-h-[52px] px-6 py-3.5 text-[12px] md:text-[13px]";
 
   /* Pure white (#fff) on dark backgrounds for maximum contrast.
      The cream --paper colour reads "off-white" on small UI text and
@@ -84,15 +84,15 @@ export function Button(props: Props) {
      warmth helps. */
   const variantClasses = {
     primary:
-      "bg-[var(--accent)] !text-white hover:bg-[var(--ink)] focus-visible:bg-[var(--ink)] [&_*]:!text-white",
+      "bg-[var(--accent)] !text-[var(--paper)] hover:bg-[var(--ink)] hover:!text-[var(--paper)] focus-visible:bg-[var(--ink)] [&_*]:!text-[var(--paper)]",
     outlined:
-      "border border-[var(--ink)] text-[var(--ink)] bg-transparent hover:bg-[var(--ink)] hover:!text-white focus-visible:bg-[var(--ink)] focus-visible:!text-white hover:[&_*]:!text-white focus-visible:[&_*]:!text-white",
+      "border border-[var(--ink)] text-[var(--ink)] bg-transparent hover:bg-[var(--ink)] hover:!text-[var(--paper)] focus-visible:bg-[var(--ink)] focus-visible:!text-[var(--paper)] hover:[&_*]:!text-[var(--paper)] focus-visible:[&_*]:!text-[var(--paper)]",
     ghost:
       "text-[var(--ink)] underline underline-offset-4 decoration-2 decoration-[var(--accent)] hover:text-[var(--accent)] hover:decoration-[var(--accent)] !min-h-0 !p-0 inline-flex",
   }[variant];
 
   const baseClasses =
-    "inline-flex items-center justify-center gap-2 mono tracking-widest uppercase transition-colors motion-reduce:transition-none disabled:opacity-60 disabled:cursor-not-allowed";
+    "btn-mat group inline-flex items-center justify-center gap-2.5 mono tracking-[0.14em] uppercase transition-all duration-200 motion-reduce:transition-none disabled:opacity-60 disabled:cursor-not-allowed";
 
   const allClasses = [
     baseClasses,
@@ -131,6 +131,7 @@ export function Button(props: Props) {
           href={props.href}
           download={typeof props.download === "string" ? props.download : ""}
           className={allClasses}
+          data-cursor="accent"
         >
           {content}
         </a>
@@ -142,6 +143,7 @@ export function Button(props: Props) {
         <a
           href={props.href}
           className={allClasses}
+          data-cursor="accent"
           target={props.external ? "_blank" : undefined}
           rel={props.external ? "noreferrer noopener" : undefined}
         >
@@ -151,7 +153,7 @@ export function Button(props: Props) {
     }
 
     return (
-      <Link href={props.href} className={allClasses}>
+      <Link href={props.href} className={allClasses} data-cursor="accent">
         {content}
       </Link>
     );
@@ -163,6 +165,7 @@ export function Button(props: Props) {
       onClick={props.onClick}
       disabled={props.disabled}
       className={allClasses}
+      data-cursor="accent"
     >
       {content}
     </button>
@@ -170,8 +173,12 @@ export function Button(props: Props) {
 }
 
 function defaultIcon(variant: Variant) {
+  // matveyan-style: arrow that slides forward 2-3px on hover.
   return (
-    <span aria-hidden className="shrink-0 text-[1.1em] leading-none">
+    <span
+      aria-hidden
+      className="shrink-0 text-[1.2em] leading-none transition-transform duration-200 ease-out group-hover:translate-x-1"
+    >
       {variant === "primary" ? "→" : variant === "outlined" ? "→" : "↗"}
     </span>
   );

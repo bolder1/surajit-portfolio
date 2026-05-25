@@ -16,7 +16,7 @@ export default function WorkPage() {
   return (
     <>
       <Masthead variant="compact" />
-      <main id="main" className="pb-20">
+      <main id="main" data-cursor="work" className="pb-20">
         {/* Work hero */}
         <section className="border-b border-[var(--rule-soft)]">
           <div className="swiss-container py-14 md:py-20">

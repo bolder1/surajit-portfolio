@@ -50,7 +50,7 @@ export default function GalleryPage() {
   return (
     <>
       <Masthead variant="compact" />
-      <main id="main" className="h-[calc(100vh-56px)]">
+      <main id="main" data-cursor="gallery" className="h-[calc(100vh-56px)]">
         <GalleryStage pieces={pieces} />
       </main>
     </>

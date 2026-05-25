@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { Cursor } from "@/components/Cursor";
+import { HUD } from "@/components/HUD";
 import "./globals.css";
 
 /* Swiss Modernism — one grotesk family (Inter) for everything visible;
@@ -92,6 +94,8 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScroll />
+        <Cursor />
+        <HUD />
         {children}
       </body>
     </html>
