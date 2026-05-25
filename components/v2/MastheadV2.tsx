@@ -13,12 +13,12 @@ import Link from "next/link";
  * 56px strip, no shadow, hairline divider below.
  */
 const PAGES = [
-  { href: "#hero",     label: "001/HOMEPAGE",     active: true },
-  { href: "#manifesto", label: "002/MANIFESTO",   active: false },
-  { href: "#work",     label: "003/SELECTED WORK", active: false },
+  { href: "/v2",         label: "001/HOMEPAGE",  match: ["/v2"] },
+  { href: "/v2#manifesto", label: "002/MANIFESTO", match: [] },
+  { href: "/v2/archive", label: "003/ARCHIVE",   match: ["/v2/archive"] },
 ];
 
-export function MastheadV2() {
+export function MastheadV2({ activeHref }: { activeHref?: string } = {}) {
   return (
     <header className="sticky top-0 z-30 border-b border-[color:var(--v2-rule-soft)] bg-[color:var(--v2-paper)]/85 backdrop-blur-[6px]">
       <div className="px-6 md:px-10 py-3 md:py-4 flex items-center justify-between gap-6">
@@ -41,23 +41,26 @@ export function MastheadV2() {
 
         {/* Page indicators center */}
         <nav className="hidden md:flex items-center gap-1 border border-[color:var(--v2-rule)] px-2 py-2">
-          {PAGES.map((p, i) => (
-            <span key={p.label} className="flex items-center">
-              <Link
-                href={p.href}
-                className={`v2-mono px-3 py-1 ${
-                  p.active
-                    ? "bg-[color:var(--v2-ink)] text-[color:var(--v2-paper)]"
-                    : "text-[color:var(--v2-ink-soft)] hover:text-[color:var(--v2-ink)]"
-                } transition-colors`}
-              >
-                {p.label}
-              </Link>
-              {i < PAGES.length - 1 && (
-                <span aria-hidden className="text-[color:var(--v2-ink-muted)] mx-0.5 v2-mono">·</span>
-              )}
-            </span>
-          ))}
+          {PAGES.map((p, i) => {
+            const isActive = activeHref ? p.match.includes(activeHref) : i === 0;
+            return (
+              <span key={p.label} className="flex items-center">
+                <Link
+                  href={p.href}
+                  className={`v2-mono px-3 py-1 ${
+                    isActive
+                      ? "bg-[color:var(--v2-ink)] text-[color:var(--v2-paper)]"
+                      : "text-[color:var(--v2-ink-soft)] hover:text-[color:var(--v2-ink)]"
+                  } transition-colors`}
+                >
+                  {p.label}
+                </Link>
+                {i < PAGES.length - 1 && (
+                  <span aria-hidden className="text-[color:var(--v2-ink-muted)] mx-0.5 v2-mono">·</span>
+                )}
+              </span>
+            );
+          })}
         </nav>
 
         {/* Right meta */}
