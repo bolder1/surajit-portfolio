@@ -7,11 +7,19 @@ import {
   HomeExperience,
   HomeHowIWork,
   HomeAIToolkit,
-  HomeEducation,
-  HomeBeyondWork,
   HomeContact,
 } from "@/components/HomeSections";
 
+/**
+ * Home — Brutalist + Electric.
+ *
+ * Concise IA per the new spec:
+ *   Hero · What I do · Cases (3) · Work preview · Gallery preview ·
+ *   AI preview · Contact.
+ *
+ * Education + Beyond Work moved to /about; full AI workflow moved
+ * to /ai; full work archive to /work; gallery to /gallery.
+ */
 export default function HomePage() {
   return (
     <>
@@ -23,8 +31,6 @@ export default function HomePage() {
         <HomeExperience />
         <HomeHowIWork />
         <HomeAIToolkit />
-        <HomeEducation />
-        <HomeBeyondWork />
         <HomeContact />
       </main>
       <Folio pageNum="01" />

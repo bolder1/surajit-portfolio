@@ -3,42 +3,53 @@
 @tailwind utilities;
 
 /* ────────────────────────────────────────────────────────────
-   FOLIO v2 — Swiss Modernism
+   FOLIO v3 — BRUTALIST + ELECTRIC
    ─────────────────────────────────────────────────────────────
-   One grotesk family (Inter), one mono (JetBrains Mono),
-   one accent (vermilion). The grid does the work; type carries
-   hierarchy; the accent appears once per surface.
-   ─────────────────────────────────────────────────────────── */
+   Dark-primary aesthetic. One mono (JetBrains Mono) carries
+   most of the surface; Inter Display 800 lowercase handles
+   hero moments. Single laser-red accent. Hard 0px radius,
+   ASCII-ish dividers, chamfered panels via clip-path.
+
+   Hover-color paging: pages set
+       background: var(--hover-tint, var(--paper));
+   so child elements (e.g. /work tiles) can swap a CSS variable
+   on hover and the whole page background reacts.
+   ─────────────────────────────────────────────────────── */
 
 :root {
-  /* Palette — light theme
+  /* Brutalist palette — dark-primary
      ----------------------------------------------------------
-     Contrast on white:
-     - --ink         : 21:1  (AAA)
-     - --ink-soft    : 12:1  (AAA)
-     - --muted       : 7.1:1 (AAA — readable for body)
-     - --muted-soft  : 4.6:1 (AA — meta only, ≥14px)
-     - --accent      : 4.7:1 (AA — bold or ≥18px)               */
-  --paper: #ffffff;
-  --paper-2: #f7f7f5;        /* alt stripe, hover wash */
-  --paper-3: #ededea;        /* deeper stripe */
-  --ink: #0a0a0a;
-  --ink-soft: #1f1f1f;
-  --muted: #5a5a5a;
-  --muted-soft: #8a8a8a;
-  --rule: #0a0a0a;            /* full ink hairlines */
-  --rule-soft: #e5e5e2;       /* light hairlines */
-  --accent: #ff3d2e;          /* vermilion — single accent */
-  --accent-deep: #c52e16;     /* AA-passing variant for small text */
-  --accent-soft: #ffe1dc;
-  --surface: #ffffff;
+     Contrast on dark base:
+     - --ink         on --paper : 18:1  (AAA)
+     - --ink-soft    on --paper : 11:1  (AAA)
+     - --muted       on --paper : 6.6:1 (AAA)
+     - --accent      on --paper : 5.4:1 (AA bold + ≥18px) */
+  --paper: #0a0a0a;            /* near-black, never pure #000 */
+  --paper-2: #141414;          /* alt stripe */
+  --paper-3: #1c1c1c;          /* third stripe */
+  --paper-light: #f5f3ee;      /* off-white for inverted blocks */
+  --ink: #f0eee8;              /* warm off-white */
+  --ink-soft: #c4c0b6;
+  --ink-deep: #0a0a0a;         /* used on light surfaces */
+  --muted: #8a8479;
+  --muted-soft: #5a554c;
+  --rule: #f0eee8;             /* full-ink hairlines */
+  --rule-soft: #2a2a28;        /* soft hairlines */
+  --accent: #ff2d20;           /* laser red */
+  --accent-deep: #cc1f15;      /* a half-step down for hover */
+  --accent-soft: #4a1410;
+  --surface: #141414;
+
+  /* Hover-tint var — pages read this; default to paper.
+     Work tiles flip this on hover to drive the page-color effect. */
+  --hover-tint: var(--paper);
 
   /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Inter", system-ui, -apple-system, sans-serif; /* same family, display weights via class */
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* 8px base unit — every spacing token is a multiple */
+  /* 8px base unit */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -51,31 +62,29 @@
   --space-10: 128px;
   --space-11: 192px;
 
-  /* Grid container */
   --container-max: 1280px;
   --grid-gap: 24px;
-
-  /* WCAG hit-target floor */
   --hit-target: 44px;
 }
 
-/* Dark theme — same variable names, different values.
-   Applied via [data-theme="dark"] on <html>.
-   Vermilion shifts slightly brighter so it doesn't go muddy on near-black. */
-[data-theme="dark"] {
-  --paper: #0a0a0a;
-  --paper-2: #141414;
-  --paper-3: #1c1c1c;
-  --ink: #f5f5f3;
-  --ink-soft: #d4d4d2;
-  --muted: #a0a0a0;
-  --muted-soft: #6a6a6a;
-  --rule: #f5f5f3;
-  --rule-soft: #262626;
-  --accent: #ff5b4d;
-  --accent-deep: #ff3d2e;
-  --accent-soft: #4a1f1a;
-  --surface: #141414;
+/* Light-mode override — used on inverted blocks and the
+   "off-white" version of the brutalist edition. */
+[data-theme="light"] {
+  --paper: #f5f3ee;
+  --paper-2: #ebe9e2;
+  --paper-3: #e0ddd2;
+  --paper-light: #ffffff;
+  --ink: #0a0a0a;
+  --ink-soft: #2a2a28;
+  --ink-deep: #0a0a0a;
+  --muted: #5a554c;
+  --muted-soft: #8a8479;
+  --rule: #0a0a0a;
+  --rule-soft: #d4d1c6;
+  --accent: #ff2d20;
+  --accent-deep: #cc1f15;
+  --accent-soft: #ffdcd9;
+  --surface: #ffffff;
 }
 
 * { border-color: var(--rule-soft); }
@@ -87,63 +96,60 @@ html {
 }
 
 body {
-  background: var(--paper);
+  background: var(--hover-tint, var(--paper));
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-feature-settings: "ss01", "cv11", "tnum", "lnum";
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.55;
+  /* The whole-page color transition on /work hovers */
+  transition: background-color 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-::selection { background: var(--accent); color: #ffffff; }
+::selection { background: var(--accent); color: var(--paper); }
 
 /* ────────────────────────────────────────────────────────────
-   Swiss type system — all from Inter, hierarchy via weight + scale
-   ─────────────────────────────────────────────────────────── */
+   Type system — JetBrains Mono carries the surface; Inter
+   Display 800 lowercase handles hero moments only.
+   ─────────────────────────────────────────────────────── */
 
-/* Display — for the hero name and major section heads.
-   Inter at 700 with tight tracking. */
 .display {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 0.96;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  text-transform: lowercase;
 }
 
-/* Inter doesn't ship italic per Swiss tradition. If a component used
-   .display-italic before, it now reads as the regular display — italics
-   were ornamental, not structural. */
 .display-italic {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 0.96;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  text-transform: lowercase;
 }
 
-/* Body prose — Inter 16px, 1.6 line height for reading comfort.
-   No serif anywhere. */
 .body-prose {
-  font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.55;
-  letter-spacing: -0.005em;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0;
   color: var(--ink-soft);
 }
 
 .body-prose-sm {
-  font-family: var(--font-sans);
-  font-size: 15px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   line-height: 1.55;
   color: var(--ink-soft);
 }
 
-/* Mono labels — eyebrows, datelines, registration marks.
-   JetBrains Mono 11px uppercase wide-tracked. */
+/* Mono labels — already mono, just for case + tracking */
 .mono {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -152,7 +158,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -161,42 +167,36 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-deep);
+  color: var(--accent);
 }
 
 .mono-xs {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* Drop cap — disabled in Swiss. Components still referencing
-   .drop-cap will simply render normal paragraphs. */
-.drop-cap::first-letter { /* intentionally empty */ }
+/* Drop-cap utility kept as a no-op so old components don't break */
+.drop-cap::first-letter { /* no-op in brutalist */ }
 
-/* Pull quote — Swiss reinterpretation: large sans, tight tracking,
-   left-aligned, single accent rule above. No italic, no decorative
-   borders. */
+/* Pull-quote — brutalist treatment: heavy mono, ASCII-bracketed */
 .pull-quote {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: clamp(24px, 3.2vw, 40px);
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: clamp(18px, 2.4vw, 28px);
+  line-height: 1.3;
   color: var(--ink);
   padding: 24px 0;
-  border-top: 2px solid var(--accent);
-  hanging-punctuation: first last;
+  border-top: 4px solid var(--accent);
+  border-bottom: 4px solid var(--accent);
 }
 
-/* Section tag — small mono label.
-   Swiss simplification: no corner ticks, just a single 2px accent
-   underline. Honest, structural. */
+/* Section eyebrow — brutalist bracket style: [01 — LEAD] */
 .section-tag {
   display: inline-flex;
   align-items: center;
@@ -204,28 +204,25 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-deep);
-  padding-bottom: 4px;
-  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 4px 0;
   background: transparent;
 }
+.section-tag::before { content: "["; color: var(--accent); }
+.section-tag::after  { content: "]"; color: var(--accent); }
 
-/* Rules — Swiss likes the hairline. */
 .rule { height: 1px; background: var(--rule); width: 100%; }
-.rule-thick { height: 2px; background: var(--rule); width: 100%; }
+.rule-thick { height: 4px; background: var(--accent); width: 100%; }
 .rule-soft { height: 1px; background: var(--rule-soft); width: 100%; }
 
-/* Tabular numerics */
 .figure {
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-feature-settings: "tnum", "lnum";
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Link — underline by default (not hover-only).
-   Swiss never relies on color alone to mark interactive text. */
 .link {
   color: var(--ink);
   text-decoration: underline;
@@ -237,35 +234,28 @@ body {
   display: inline-block;
 }
 .link:hover,
-.link:focus-visible { color: var(--accent-deep); }
+.link:focus-visible { color: var(--accent); }
 
-/* Folio — page-number style, mono not italic */
 .folio {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 /* ────────────────────────────────────────────────────────────
-   Grid utilities — strict 12-column with consistent gutter
-   ─────────────────────────────────────────────────────────── */
-
+   Container + grid
+   ─────────────────────────────────────────────────────── */
 .swiss-container {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
   padding-inline: 24px;
 }
-
-@media (min-width: 768px) {
-  .swiss-container { padding-inline: 40px; }
-}
-@media (min-width: 1280px) {
-  .swiss-container { padding-inline: 56px; }
-}
+@media (min-width: 768px)  { .swiss-container { padding-inline: 40px; } }
+@media (min-width: 1280px) { .swiss-container { padding-inline: 56px; } }
 
 .swiss-grid {
   display: grid;
@@ -274,12 +264,43 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────
+   Brutalist panel — chamfered corner via clip-path
+   ─────────────────────────────────────────────────────── */
+.brutalist-panel {
+  background: var(--paper-2);
+  border: 1px solid var(--rule-soft);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+/* ────────────────────────────────────────────────────────────
+   ASCII divider — used for section breaks
+   ─────────────────────────────────────────────────────── */
+.ascii-divider {
+  font-family: var(--font-mono);
+  color: var(--muted-soft);
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 11px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Console-style prompt button
+   ─────────────────────────────────────────────────────── */
+.console-cta::before {
+  content: "$ ";
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* ────────────────────────────────────────────────────────────
    Focus, skip, hit targets, motion
-   ─────────────────────────────────────────────────────────── */
+   ─────────────────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 1px;
+  border-radius: 0;
 }
 
 .skip-link {
@@ -287,25 +308,21 @@ body {
   top: 8px;
   left: 8px;
   z-index: 100;
-  background: var(--ink);
+  background: var(--accent);
   color: var(--paper);
   padding: 10px 16px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   transform: translateY(-200%);
   transition: transform 180ms ease;
 }
 .skip-link:focus,
-.skip-link:focus-visible {
-  transform: translateY(0);
-}
+.skip-link:focus-visible { transform: translateY(0); }
 
-.hit-area-44 {
-  position: relative;
-}
+.hit-area-44 { position: relative; }
 .hit-area-44::after {
   content: "";
   position: absolute;
@@ -325,28 +342,21 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  body { transition: none; }
 }
 
-/* ────────────────────────────────────────────────────────────
-   Reveal — restrained Swiss entrance: shift + fade
-   ─────────────────────────────────────────────────────────── */
+/* Reveal */
 .reveal {
   opacity: 0;
   transform: translateY(12px);
   transition:
-    opacity 600ms cubic-bezier(0.2, 0, 0, 1),
-    transform 600ms cubic-bezier(0.2, 0, 0, 1);
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-}
-
-/* ────────────────────────────────────────────────────────────
-   Marquee — kept for tag-cloud strips
-   ─────────────────────────────────────────────────────────── */
+/* Marquee — kept */
 @keyframes marquee-x {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -356,29 +366,106 @@ body {
   width: max-content;
   animation: marquee-x 80s linear infinite;
 }
-@media (prefers-reduced-motion: reduce) {
-  .marquee { animation: none; }
-}
+@media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
 
-/* ────────────────────────────────────────────────────────────
-   Deprecated editorial utilities — kept as no-ops so existing
-   components don't crash if they still reference them.
-   ─────────────────────────────────────────────────────────── */
+/* Legacy no-ops so older components don't crash */
 .diamond,
 .diamond-open {
   display: inline-block;
   width: 8px;
   height: 8px;
   background: var(--accent);
-  transform: rotate(45deg);
 }
 .spine-pulse,
-.scan-wipe { /* deprecated decorative — left as identity */ }
+.scan-wipe { /* deprecated */ }
 
 /* ────────────────────────────────────────────────────────────
-   Print
-   ─────────────────────────────────────────────────────────── */
+   /work — tile system. Tiles flip --hover-tint upward to body,
+   so the entire page background animates to the project color.
+   ─────────────────────────────────────────────────────── */
+.work-tile {
+  position: relative;
+  display: block;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-soft);
+  color: var(--ink);
+  padding: 32px;
+  min-height: 200px;
+  transition:
+    background-color 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 480ms cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.work-tile:hover,
+.work-tile:focus-visible {
+  background: var(--tile-hover, #1a1a1a);
+  color: var(--tile-hover-ink, var(--ink));
+  border-color: transparent;
+}
+
+/* ────────────────────────────────────────────────────────────
+   /gallery — infinite-scroll globe utilities
+   ─────────────────────────────────────────────────────── */
+.gallery-stage {
+  position: relative;
+  width: 100vw;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  background: var(--paper);
+  cursor: grab;
+  touch-action: none;
+}
+.gallery-stage:active { cursor: grabbing; }
+
+.gallery-plane {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  will-change: transform;
+  transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gallery-plane.is-panning { transition: none; }
+
+.gallery-frame {
+  position: absolute;
+  border: 1px solid var(--rule-soft);
+  background: var(--paper-2);
+  overflow: hidden;
+  transition:
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 200ms ease,
+    box-shadow 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  will-change: transform;
+}
+.gallery-frame:hover {
+  border-color: var(--accent);
+  z-index: 2;
+}
+.gallery-frame.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent), 0 32px 64px rgba(0,0,0,0.6);
+  z-index: 10;
+}
+
+/* Vignette around the stage edges */
+.gallery-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    var(--paper) 95%
+  );
+  opacity: 0.6;
+}
+
+/* Print */
 @media print {
   .marquee, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
   nav, .no-print { display: none !important; }
+  body { transition: none; background: white; color: black; }
 }

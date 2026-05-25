@@ -1955,3 +1955,68 @@ export function getFeaturedProjects(): Project[] {
 export function getAllProjects(): Project[] {
   return [...projects].sort((a, b) => a.order - b.order);
 }
+
+/* ──────────────────────────────────────────────────────────
+   Track assignment.
+   The three case studies are the strongest end-to-end stories
+   in the portfolio. Everything else moves to /work or /gallery.
+   ──────────────────────────────────────────────────────── */
+const CASE_SLUGS = new Set<string>([
+  "ad-tools",          // 5-day AI prototype — the AI workflow flagship
+  "iga-platform",      // Public IGA work — represents real enterprise IAM
+  "banking-analytics", // AI-augmented banking dashboard — breadth
+]);
+
+/* Per-project hover colors for the /work page (bishal.cc pattern).
+   When a user hovers a tile, --hover-tint flips to this color and the
+   entire page background animates to it. */
+const WORK_HOVERS: Record<string, { color: string; ink: string; glyph?: string }> = {
+  "ad-tools":          { color: "#1e3a8a", ink: "#f0eee8", glyph: "AD" },   // navy
+  "iga-platform":      { color: "#0c4a3e", ink: "#f0eee8", glyph: "IGA" },  // deep emerald
+  "iam-platform":      { color: "#581c87", ink: "#f0eee8", glyph: "IAM" },  // royal purple
+  "pam-platform":      { color: "#7c2d12", ink: "#f0eee8", glyph: "PAM" },  // burnt sienna
+  "uem-platform":      { color: "#075985", ink: "#f0eee8", glyph: "UEM" },  // teal-blue
+  "mods-design-system":{ color: "#3f2c1f", ink: "#f0eee8", glyph: "DS" },   // umber
+  "product-os":        { color: "#0c0a09", ink: "#f0eee8", glyph: "OS" },   // near-black
+  "banking-analytics": { color: "#14532d", ink: "#f0eee8", glyph: "BNK" },  // forest
+  "dpdp-compliance":   { color: "#7e22ce", ink: "#f0eee8", glyph: "DPDP" }, // violet
+  "signup-customizer": { color: "#9a3412", ink: "#f0eee8", glyph: "SU" },   // burnt orange
+  "patient-portal":    { color: "#1e6091", ink: "#f0eee8", glyph: "PP" },   // medical blue
+};
+
+/* Augment each project in place with track + hover metadata. Runs once at
+   module load. Done here (instead of inline on every entry) to keep the
+   2000-line catalog manageable. */
+for (const p of projects) {
+  if (CASE_SLUGS.has(p.slug)) {
+    p.track = "case";
+  } else {
+    p.track = p.track ?? "work";
+  }
+  const hov = WORK_HOVERS[p.slug];
+  if (hov) {
+    p.hoverColor = hov.color;
+    p.hoverInk = hov.ink;
+    p.hoverIllustration = hov.glyph;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   Track-aware selectors
+   ──────────────────────────────────────────────────────── */
+export function getCaseProjects(): Project[] {
+  return projects.filter((p) => p.track === "case").sort((a, b) => a.order - b.order);
+}
+
+export function getWorkProjects(): Project[] {
+  return projects
+    .filter((p) => p.track === "work" && p.access !== "external")
+    .sort((a, b) => a.order - b.order);
+}
+
+export function getGalleryProjects(): Project[] {
+  return projects.filter((p) => p.track === "gallery").sort((a, b) => a.order - b.order);
+}
+
+/** Helpful test: the 3 cases must always exist. */
+export const CASE_STUDY_SLUGS = Array.from(CASE_SLUGS) as readonly string[];

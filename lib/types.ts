@@ -150,6 +150,13 @@ export interface CaseStudyScreen {
   span?: 1 | 2;
 }
 
+/** Which surface this project lives on.
+ *    case    — gets a full /cases/[slug] detailed page; only ~3 of these exist.
+ *    work    — appears on /work as a black tile with hover color; carousel detail.
+ *    gallery — appears on /gallery as an infinite-scroll tile; lighter treatment.
+ */
+export type ProjectTrack = "case" | "work" | "gallery";
+
 export interface Project {
   slug: string;
   title: string;
@@ -167,6 +174,18 @@ export interface Project {
   detailedSections?: ProjectSection[];
   tags: string[];
   order: number;
+
+  /** Which surface this lives on. Default "work" for back-compat. */
+  track?: ProjectTrack;
+  /** Cover image (or asset path) for /work and /gallery tiles. */
+  cover?: { src: string; alt: string };
+  /** Background colour the /work tile flips the page to on hover (bishal.cc pattern). */
+  hoverColor?: string;
+  /** Text colour when hover-color is active (use #0a0a0a or #f0eee8 typically). */
+  hoverInk?: string;
+  /** A short lightweight illustration / glyph shown only on hover.
+      Can be an emoji, a single character, or short string ("01", "AD", "⚙"). */
+  hoverIllustration?: string;
 
   /** Show in featured-list on home page */
   featured?: boolean;
