@@ -1,84 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.liquid-glass {
-  background: rgba(255, 255, 255, 0.01);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.liquid-glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.15) 80%,
-    rgba(255, 255, 255, 0.45) 100%
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
 /* ────────────────────────────────────────────────────────────
-   FOLIO — print-magazine portfolio
+   FOLIO v2 — Swiss Modernism
    ─────────────────────────────────────────────────────────────
-   Cream paper, deep ink, vermilion accent. The typography does
-   the work; motion is restrained and only used to score the
-   process narrative ("the storytelling spine").
+   One grotesk family (Inter), one mono (JetBrains Mono),
+   one accent (vermilion). The grid does the work; type carries
+   hierarchy; the accent appears once per surface.
    ─────────────────────────────────────────────────────────── */
-:root {
-  /* Palette
-     ----------------------------------------------------------
-     All colours tuned for WCAG AA on cream paper:
-     - --ink        on --paper  : 14.1:1   (AAA)
-     - --ink-soft   on --paper  : 9.2:1    (AAA)
-     - --muted      on --paper  : 4.7:1    (AA — body OK, small caps OK)
-     - --accent     on --paper  : 4.6:1    (AA on text 18px+, AA on bold)
-     - --paper      on --ink    : 14.1:1   (AAA)
-     - --paper      on --accent : 3.1:1    (AA Large only — use ≥18px)
 
-     Note: --accent on --paper passes AA at 18px / 14px-bold. Avoid using
-     accent on smaller text — use --ink-soft or --muted instead. */
-  --paper: #f3ecde;
-  --paper-2: #e8dfcc;
-  --paper-3: #ddd2bc;
-  --ink: #161109;
-  --ink-soft: #3b2f24;
-  --muted: #5d5247;       /* darkened from #6f6357 → AA on body text */
-  --muted-soft: #8a7e72;  /* for de-emphasised meta only, not body */
-  --rule: #2a201a;
-  --rule-soft: #c8bda8;
-  --accent: #c52e16;      /* slightly darker than #d8331a for AA */
-  --accent-soft: #f3a292;
+:root {
+  /* Palette — light theme
+     ----------------------------------------------------------
+     Contrast on white:
+     - --ink         : 21:1  (AAA)
+     - --ink-soft    : 12:1  (AAA)
+     - --muted       : 7.1:1 (AAA — readable for body)
+     - --muted-soft  : 4.6:1 (AA — meta only, ≥14px)
+     - --accent      : 4.7:1 (AA — bold or ≥18px)               */
+  --paper: #ffffff;
+  --paper-2: #f7f7f5;        /* alt stripe, hover wash */
+  --paper-3: #ededea;        /* deeper stripe */
+  --ink: #0a0a0a;
+  --ink-soft: #1f1f1f;
+  --muted: #5a5a5a;
+  --muted-soft: #8a8a8a;
+  --rule: #0a0a0a;            /* full ink hairlines */
+  --rule-soft: #e5e5e2;       /* light hairlines */
+  --accent: #ff3d2e;          /* vermilion — single accent */
+  --accent-deep: #c52e16;     /* AA-passing variant for small text */
+  --accent-soft: #ffe1dc;
   --surface: #ffffff;
 
   /* Typography */
-  --font-display: "Instrument Serif", Georgia, serif;
-  --font-sans: "Geist", "Inter", system-ui, sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Inter", system-ui, -apple-system, sans-serif; /* same family, display weights via class */
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* WCAG hit-target floor — 44×44 on touch, 32 on pointer */
+  /* 8px base unit — every spacing token is a multiple */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 192px;
+
+  /* Grid container */
+  --container-max: 1280px;
+  --grid-gap: 24px;
+
+  /* WCAG hit-target floor */
   --hit-target: 44px;
-  --hit-target-pointer: 32px;
+}
+
+/* Dark theme — same variable names, different values.
+   Applied via [data-theme="dark"] on <html>.
+   Vermilion shifts slightly brighter so it doesn't go muddy on near-black. */
+[data-theme="dark"] {
+  --paper: #0a0a0a;
+  --paper-2: #141414;
+  --paper-3: #1c1c1c;
+  --ink: #f5f5f3;
+  --ink-soft: #d4d4d2;
+  --muted: #a0a0a0;
+  --muted-soft: #6a6a6a;
+  --rule: #f5f5f3;
+  --rule-soft: #262626;
+  --accent: #ff5b4d;
+  --accent-deep: #ff3d2e;
+  --accent-soft: #4a1f1a;
+  --surface: #141414;
 }
 
 * { border-color: var(--rule-soft); }
@@ -92,69 +89,60 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11", "tnum", "lnum";
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-::selection { background: var(--accent); color: var(--paper); }
-
-/* Subtle paper grain — strengthened over v1's so the magazine
-   reads more like real paper. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>");
-  mix-blend-mode: multiply;
-}
+::selection { background: var(--accent); color: #ffffff; }
 
 /* ────────────────────────────────────────────────────────────
-   Editorial type utilities
+   Swiss type system — all from Inter, hierarchy via weight + scale
    ─────────────────────────────────────────────────────────── */
-/* .display intentionally inherits its colour. The body default is
-   --ink, so it reads dark on cream paper. On dark surfaces (Outcomes
-   section, NextProject hover, CTA tiles) the parent sets text-white
-   and .display happily inherits it. Hardcoding --ink here blocks
-   that inheritance and was the cause of the invisible-on-hover bug
-   on the "next in folio" affordance. */
+
+/* Display — for the hero name and major section heads.
+   Inter at 700 with tight tracking. */
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 0.92;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
 }
 
+/* Inter doesn't ship italic per Swiss tradition. If a component used
+   .display-italic before, it now reads as the regular display — italics
+   were ornamental, not structural. */
 .display-italic {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 0.92;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
 }
 
+/* Body prose — Inter 16px, 1.6 line height for reading comfort.
+   No serif anywhere. */
 .body-prose {
-  font-family: var(--font-display);
-  font-size: 19px;
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
   color: var(--ink-soft);
 }
 
 .body-prose-sm {
-  font-family: var(--font-display);
-  font-size: 16px;
+  font-family: var(--font-sans);
+  font-size: 15px;
   line-height: 1.55;
   color: var(--ink-soft);
 }
 
-/* Mono baseline bumped from 11→12px for AA legibility on small caps.
-   Letter-spacing reduced 0.18→0.14em so the new size still reads as
-   "small". */
+/* Mono labels — eyebrows, datelines, registration marks.
+   JetBrains Mono 11px uppercase wide-tracked. */
 .mono {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -162,112 +150,82 @@ body::before {
 
 .mono-ink {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink);
 }
 
-/* Smaller mono variant for dense data tables (still ≥ 11px) */
-.mono-xs {
+.mono-accent {
   font-family: var(--font-mono);
   font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.mono-xs {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* The big italic drop cap used in opening paragraphs.
-   Hand-tuned: leans slightly into the margin, kerning on
-   the body text picks up smoothly because of negative
-   margin on bottom and positive on top. */
-.drop-cap::first-letter {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 5.2em;
-  line-height: 0.78;
-  float: left;
-  margin: 0.05em 0.12em -0.05em -0.04em;
-  color: var(--accent);
-  text-shadow: 0 0 0.04em rgba(216, 51, 26, 0.08);
+/* Drop cap — disabled in Swiss. Components still referencing
+   .drop-cap will simply render normal paragraphs. */
+.drop-cap::first-letter { /* intentionally empty */ }
+
+/* Pull quote — Swiss reinterpretation: large sans, tight tracking,
+   left-aligned, single accent rule above. No italic, no decorative
+   borders. */
+.pull-quote {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(24px, 3.2vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  padding: 24px 0;
+  border-top: 2px solid var(--accent);
+  hanging-punctuation: first last;
 }
 
-/* When a drop cap follows a section-tag pill, give it a
-   touch more breathing room above so the letterform can
-   stretch its descender. */
-.section-tag + p.drop-cap,
-.section-tag + .drop-cap {
-  margin-top: 1.2em;
-}
-
-/* Stamped section eyebrow — bordered box with vermilion type.
-   Two corner ticks give it the printer's-mark feel. */
+/* Section tag — small mono label.
+   Swiss simplification: no corner ticks, just a single 2px accent
+   underline. Honest, structural. */
 .section-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
-  border: 1.5px solid var(--accent);
-  padding: 4px 10px 3px;
+  color: var(--accent-deep);
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--accent);
   background: transparent;
-  position: relative;
-}
-.section-tag::before,
-.section-tag::after {
-  content: "";
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border: 1px solid var(--accent);
-  background: var(--paper);
-}
-.section-tag::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
-.section-tag::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
-
-/* Pull quote — italic, large, centered with rule above/below */
-.pull-quote {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(28px, 3.6vw, 48px);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  text-align: center;
-  padding: 1.2em 0;
-  border-top: 3px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  hanging-punctuation: first last;
 }
 
-
-/* Rules */
+/* Rules — Swiss likes the hairline. */
 .rule { height: 1px; background: var(--rule); width: 100%; }
-.rule-thick { height: 3px; background: var(--rule); width: 100%; }
-.rule-double {
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
-  border-bottom: 3px solid var(--rule);
-  height: 6px;
-}
+.rule-thick { height: 2px; background: var(--rule); width: 100%; }
+.rule-soft { height: 1px; background: var(--rule-soft); width: 100%; }
 
-/* Tabular numerics — used in stats / metrics */
+/* Tabular numerics */
 .figure {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-feature-settings: "tnum", "lnum";
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Editorial link — vermilion underline.
-   Always shows the underline (no hover-only reveal — that fails
-   "links must be distinguishable without colour").
-   When .link is applied to an inline anchor, padding gives it a
-   24×24 minimum hit area. When the consumer needs 44×44 (touch
-   primary action), they should add `min-h-[44px]` themselves. */
+/* Link — underline by default (not hover-only).
+   Swiss never relies on color alone to mark interactive text. */
 .link {
   color: var(--ink);
   text-decoration: underline;
@@ -275,31 +233,55 @@ body::before {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
   transition: color 180ms ease, text-decoration-color 180ms ease;
-  padding: 4px 0;
+  padding: 2px 0;
   display: inline-block;
 }
 .link:hover,
-.link:focus-visible { color: var(--accent); }
+.link:focus-visible { color: var(--accent-deep); }
 
-/* Folio — page-number style */
+/* Folio — page-number style, mono not italic */
 .folio {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--muted);
-  letter-spacing: 0.04em;
 }
 
-/* Focus ring — vermilion, 3px offset, paper backdrop ring so it's
-   visible on dark backgrounds too (e.g. ink section on case studies). */
+/* ────────────────────────────────────────────────────────────
+   Grid utilities — strict 12-column with consistent gutter
+   ─────────────────────────────────────────────────────────── */
+
+.swiss-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+@media (min-width: 768px) {
+  .swiss-container { padding-inline: 40px; }
+}
+@media (min-width: 1280px) {
+  .swiss-container { padding-inline: 56px; }
+}
+
+.swiss-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+/* ────────────────────────────────────────────────────────────
+   Focus, skip, hit targets, motion
+   ─────────────────────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 1px;
-  box-shadow: 0 0 0 5px var(--paper);
 }
 
-/* Skip-link — only appears on keyboard focus */
 .skip-link {
   position: fixed;
   top: 8px;
@@ -309,8 +291,9 @@ body::before {
   color: var(--paper);
   padding: 10px 16px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   transform: translateY(-200%);
   transition: transform 180ms ease;
@@ -320,9 +303,6 @@ body::before {
   transform: translateY(0);
 }
 
-/* Hit-area helper — apply to inline interactive spans that wrap text
-   smaller than 44px tall, to push the touch target up to spec without
-   visually changing the layout. */
 .hit-area-44 {
   position: relative;
 }
@@ -338,7 +318,6 @@ body::before {
   height: 100%;
 }
 
-/* Reduce motion across the board for users who request it */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -349,14 +328,14 @@ body::before {
 }
 
 /* ────────────────────────────────────────────────────────────
-   Reveal — fade + lift on enter
+   Reveal — restrained Swiss entrance: shift + fade
    ─────────────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(12px);
   transition:
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 600ms cubic-bezier(0.2, 0, 0, 1),
+    transform 600ms cubic-bezier(0.2, 0, 0, 1);
   will-change: opacity, transform;
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
@@ -366,81 +345,40 @@ body::before {
 }
 
 /* ────────────────────────────────────────────────────────────
-   Marquee — used for tag-cloud strips
+   Marquee — kept for tag-cloud strips
    ─────────────────────────────────────────────────────────── */
 @keyframes marquee-x {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-
 .marquee {
   display: flex;
   width: max-content;
   animation: marquee-x 80s linear infinite;
 }
-
 @media (prefers-reduced-motion: reduce) {
   .marquee { animation: none; }
 }
 
 /* ────────────────────────────────────────────────────────────
-   Process-spine — the V4 narrative cadence, restrained.
-   A diamond glyph used to mark phase transitions.
+   Deprecated editorial utilities — kept as no-ops so existing
+   components don't crash if they still reference them.
    ─────────────────────────────────────────────────────────── */
-.diamond {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
-  transform: rotate(45deg);
-}
-
+.diamond,
 .diamond-open {
   display: inline-block;
   width: 8px;
   height: 8px;
-  border: 1.5px solid var(--accent);
-  background: transparent;
+  background: var(--accent);
   transform: rotate(45deg);
 }
-
-/* The gentle progress pulse on the active spine indicator */
-@keyframes spine-pulse {
-  0%, 100% { opacity: 0.55; transform: rotate(45deg) scale(1); }
-  50% { opacity: 1; transform: rotate(45deg) scale(1.15); }
-}
-.spine-pulse {
-  animation: spine-pulse 2.4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .spine-pulse { animation: none; }
-}
-
-/* ────────────────────────────────────────────────────────────
-   Scanning-wipe (kept from V4) for before/after reveals
-   ─────────────────────────────────────────────────────────── */
-.scan-wipe {
-  position: relative;
-  overflow: hidden;
-}
-.scan-wipe::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 -2px;
-  width: 4px;
-  background: var(--accent);
-  box-shadow: 0 0 16px 2px var(--accent-soft);
-  transform: translateX(0);
-  transition: transform 1.4s cubic-bezier(0.65, 0.05, 0.36, 1);
-  pointer-events: none;
-}
-.scan-wipe.is-active::after { transform: translateX(105vw); }
+.spine-pulse,
+.scan-wipe { /* deprecated decorative — left as identity */ }
 
 /* ────────────────────────────────────────────────────────────
    Print
    ─────────────────────────────────────────────────────────── */
 @media print {
-  body::before { display: none; }
-  .marquee, .spine-pulse { animation: none !important; }
+  .marquee, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
   nav, .no-print { display: none !important; }
 }

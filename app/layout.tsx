@@ -1,24 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
-const display = Instrument_Serif({
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-  display: "swap",
-});
+/* Swiss Modernism — one grotesk family (Inter) for everything visible;
+   JetBrains Mono for labels, datelines, registration marks. Inter is
+   loaded with display variant weights for the hero, body weights for
+   prose, mono for the small-caps eyebrow vocabulary. */
 
-const sans = Geist({
+const sans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const mono = Geist_Mono({
+const display = Inter({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-mono",
@@ -26,13 +30,13 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://surajit.design"),
+  metadataBase: new URL("https://surajit-dutta.vercel.app"),
   title: {
-    default: "Surajit Dutta — Folio",
+    default: "Surajit Dutta — Product designer for enterprise software",
     template: "%s · Surajit Dutta",
   },
   description:
-    "A portfolio in the form of a newspaper. Surajit Dutta — product designer for enterprise software. IAM, UEM, PAM, design systems.",
+    "Surajit Dutta — product designer for enterprise software. IAM, UEM, PAM, design systems. Built on a strict grid.",
   keywords: [
     "Product Designer",
     "Surajit Dutta",
@@ -46,21 +50,24 @@ export const metadata: Metadata = {
   creator: "Surajit Dutta",
   openGraph: {
     type: "website",
-    title: "Surajit Dutta — Folio",
+    title: "Surajit Dutta — Product designer for enterprise software",
     description:
-      "A portfolio in the form of a newspaper. Enterprise SaaS, design systems, the workflows behind the product.",
+      "IAM, UEM, PAM, design systems. Enterprise workflows behind the product.",
     siteName: "Surajit Dutta",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Surajit Dutta — Folio",
+    title: "Surajit Dutta — Product designer for enterprise software",
     description:
-      "A portfolio in the form of a newspaper. Enterprise SaaS, design systems, the workflows behind the product.",
+      "IAM, UEM, PAM, design systems. Enterprise workflows behind the product.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f3ecde",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({
@@ -71,13 +78,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable}`}
+      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+      suppressHydrationWarning
     >
-      <body className="relative antialiased">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-[var(--ink)] focus:text-white focus:px-3 focus:py-2 focus:rounded"
-        >
+      <head>
+        {/* No-flash theme script — reads stored or system preference before paint. */}
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('folio.theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="relative antialiased bg-paper text-ink">
+        <a href="#main" className="skip-link">
           Skip to main content
         </a>
         <SmoothScroll />

@@ -1,30 +1,29 @@
 /**
- * Home-page sections — interview-friendly resume-portfolio.
- * Fact-checked against Surajit Dutta's CV (Jul 2022 – present).
+ * Home-page sections — Swiss Modernism rebuild.
  *
- * Information architecture (top to bottom, fast-scan order):
- *   01  Hero               — name, role, status, TL;DR, hire-me CTA, four stats
- *   02  What I do          — Domains / Strengths / Tools, scannable
- *   03  Selected Work      — five projects with role + scope (outcomes "on request")
- *   04  Experience         — three roles (miniOrange, Impero IT, Fortmindz)
- *   05  How I work         — three principles + compact 8-step process row
- *   06  Education          — B.Tech IT + Diploma E&T
- *   07  Beyond work        — short personal note
- *   08  Contact            — email / phone / LinkedIn / Resume PDF
+ * Same content, same fact-binding to Surajit's CV. The visual register
+ * changes: one grotesk family (Inter), one accent (vermilion) appearing
+ * once per section, strict 12-col grid via .swiss-grid + .swiss-container,
+ * 8px spacing rhythm, hierarchy via weight + size, not decoration.
  *
- * Numbers and claims are bound to the CV. Anything not on the CV is
- * either omitted or labelled "shared on request".
+ * Sections (top to bottom):
+ *   01  Hero               — name moment + four stats
+ *   02  What I do          — Domains / Strengths / Tools
+ *   03  Selected Work      — five projects, scope + role
+ *   04  Experience         — three roles, real bullets
+ *   05  How I work         — three principles + 8-step process strip
+ *   06  AI-native Toolkit  — manifesto + tool taxonomy + receipts
+ *   07  Education          — B.Tech IT + Diploma
+ *   08  Beyond work        — short personal note
+ *   09  Contact            — channels
  */
 
 import Link from "next/link";
 import { getFeaturedProjects } from "@/lib/projects";
-import { Button, StatusPill, Tag } from "./Button";
+import { Button, StatusPill } from "./Button";
 
 /* ──────────────────────────────────────────────────────────
    01  HERO
-   Fact-bound: 3+ years, four platforms (IAM/PAM/IGA/UEM),
-   5-day AD prototype + ~70% cycle compression, currently at
-   miniOrange.
    ─────────────────────────────────────────────────────── */
 export function HomeHero() {
   return (
@@ -33,47 +32,38 @@ export function HomeHero() {
       className="border-b border-[var(--rule)] scroll-mt-20"
       aria-labelledby="hero-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        {/* Status row — leads with availability */}
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pb-6 border-b border-[var(--rule-soft)] mono text-[var(--ink)]">
-          <span className="inline-flex items-center gap-2">
-            <span className="diamond" aria-hidden />
-            <span className="text-[var(--accent)]">OPEN TO ROLES</span>
+      <div className="swiss-container py-14 md:py-20">
+        {/* Status strip */}
+        <div className="swiss-grid items-center pb-6 border-b border-[var(--rule-soft)] mono">
+          <span className="col-span-6 md:col-span-3 text-[var(--accent-deep)]">
+            OPEN TO ROLES
           </span>
-          <Sep />
-          <span>PRODUCT DESIGNER</span>
-          <Sep />
-          <span>FULL-TIME · CONTRACT</span>
-          <Sep />
-          <span>PUNE · IST · ASYNC US</span>
-          <span className="ml-auto hidden md:inline text-[var(--muted)]">
+          <span className="col-span-6 md:col-span-6 md:text-center">
+            FULL-TIME · CONTRACT · PUNE / IST / ASYNC US
+          </span>
+          <span className="col-span-12 md:col-span-3 md:text-right text-[var(--muted)]">
             REPLY WITHIN 24H
           </span>
         </div>
 
         {/* Headline + supporting paragraph */}
-        <div className="grid md:grid-cols-12 gap-8 md:gap-12 pt-10 md:pt-14 items-end">
-          <div className="md:col-span-8">
-            <p className="mono mb-5 text-[var(--accent)]">▸ § 01 · LEAD</p>
+        <div className="swiss-grid items-end pt-10 md:pt-14">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-6">01 — Lead</p>
             <h2
               id="hero-heading"
-              className="display text-[12vw] md:text-[8vw] lg:text-[120px] leading-[0.88] tracking-tightest"
+              className="display text-[14vw] sm:text-[11vw] md:text-[8vw] lg:text-[120px]"
             >
-              I design product flows for{" "}
-              <span className="display-italic text-[var(--accent)]">
-                IT and security teams
-              </span>
-              .
+              I design product flows for IT and security teams.
             </h2>
           </div>
-          <div className="md:col-span-4">
-            <p className="body-prose drop-cap">
-              Three-plus years on enterprise SaaS &mdash; currently at
-              miniOrange, leading end-to-end design across IAM, PAM, IGA and
-              UEM. I orchestrate Claude, Figma Make AI, Cursor, and a
-              widening AI stack to compress discovery-to-handoff cycles from
-              weeks to days &mdash; without trading taste for speed.
-              Receipts in &sect; 06.
+          <div className="col-span-12 md:col-span-4">
+            <p className="body-prose">
+              Three-plus years on enterprise SaaS — currently at miniOrange,
+              leading end-to-end design across IAM, PAM, IGA and UEM. I
+              orchestrate Claude, Figma Make AI, Cursor, and a widening AI
+              stack to compress discovery-to-handoff cycles from weeks to
+              days — without trading taste for speed. Receipts in § 06.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button href="/hire" variant="primary">
@@ -91,17 +81,22 @@ export function HomeHero() {
           </div>
         </div>
 
-        {/* Stats strip — defensible CV-bound numbers only */}
-        <div className="mt-14 md:mt-20 grid grid-cols-2 md:grid-cols-4 border-t-2 border-[var(--rule)] divide-x divide-[var(--rule)]">
-          {STATS.map((s) => (
-            <div key={s.label} className="px-4 md:px-6 py-6">
-              <div className="figure display text-[40px] md:text-[60px] lg:text-[76px] leading-[0.95] text-[var(--accent)]">
+        {/* Stats strip — defensible CV-bound numbers.
+            Swiss adjustment: figures in heavy sans, single accent on the
+            number itself, dividers are hairline-soft (not full ink). */}
+        <div className="mt-14 md:mt-20 swiss-grid border-t-2 border-[var(--rule)]">
+          {STATS.map((s, i) => (
+            <div
+              key={s.label}
+              className={`col-span-6 md:col-span-3 py-6 ${
+                i > 0 ? "md:border-l border-[var(--rule-soft)] md:pl-6" : ""
+              }`}
+            >
+              <div className="figure display text-[40px] md:text-[60px] lg:text-[76px] text-[var(--ink)]">
                 {s.value}
               </div>
               <div className="mono mt-2 text-[var(--ink-soft)]">{s.label}</div>
-              <div className="text-[14px] mt-1 text-[var(--muted)] italic">
-                {s.note}
-              </div>
+              <div className="text-[14px] mt-1 text-[var(--muted)]">{s.note}</div>
             </div>
           ))}
         </div>
@@ -110,16 +105,15 @@ export function HomeHero() {
   );
 }
 
-/* CV-bound stats only. No invented numbers. */
 const STATS = [
   { value: "3+", label: "YEARS", note: "designing enterprise SaaS" },
   { value: "4", label: "PLATFORMS", note: "IAM · PAM · IGA · UEM" },
-  { value: "5 days", label: "0→PROTOTYPE", note: "AD console, Figma Make AI" },
+  { value: "5 days", label: "0 → PROTOTYPE", note: "AD console, Figma Make AI" },
   { value: "~70%", label: "CYCLE COMPRESSION", note: "discovery to handoff" },
 ];
 
 /* ──────────────────────────────────────────────────────────
-   02  WHAT I DO — straight from CV's Skills block
+   02  WHAT I DO
    ─────────────────────────────────────────────────────── */
 const COLS = [
   {
@@ -167,39 +161,38 @@ export function HomeWhatIDo() {
       className="border-b border-[var(--rule)] scroll-mt-20 bg-[var(--paper-2)]"
       aria-labelledby="what-i-do-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="flex items-end justify-between mb-10 md:mb-12 gap-6">
-          <div>
-            <p className="mono mb-3 text-[var(--accent)]">▸ § 02 · CAPABILITIES</p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid items-end mb-10 md:mb-12">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-5">02 — Capabilities</p>
             <h2
               id="what-i-do-heading"
-              className="display text-[10vw] md:text-[5.4vw] lg:text-[72px] tracking-tightest leading-[0.95]"
+              className="display text-[10vw] md:text-[6vw] lg:text-[72px]"
             >
-              What I bring,{" "}
-              <span className="display-italic">in three columns</span>.
+              What I bring, in three columns.
             </h2>
           </div>
-          <p className="hidden md:block max-w-xs text-right body-prose-sm">
+          <p className="col-span-12 md:col-span-4 body-prose-sm md:text-right">
             Lifted directly from the CV. Read across for the answer most
             hiring managers ask first.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 border-t-2 border-[var(--rule)]">
+        <div className="swiss-grid border-t-2 border-[var(--rule)]">
           {COLS.map((c, idx) => (
             <div
               key={c.label}
-              className={`py-7 md:py-9 ${
+              className={`col-span-12 md:col-span-4 py-7 md:py-9 ${
                 idx > 0
-                  ? "md:border-l border-[var(--rule)] md:pl-8"
+                  ? "md:border-l border-[var(--rule-soft)] md:pl-8"
                   : "md:pr-8"
               }`}
             >
               <div className="flex items-baseline justify-between mb-5">
-                <span className="mono text-[var(--accent)]">{c.label}</span>
-                <span className="mono text-[var(--muted)]">№ 0{idx + 1}</span>
+                <span className="mono-accent">{c.label}</span>
+                <span className="mono-xs">№ 0{idx + 1}</span>
               </div>
-              <h3 className="display-italic text-[28px] md:text-[32px] mb-5 text-[var(--ink)]">
+              <h3 className="display text-[26px] md:text-[30px] mb-5">
                 {c.title}
               </h3>
               <ul className="space-y-2.5">
@@ -208,7 +201,9 @@ export function HomeWhatIDo() {
                     key={it}
                     className="flex items-baseline gap-3 body-prose-sm"
                   >
-                    <span className="mono shrink-0 text-[var(--accent)]">→</span>
+                    <span aria-hidden className="mono shrink-0">
+                      →
+                    </span>
                     {it}
                   </li>
                 ))}
@@ -223,9 +218,6 @@ export function HomeWhatIDo() {
 
 /* ──────────────────────────────────────────────────────────
    03  SELECTED WORK
-   Each project carries verifiable problem framing + scope.
-   Specific outcome metrics that aren't on the CV are
-   replaced with "shared on request" notes.
    ─────────────────────────────────────────────────────── */
 export function HomeSelectedWork() {
   const projects = getFeaturedProjects().slice(0, 5);
@@ -236,51 +228,45 @@ export function HomeSelectedWork() {
       className="border-b border-[var(--rule)] scroll-mt-20"
       aria-labelledby="work-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="flex items-end justify-between mb-10 md:mb-12 gap-6">
-          <div>
-            <p className="mono mb-3 text-[var(--accent)]">▸ § 03 · SELECTED WORK</p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid items-end mb-10 md:mb-12">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-5">03 — Selected Work</p>
             <h2
               id="work-heading"
-              className="display text-[12vw] md:text-[7vw] lg:text-[96px] tracking-tightest leading-[0.92]"
+              className="display text-[11vw] md:text-[7vw] lg:text-[96px]"
             >
-              Five projects, told{" "}
-              <span className="display-italic text-[var(--accent)]">
-                in the time it takes to scan
-              </span>
-              .
+              Five projects, told in the time it takes to scan.
             </h2>
           </div>
-          <p className="hidden md:block max-w-xs text-right body-prose-sm">
+          <p className="col-span-12 md:col-span-4 body-prose-sm md:text-right">
             Most enterprise work at miniOrange is under NDA. Public summaries
             below; full case studies, screens, and outcome metrics shared on
             request.
           </p>
         </div>
 
-        <ul className="border-t-2 border-[var(--rule)]">
+        <ul className="border-t-2 border-[var(--rule)]" role="list">
           {projects.map((p, i) => (
             <li
               key={p.slug}
               className="border-b border-[var(--rule-soft)] py-7 md:py-9"
             >
-              <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-baseline">
-                {/* Index */}
-                <div className="md:col-span-1 mono text-[var(--muted)]">
+              <div className="swiss-grid items-baseline">
+                <div className="col-span-2 md:col-span-1 mono text-[var(--muted)]">
                   {String(i + 1).padStart(2, "0")}
                 </div>
 
-                {/* Title + meta */}
-                <div className="md:col-span-5">
-                  <h3 className="display text-[32px] md:text-[40px] lg:text-[48px] tracking-tightest leading-[0.95]">
+                <div className="col-span-10 md:col-span-5">
+                  <h3 className="display text-[28px] md:text-[36px] lg:text-[44px]">
                     {p.title}
                     {p.confidential && (
-                      <span className="display-italic text-[var(--muted)] text-[18px] ml-3 align-baseline">
-                        (NDA)
+                      <span className="mono ml-3 align-middle text-[var(--muted)]">
+                        NDA
                       </span>
                     )}
                   </h3>
-                  <p className="body-prose mt-1.5">{p.subtitle}</p>
+                  <p className="body-prose mt-2">{p.subtitle}</p>
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 mono text-[var(--muted)]">
                     <span>{p.year}</span>
                     <span aria-hidden>·</span>
@@ -288,26 +274,21 @@ export function HomeSelectedWork() {
                   </div>
                 </div>
 
-                {/* Problem one-liner */}
-                <div className="md:col-span-3">
-                  <p className="mono mb-1.5 text-[var(--accent)]">
-                    THE PROBLEM
-                  </p>
+                <div className="col-span-12 md:col-span-3 mt-4 md:mt-0">
+                  <p className="mono-accent mb-1.5">THE PROBLEM</p>
                   <p className="body-prose-sm">
-                    {(p.problem ??
-                      "Confidential — full brief shared on request.")
+                    {(p.problem ?? "Confidential — full brief shared on request.")
                       .split(".")
                       .filter(Boolean)[0] + "."}
                   </p>
                 </div>
 
-                {/* Scope, not invented metrics */}
-                <div className="md:col-span-3">
-                  <p className="mono mb-1.5 text-[var(--accent)]">SCOPE</p>
+                <div className="col-span-12 md:col-span-3 mt-4 md:mt-0">
+                  <p className="mono-accent mb-1.5">SCOPE</p>
                   <p className="body-prose-sm">
                     End-to-end product design — discovery, IA, flows,
                     high-fidelity UI, design QA.{" "}
-                    <span className="italic text-[var(--muted)]">
+                    <span className="text-[var(--muted)]">
                       Outcome metrics shared in full case study.
                     </span>
                   </p>
@@ -342,7 +323,7 @@ export function HomeSelectedWork() {
           <Link href="/work" className="mono link">
             SEE THE FULL ARCHIVE →
           </Link>
-          <a href="#contact" className="mono link text-[var(--accent)]">
+          <a href="#contact" className="mono link text-[var(--accent-deep)]">
             HAVE A PROJECT IN MIND? LET&rsquo;S TALK →
           </a>
         </div>
@@ -352,8 +333,7 @@ export function HomeSelectedWork() {
 }
 
 /* ──────────────────────────────────────────────────────────
-   04  EXPERIENCE — straight from CV.
-   Three roles, real dates, real bullets. No invented seniority.
+   04  EXPERIENCE
    ─────────────────────────────────────────────────────── */
 const ROLES = [
   {
@@ -403,27 +383,25 @@ export function HomeExperience() {
       className="border-b border-[var(--rule)] scroll-mt-20 bg-[var(--paper-2)]"
       aria-labelledby="experience-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="flex items-end justify-between mb-10 md:mb-14 gap-6">
-          <div>
-            <p className="mono mb-3 text-[var(--accent)]">▸ § 04 · EXPERIENCE</p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid items-end mb-10 md:mb-14">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-5">04 — Experience</p>
             <h2
               id="experience-heading"
-              className="display text-[10vw] md:text-[5.4vw] lg:text-[72px] tracking-tightest leading-[0.95]"
+              className="display text-[10vw] md:text-[6vw] lg:text-[72px]"
             >
-              Three roles,{" "}
-              <span className="display-italic text-[var(--accent)]">
-                one trajectory toward enterprise
-              </span>
-              .
+              Three roles, one trajectory toward enterprise.
             </h2>
           </div>
-          <a
-            href="/resume.pdf"
-            className="hidden md:inline-flex items-center gap-2 mono link shrink-0"
-          >
-            DOWNLOAD AS PDF ↓
-          </a>
+          <div className="col-span-12 md:col-span-4 md:text-right">
+            <a
+              href="/resume.pdf"
+              className="inline-flex items-center gap-2 mono link"
+            >
+              DOWNLOAD AS PDF ↓
+            </a>
+          </div>
         </div>
 
         <ol className="border-t-2 border-[var(--rule)]">
@@ -432,17 +410,15 @@ export function HomeExperience() {
               key={r.role + r.period}
               className="border-b border-[var(--rule-soft)] py-7 md:py-9"
             >
-              <div className="grid md:grid-cols-12 gap-6 md:gap-10">
-                <div className="md:col-span-3">
-                  <div className="mono text-[var(--accent)]">{r.period}</div>
-                  <div className="display-italic text-[18px] mt-1.5 text-[var(--ink)]">
+              <div className="swiss-grid">
+                <div className="col-span-12 md:col-span-3">
+                  <div className="mono-accent">{r.period}</div>
+                  <div className="text-[16px] mt-1.5 text-[var(--ink-soft)]">
                     {r.location}
                   </div>
                 </div>
-                <div className="md:col-span-4">
-                  <h3 className="display text-[26px] md:text-[32px] tracking-tightest leading-[1.05]">
-                    {r.role}
-                  </h3>
+                <div className="col-span-12 md:col-span-4 mt-3 md:mt-0">
+                  <h3 className="display text-[24px] md:text-[30px]">{r.role}</h3>
                   <p className="body-prose-sm mt-1.5 text-[var(--ink)]">
                     {r.place}
                   </p>
@@ -457,10 +433,13 @@ export function HomeExperience() {
                     ))}
                   </div>
                 </div>
-                <ul className="md:col-span-5 space-y-3">
+                <ul className="col-span-12 md:col-span-5 space-y-3 mt-3 md:mt-0">
                   {r.bullets.map((b) => (
                     <li key={b} className="body-prose-sm flex gap-3">
-                      <span aria-hidden className="diamond mt-2 shrink-0" />
+                      <span
+                        aria-hidden
+                        className="shrink-0 mt-[10px] block w-2 h-px bg-[var(--accent)]"
+                      />
                       <span>{b}</span>
                     </li>
                   ))}
@@ -481,21 +460,20 @@ export function HomeExperience() {
 
 /* ──────────────────────────────────────────────────────────
    05  HOW I WORK
-   Three principles + the 8-step process compressed.
    ─────────────────────────────────────────────────────── */
 const PRINCIPLES = [
   {
-    n: "i",
+    n: "01",
     title: "Make complex feel calm",
     body: "Right thing on screen at the right moment. Everything else, off.",
   },
   {
-    n: "ii",
+    n: "02",
     title: "Systems, then surfaces",
     body: "Tokens, components, patterns first. The system pays back on year two.",
   },
   {
-    n: "iii",
+    n: "03",
     title: "Compress with AI, polish with judgment",
     body:
       "Use AI to spin variants and write edge cases. Reserve human time for the calls that need taste.",
@@ -503,14 +481,14 @@ const PRINCIPLES = [
 ];
 
 const PHASES = [
-  { num: "01", label: "Desk", filled: false },
-  { num: "02", label: "Field", filled: false },
-  { num: "03", label: "Synthesis", filled: true },
-  { num: "04", label: "Draft", filled: false },
-  { num: "05", label: "System", filled: true },
-  { num: "06", label: "Motion", filled: false },
-  { num: "07", label: "Hand-off", filled: true },
-  { num: "08", label: "Talk", filled: true },
+  { num: "01", label: "Desk" },
+  { num: "02", label: "Field" },
+  { num: "03", label: "Synthesis" },
+  { num: "04", label: "Draft" },
+  { num: "05", label: "System" },
+  { num: "06", label: "Motion" },
+  { num: "07", label: "Hand-off" },
+  { num: "08", label: "Talk" },
 ];
 
 export function HomeHowIWork() {
@@ -520,30 +498,29 @@ export function HomeHowIWork() {
       className="border-b border-[var(--rule)] scroll-mt-20"
       aria-labelledby="how-i-work-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="flex items-end justify-between mb-10 md:mb-14 gap-6">
-          <div>
-            <p className="mono mb-3 text-[var(--accent)]">▸ § 05 · APPROACH</p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid items-end mb-10 md:mb-14">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-5">05 — Approach</p>
             <h2
               id="how-i-work-heading"
-              className="display text-[10vw] md:text-[5.4vw] lg:text-[72px] tracking-tightest leading-[0.95]"
+              className="display text-[10vw] md:text-[6vw] lg:text-[72px]"
             >
-              How I work,{" "}
-              <span className="display-italic">in three rules</span>.
+              How I work, in three rules.
             </h2>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-px bg-[var(--rule)] border border-[var(--rule)]">
-          {PRINCIPLES.map((p) => (
+        <div className="swiss-grid border-t-2 border-[var(--rule)]">
+          {PRINCIPLES.map((p, i) => (
             <div
               key={p.n}
-              className="bg-[var(--paper)] p-6 md:p-8 flex flex-col gap-3"
+              className={`col-span-12 md:col-span-4 py-7 md:py-9 ${
+                i > 0 ? "md:border-l border-[var(--rule-soft)] md:pl-8" : "md:pr-8"
+              }`}
             >
-              <div className="display-italic text-[28px] text-[var(--accent)]">
-                {p.n}.
-              </div>
-              <h3 className="display text-[22px] md:text-[26px] tracking-tightest">
+              <div className="mono-accent mb-4">{p.n}</div>
+              <h3 className="display text-[22px] md:text-[26px] mb-3">
                 {p.title}
               </h3>
               <p className="body-prose-sm">{p.body}</p>
@@ -551,37 +528,37 @@ export function HomeHowIWork() {
           ))}
         </div>
 
+        {/* Process strip — 8 phases, single accent rule above the first
+            phase, otherwise a flat divided strip. */}
         <div className="mt-10 md:mt-14">
           <div className="flex items-baseline justify-between mb-4">
-            <span className="mono text-[var(--accent)]">
-              ▸ THE LOOP · VIII PHASES
-            </span>
+            <span className="mono-accent">THE LOOP · 8 PHASES</span>
             <Link href="/about#process" className="mono link hidden md:inline">
               READ THE LONG VERSION →
             </Link>
           </div>
-          <ol className="grid grid-cols-4 md:grid-cols-8 border-t-2 border-[var(--rule)]">
-            {PHASES.map((p) => (
+          <ol className="swiss-grid border-t-2 border-[var(--rule)] gap-0">
+            {PHASES.map((p, i) => (
               <li
                 key={p.num}
-                className="border-b border-r border-[var(--rule-soft)] last:border-r-0 py-5 px-3"
+                className={`col-span-6 md:col-span-3 lg:col-span-[1.5] py-5 px-4 border-b border-[var(--rule-soft)] ${
+                  i % 2 !== 0 || i % 4 === 3
+                    ? ""
+                    : "md:border-r border-[var(--rule-soft)]"
+                } ${
+                  i < 7 ? "lg:border-r" : ""
+                }`}
+                style={{ gridColumn: `span ${i === 7 ? 1.5 : 1.5}` }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    aria-hidden
-                    className={p.filled ? "diamond" : "diamond-open"}
-                  />
-                  <span className="mono text-[var(--accent)]">{p.num}</span>
-                </div>
-                <div className="display-italic text-[17px] md:text-[18px] leading-[1.1]">
+                <div className="mono text-[var(--muted)] mb-2">{p.num}</div>
+                <div className="text-[17px] md:text-[18px] font-medium text-[var(--ink)]">
                   {p.label}
                 </div>
               </li>
             ))}
           </ol>
           <p className="mono mt-3 text-[var(--muted)]">
-            ◇ DIVERGE &middot; ◆ CONVERGE &middot; ↺ MOST PHASES LOOP BACK TO
-            FIELDWORK
+            MOST PHASES LOOP BACK TO FIELDWORK
           </p>
         </div>
       </div>
@@ -591,14 +568,6 @@ export function HomeHowIWork() {
 
 /* ──────────────────────────────────────────────────────────
    06  AI-NATIVE TOOLKIT
-   The biggest competitive line in 2026: this designer
-   orchestrates a working AI stack. Three sub-modules:
-     a) The manifesto — positioning ("I orchestrate, models
-        execute") so a recruiter doesn't read it as cargo cult.
-     b) The toolkit — taxonomy of tools by function with a
-        one-line "how I use it" per tool. Daily / Weekly /
-        Exploring tags so claims stay defensible.
-     c) The receipts — what these tools actually shipped.
    ─────────────────────────────────────────────────────── */
 const TOOLKIT = [
   {
@@ -627,12 +596,12 @@ const TOOLKIT = [
   },
   {
     category: "VIBE CODING",
-    note: "ship-a-page-from-a-vibe — AI builds the artifact, I direct the taste",
+    note: "AI builds the artifact, I direct the taste",
     tools: [
       { name: "Claude Design", maker: "Anthropic", cadence: "DAILY",
         use: "HTML/CSS/JS prototype generation from a brief — produced the Internal Banking Tool's full surface ready for handoff" },
       { name: "Claude Code", maker: "Anthropic", cadence: "DAILY",
-        use: "engineering pair — wrote this portfolio end-to-end (Next.js 15, React 19, Motion); refactors, audits, CI workflows" },
+        use: "engineering pair — wrote this portfolio end-to-end (Next.js, React 19); refactors, audits, CI workflows" },
       { name: "Figma Make", maker: "Figma", cadence: "DAILY",
         use: "live click-through prototypes for stakeholder review — DPDP, Sign-up Customizer, Patient Portal, AD V2" },
       { name: "Lovable", maker: "Lovable", cadence: "WEEKLY",
@@ -712,9 +681,9 @@ const SKILLS_RUN = [
     use: "Premium frontend design system. Defines the spacing, shadows, and animations that make a website feel expensive.",
   },
   {
-    name: "vercel-react-best-practices",
-    by: "Vercel",
-    use: "React + Next.js performance and composition patterns. Applied to keep this site lean and fast.",
+    name: "ui-ux-pro-max",
+    by: "Community",
+    use: "Comprehensive design intelligence — 50+ styles, 161 palettes, 99 UX rules. Used to direct this Swiss revamp.",
   },
 ];
 
@@ -729,13 +698,13 @@ const RECEIPTS = [
     title: "This portfolio",
     where: "Built with Claude Code, 2026",
     body:
-      "Next.js 15, React 19, Motion. Twelve hand-coded SVG illustrations, an editorial design system in CSS variables, three Figma frames pushed via the Plugin API. Built end-to-end with Claude Code.",
+      "Next.js, React 19, Inter + JetBrains Mono on a strict 12-col Swiss grid. Token-driven theming (light + dark). Built end-to-end with Claude Code; design direction from the ui-ux-pro-max skill.",
   },
   {
-    title: "Brand voice + design system",
-    where: "Folio brand · 2026",
+    title: "Throughline — feedback-to-decision tool",
+    where: "Built with Claude Code, 2026",
     body:
-      "PRODUCT.md and DESIGN.md generated via the Anthropic brand-voice skill. Tokens scoped, typography ratios committed, principles documented — the system the screens compose against.",
+      "A standalone product anchoring the portfolio. Triage Inbox, decision log, primitive library. Live at throughline-app.vercel.app.",
   },
 ];
 
@@ -746,37 +715,30 @@ export function HomeAIToolkit() {
       className="border-b border-[var(--rule)] scroll-mt-20 bg-[var(--paper-2)]"
       aria-labelledby="ai-toolkit-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
+      <div className="swiss-container py-14 md:py-20">
         {/* Header + manifesto */}
-        <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-12 md:mb-16">
-          <div className="md:col-span-7">
-            <p className="mono mb-3 text-[var(--accent)]">
-              ▸ § 06 · AI-NATIVE WORKFLOW
-            </p>
+        <div className="swiss-grid gap-y-8 mb-12 md:mb-16">
+          <div className="col-span-12 md:col-span-7">
+            <p className="section-tag mb-5">06 — AI-native workflow</p>
             <h2
               id="ai-toolkit-heading"
-              className="display text-[10vw] md:text-[6vw] lg:text-[88px] tracking-tightest leading-[0.92]"
+              className="display text-[10vw] md:text-[7vw] lg:text-[88px]"
             >
-              I orchestrate.{" "}
-              <span className="display-italic text-[var(--accent)]">
-                The models execute
-              </span>
-              .
+              I orchestrate. The models execute.
             </h2>
           </div>
-          <div className="md:col-span-5 md:pt-4">
-            <p className="body-prose drop-cap">
+          <div className="col-span-12 md:col-span-5 md:pt-4">
+            <p className="body-prose">
               AI doesn&rsquo;t make me a designer. It lets me be the designer
-              who ships in days what used to take weeks &mdash; same taste,
-              more reps. The judgment about <em>what</em> to ship still has to
-              be human; the work to make it real is where AI earns its keep.
+              who ships in days what used to take weeks — same taste, more
+              reps. The judgment about <em>what</em> to ship still has to be
+              human; the work to make it real is where AI earns its keep.
               Vibe-coding tools (Claude Design, Figma Make, Lovable, Bolt)
               turn a brief into a clickable artifact in an afternoon.
             </p>
             <p className="body-prose-sm mt-4 text-[var(--ink-soft)]">
-              Daily &middot; Weekly &middot; Exploring labels keep the claims
-              defensible. Ask in an interview &mdash; I&rsquo;ll show
-              receipts.
+              Daily · Weekly · Exploring labels keep the claims defensible.
+              Ask in an interview — I&rsquo;ll show receipts.
             </p>
           </div>
         </div>
@@ -786,34 +748,36 @@ export function HomeAIToolkit() {
           {TOOLKIT.map((cat, ci) => (
             <div
               key={cat.category}
-              className="grid md:grid-cols-12 gap-6 md:gap-10 py-7 md:py-9 border-b border-[var(--rule-soft)]"
+              className="swiss-grid gap-y-4 py-7 md:py-9 border-b border-[var(--rule-soft)]"
             >
-              <div className="md:col-span-3">
-                <div className="mono text-[var(--accent)] mb-2">
+              <div className="col-span-12 md:col-span-3">
+                <div className="mono-accent mb-2">
                   {String(ci + 1).padStart(2, "0")} · {cat.category}
                 </div>
-                <p className="display-italic text-[18px] md:text-[20px] text-[var(--ink-soft)]">
+                <p className="text-[17px] md:text-[18px] text-[var(--ink-soft)]">
                   {cat.note}
                 </p>
               </div>
-              <ul className="md:col-span-9 space-y-4 md:space-y-5">
+              <ul className="col-span-12 md:col-span-9 space-y-4 md:space-y-5">
                 {cat.tools.map((t) => (
                   <li
                     key={t.name}
-                    className="grid md:grid-cols-12 gap-3 md:gap-6 items-baseline"
+                    className="swiss-grid gap-y-1 items-baseline"
                   >
-                    <div className="md:col-span-4">
-                      <div className="display text-[22px] md:text-[26px] tracking-tightest leading-tight">
+                    <div className="col-span-12 md:col-span-4">
+                      <div className="display text-[20px] md:text-[24px]">
                         {t.name}
                       </div>
                       <div className="mono text-[var(--muted)] mt-1">
                         BY {t.maker.toUpperCase()}
                       </div>
                     </div>
-                    <div className="md:col-span-2">
+                    <div className="col-span-6 md:col-span-2">
                       <CadenceBadge cadence={t.cadence} />
                     </div>
-                    <div className="md:col-span-6 body-prose-sm">{t.use}</div>
+                    <div className="col-span-12 md:col-span-6 body-prose-sm">
+                      {t.use}
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -821,33 +785,27 @@ export function HomeAIToolkit() {
           ))}
         </div>
 
-        {/* Skills run — concrete orchestration proof */}
+        {/* Skills run */}
         <div className="mt-14 md:mt-20">
-          <div className="flex items-baseline justify-between mb-8">
-            <h3 className="display text-[28px] md:text-[36px] tracking-tightest">
-              Skills I&rsquo;ve run end-to-end{" "}
-              <span className="display-italic text-[var(--accent)]">
-                in production work
-              </span>
-              .
+          <div className="swiss-grid items-baseline mb-8">
+            <h3 className="col-span-12 md:col-span-8 display text-[26px] md:text-[34px]">
+              Skills I&rsquo;ve run end-to-end in production.
             </h3>
-            <span className="mono text-[var(--muted)] hidden md:inline">
-              ↑ ORCHESTRATED, NOT ONE-OFF
+            <span className="hidden md:inline-block col-span-4 md:text-right mono text-[var(--muted)]">
+              ORCHESTRATED, NOT ONE-OFF
             </span>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--rule)] border border-[var(--rule)]">
-            {SKILLS_RUN.map((s) => (
+          <div className="swiss-grid border-t-2 border-[var(--rule)]">
+            {SKILLS_RUN.map((s, i) => (
               <div
                 key={s.name}
-                className="bg-[var(--paper)] p-5 md:p-6 flex flex-col gap-2"
+                className={`col-span-12 md:col-span-6 lg:col-span-4 p-5 md:p-6 border-b border-[var(--rule-soft)] ${
+                  i % 3 !== 0 ? "lg:border-l" : ""
+                } ${i % 2 !== 0 ? "md:border-l lg:border-l" : ""}`}
               >
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="mono text-[var(--accent)]">
-                    /{s.name}
-                  </span>
-                  <span className="mono text-[var(--muted)] text-[10px]">
-                    {s.by.toUpperCase()}
-                  </span>
+                <div className="flex items-baseline justify-between gap-2 mb-2">
+                  <span className="mono-accent">/{s.name}</span>
+                  <span className="mono-xs">{s.by.toUpperCase()}</span>
                 </div>
                 <p className="body-prose-sm">{s.use}</p>
               </div>
@@ -855,13 +813,13 @@ export function HomeAIToolkit() {
           </div>
         </div>
 
-        {/* Receipts — actual outputs */}
+        {/* Receipts */}
         <div className="mt-14 md:mt-20">
-          <div className="flex items-baseline justify-between mb-8">
-            <h3 className="display text-[28px] md:text-[36px] tracking-tightest">
+          <div className="swiss-grid items-baseline mb-8">
+            <h3 className="col-span-12 md:col-span-8 display text-[26px] md:text-[34px]">
               The receipts.
             </h3>
-            <span className="mono text-[var(--muted)] hidden md:inline">
+            <span className="hidden md:inline-block col-span-4 md:text-right mono text-[var(--muted)]">
               WHAT THE STACK ACTUALLY SHIPPED
             </span>
           </div>
@@ -869,20 +827,20 @@ export function HomeAIToolkit() {
             {RECEIPTS.map((r, i) => (
               <li
                 key={r.title}
-                className="grid md:grid-cols-12 gap-6 md:gap-10 border-b border-[var(--rule-soft)] py-5 md:py-7"
+                className="swiss-grid border-b border-[var(--rule-soft)] py-5 md:py-7"
               >
-                <div className="md:col-span-1 mono text-[var(--muted)]">
+                <div className="col-span-2 md:col-span-1 mono text-[var(--muted)]">
                   {String(i + 1).padStart(2, "0")}
                 </div>
-                <div className="md:col-span-4">
-                  <div className="display text-[22px] md:text-[26px] tracking-tightest leading-[1.05]">
+                <div className="col-span-10 md:col-span-4">
+                  <div className="display text-[20px] md:text-[24px]">
                     {r.title}
                   </div>
-                  <div className="mono text-[var(--accent)] mt-1.5">
-                    {r.where}
-                  </div>
+                  <div className="mono-accent mt-1.5">{r.where}</div>
                 </div>
-                <p className="md:col-span-7 body-prose-sm">{r.body}</p>
+                <p className="col-span-12 md:col-span-7 body-prose-sm mt-3 md:mt-0">
+                  {r.body}
+                </p>
               </li>
             ))}
           </ol>
@@ -894,9 +852,9 @@ export function HomeAIToolkit() {
 
 function CadenceBadge({ cadence }: { cadence: string }) {
   const styleMap: Record<string, string> = {
-    DAILY: "bg-[var(--accent)] !text-white border-[var(--accent)]",
+    DAILY: "bg-[var(--accent)] !text-white border-[var(--accent)] [&]:!text-white",
     WEEKLY: "border-[var(--ink)] text-[var(--ink)]",
-    EXPLORING: "border-[var(--rule)] text-[var(--muted)] italic",
+    EXPLORING: "border-[var(--rule-soft)] text-[var(--muted)]",
   };
   return (
     <span
@@ -910,7 +868,7 @@ function CadenceBadge({ cadence }: { cadence: string }) {
 }
 
 /* ──────────────────────────────────────────────────────────
-   07  EDUCATION — from CV.
+   07  EDUCATION
    ─────────────────────────────────────────────────────── */
 const EDUCATION = [
   {
@@ -934,18 +892,18 @@ export function HomeEducation() {
       className="border-b border-[var(--rule)] scroll-mt-20 bg-[var(--paper-2)]"
       aria-labelledby="education-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="flex items-end justify-between mb-10 md:mb-12 gap-6">
-          <div>
-            <p className="mono mb-3 text-[var(--accent)]">▸ § 07 · EDUCATION</p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid items-end mb-10 md:mb-12">
+          <div className="col-span-12 md:col-span-8">
+            <p className="section-tag mb-5">07 — Education</p>
             <h2
               id="education-heading"
-              className="display text-[10vw] md:text-[5.4vw] lg:text-[64px] tracking-tightest leading-[0.95]"
+              className="display text-[10vw] md:text-[5vw] lg:text-[64px]"
             >
               On paper.
             </h2>
           </div>
-          <p className="hidden md:block max-w-xs text-right body-prose-sm">
+          <p className="col-span-12 md:col-span-4 body-prose-sm md:text-right">
             Engineering training. The design fluency came from shipping work
             on the job.
           </p>
@@ -955,19 +913,17 @@ export function HomeEducation() {
           {EDUCATION.map((e) => (
             <li
               key={e.qual}
-              className="grid md:grid-cols-12 gap-6 md:gap-10 border-b border-[var(--rule-soft)] py-6 md:py-8"
+              className="swiss-grid border-b border-[var(--rule-soft)] py-6 md:py-8"
             >
-              <div className="md:col-span-3 mono text-[var(--accent)]">
+              <div className="col-span-12 md:col-span-3 mono-accent">
                 {e.period}
               </div>
-              <div className="md:col-span-6">
-                <h3 className="display text-[22px] md:text-[28px] tracking-tightest leading-[1.05]">
-                  {e.qual}
-                </h3>
+              <div className="col-span-12 md:col-span-6">
+                <h3 className="display text-[20px] md:text-[26px]">{e.qual}</h3>
                 <p className="body-prose-sm mt-1.5">{e.place}</p>
               </div>
-              <div className="md:col-span-3 md:text-right">
-                <span className="display-italic text-[20px] md:text-[24px] text-[var(--accent)]">
+              <div className="col-span-12 md:col-span-3 md:text-right">
+                <span className="text-[18px] md:text-[22px] font-semibold text-[var(--ink)]">
                   {e.score}
                 </span>
               </div>
@@ -980,7 +936,7 @@ export function HomeEducation() {
 }
 
 /* ──────────────────────────────────────────────────────────
-   07  BEYOND WORK — light personal note (no invented hobbies)
+   08  BEYOND WORK
    ─────────────────────────────────────────────────────── */
 export function HomeBeyondWork() {
   return (
@@ -988,29 +944,27 @@ export function HomeBeyondWork() {
       className="border-b border-[var(--rule)]"
       aria-labelledby="beyond-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="grid md:grid-cols-12 gap-8 md:gap-12">
-          <div className="md:col-span-5">
-            <p className="mono mb-3 text-[var(--accent)]">
-              ▸ § 08 · OFF THE CLOCK
-            </p>
+      <div className="swiss-container py-14 md:py-20">
+        <div className="swiss-grid">
+          <div className="col-span-12 md:col-span-5">
+            <p className="section-tag mb-5">08 — Off the clock</p>
             <h2
               id="beyond-heading"
-              className="display text-[8vw] md:text-[4.4vw] lg:text-[60px] tracking-tightest leading-[1]"
+              className="display text-[8vw] md:text-[5vw] lg:text-[56px]"
             >
               When I&rsquo;m not at the desk.
             </h2>
           </div>
-          <div className="md:col-span-7">
-            <p className="body-prose drop-cap">
+          <div className="col-span-12 md:col-span-7 mt-6 md:mt-0">
+            <p className="body-prose">
               I&rsquo;m a quiet collaborator who does best in a writing-heavy
               culture and on teams that take research seriously. Most of my
-              spare attention goes to learning new tools deeply &mdash;
-              recently that&rsquo;s been Figma Make AI, Claude, and Cursor
-              &mdash; and figuring out how to fold them into how I design
-              without losing the human judgment that decides what&rsquo;s
-              worth shipping. I read more long-form than I should, and I
-              still edit the occasional video for fun.
+              spare attention goes to learning new tools deeply — recently
+              that&rsquo;s been Figma Make AI, Claude, and Cursor — and
+              figuring out how to fold them into how I design without losing
+              the human judgment that decides what&rsquo;s worth shipping. I
+              read more long-form than I should, and I still edit the
+              occasional video for fun.
             </p>
           </div>
         </div>
@@ -1020,7 +974,7 @@ export function HomeBeyondWork() {
 }
 
 /* ──────────────────────────────────────────────────────────
-   08  CONTACT — real channels from CV
+   09  CONTACT
    ─────────────────────────────────────────────────────── */
 const CHANNELS = [
   {
@@ -1056,32 +1010,25 @@ export function HomeContact() {
       className="border-b border-[var(--rule)] scroll-mt-20"
       aria-labelledby="contact-heading"
     >
-      <div className="max-w-page mx-auto px-6 md:px-10 py-20 md:py-28">
+      <div className="swiss-container py-20 md:py-28">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-10 mono">
-          <span className="inline-flex items-center gap-2">
-            <span className="diamond" aria-hidden />
-            <span className="text-[var(--accent)]">OPEN TO ROLES</span>
-          </span>
+          <StatusPill size="md" />
           <span className="text-[var(--muted)]">·</span>
           <span>FULL-TIME · CONTRACT · IST OR ASYNC US</span>
           <span className="text-[var(--muted)]">·</span>
           <span>STARTING WITHIN 4 WEEKS</span>
         </div>
 
-        <p className="mono mb-3 text-[var(--accent)]">▸ § 09 · CONTACT</p>
+        <p className="section-tag mb-5">09 — Contact</p>
         <h2
           id="contact-heading"
-          className="display text-[14vw] md:text-[8vw] lg:text-[120px] tracking-tightest leading-[0.92]"
+          className="display text-[12vw] md:text-[7vw] lg:text-[112px]"
         >
-          Let&rsquo;s build{" "}
-          <span className="display-italic text-[var(--accent)]">
-            something good
-          </span>{" "}
-          together.
+          Let&rsquo;s build something good together.
         </h2>
 
-        <div className="grid md:grid-cols-12 gap-8 md:gap-16 mt-10 md:mt-14">
-          <div className="md:col-span-5">
+        <div className="swiss-grid mt-10 md:mt-14">
+          <div className="col-span-12 md:col-span-5">
             <p className="body-prose">
               I&rsquo;m looking for product design roles working on enterprise
               SaaS, design systems, or workflow-heavy products. Email is
@@ -1093,11 +1040,17 @@ export function HomeContact() {
             </p>
           </div>
 
-          <ul className="md:col-span-6 md:col-start-7 border-y-2 border-[var(--rule)] divide-y divide-[var(--rule-soft)]">
-            {CHANNELS.map((c) => {
+          <ul
+            className="col-span-12 md:col-span-6 md:col-start-7 border-y-2 border-[var(--rule)]"
+            role="list"
+          >
+            {CHANNELS.map((c, i) => {
               const isExternal = c.href.startsWith("http");
               return (
-                <li key={c.label}>
+                <li
+                  key={c.label}
+                  className={i > 0 ? "border-t border-[var(--rule-soft)]" : ""}
+                >
                   <a
                     href={c.href}
                     target={isExternal ? "_blank" : undefined}
@@ -1105,14 +1058,14 @@ export function HomeContact() {
                     aria-label={`${c.label}: ${c.value}${
                       isExternal ? ", opens in new tab" : ""
                     }`}
-                    className="group grid grid-cols-[80px_1fr_auto] items-baseline gap-4 py-5 md:py-6 min-h-[64px] hover:text-[var(--accent)] focus-visible:text-[var(--accent)] transition-colors"
+                    className="group grid grid-cols-[80px_1fr_auto] items-baseline gap-4 py-5 md:py-6 min-h-[64px] hover:text-[var(--accent-deep)] focus-visible:text-[var(--accent-deep)] transition-colors"
                   >
                     <span className="mono">{c.label}</span>
                     <div>
-                      <div className="display text-[20px] md:text-[24px] tracking-tightest">
+                      <div className="display text-[18px] md:text-[22px]">
                         {c.value}
                       </div>
-                      <div className="text-[13px] mt-1 italic text-[var(--muted)]">
+                      <div className="text-[13px] mt-1 text-[var(--muted)]">
                         {c.note}
                       </div>
                     </div>
@@ -1130,16 +1083,5 @@ export function HomeContact() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────
-   Helper
-   ─────────────────────────────────────────────────────── */
-function Sep() {
-  return (
-    <span aria-hidden className="text-[var(--rule-soft)]">
-      ·
-    </span>
   );
 }
