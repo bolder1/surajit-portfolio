@@ -34,8 +34,8 @@ export type CoverImageProps = {
   ink?: string;
   /** Tailwind classes for the outer frame — size + aspect. */
   className?: string;
-  /** Cursor flavor for matveyan custom cursor. Default: work. */
-  cursorFlavor?: "default" | "accent" | "work" | "gallery" | "hidden";
+  /** Cursor flavor for the custom cursor. Default: image. */
+  cursorFlavor?: "default" | "accent" | "work" | "gallery" | "image" | "text" | "drag" | "hidden";
   /** When true, glyph is smaller (used for inline 64-80px thumbs). */
   compact?: boolean;
   /** When true, render `loading="eager"` (for above-the-fold heroes). */

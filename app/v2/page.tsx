@@ -1,31 +1,27 @@
 import { MastheadV2 } from "@/components/v2/MastheadV2";
 import { HeroV2 } from "@/components/v2/HeroV2";
+import { ManifestoScroll } from "@/components/v2/ManifestoScroll";
+import { SelectedWorkV2 } from "@/components/v2/SelectedWorkV2";
+import { FooterV2 } from "@/components/v2/FooterV2";
 
 /**
- * /v2 — the new direction.
+ * /v2 — complete V2 home.
  *
- * Builds independently of the brutalist /. Olive paper, italic-serif
- * skill satellites radiating from the centered name, mouse-responsive
- * connectors, hover-glitch on the name.
- *
- * Only the Hero ships in this turn. Sections 2 (Manifesto scroll) and
- * 3 (Selected Work) follow next.
+ * Composition:
+ *   001  Hero            — center name + radiating skill connectors
+ *   002  Manifesto       — five-phase scroll narrative
+ *   003  Selected Work   — three case studies, ozgur list pattern
+ *   004  Footer          — work-with-me + channels + CV
  */
 export default function V2Page() {
   return (
     <>
-      <MastheadV2 />
+      <MastheadV2 activeHref="/v2" />
       <main id="main">
         <HeroV2 />
-
-        {/* Placeholder for next sections — kept so the page has shape
-            and the scroll affordance feels honest. Will replace with
-            the scroll-narrative manifesto next turn. */}
-        <section className="h-screen flex items-center justify-center border-t border-[color:var(--v2-rule-soft)]">
-          <p className="v2-mono opacity-50">
-            002 / manifesto — coming next
-          </p>
-        </section>
+        <ManifestoScroll />
+        <SelectedWorkV2 />
+        <FooterV2 />
       </main>
     </>
   );
