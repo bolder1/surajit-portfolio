@@ -20,6 +20,7 @@ import { Button, StatusPill } from "./Button";
 import { Glitch } from "./Glitch";
 import { SerialMark, Asterisk, Plus } from "./Ornaments";
 import { ScrollNarrative } from "./ScrollNarrative";
+import { CoverImage } from "./CoverImage";
 
 /* ──────────────────────────────────────────────────────────
    01  HERO — matveyan-style. Glitched name on first paint,
@@ -126,19 +127,32 @@ export function HomeSelectedWork() {
             <li key={p.slug} className="border-b border-[var(--rule-soft)]">
               <Link
                 href={`/cases/${p.slug}`}
-                className="group block py-8 md:py-10 hover:bg-[var(--paper-2)] transition-colors"
+                className="group block py-6 md:py-8 hover:bg-[var(--paper-2)] transition-colors"
               >
-                <div className="swiss-grid items-baseline">
+                <div className="swiss-grid items-center">
                   <div className="col-span-2 md:col-span-1 mono text-[var(--muted)]">
                     0{i + 1}
                   </div>
-                  <div className="col-span-10 md:col-span-6">
-                    <h3 className="display text-[28px] md:text-[40px] lg:text-[48px] group-hover:text-[var(--accent)] transition-colors">
+                  {/* Inline cover thumbnail — falls back to glyph */}
+                  <div className="col-span-10 md:col-span-2">
+                    <CoverImage
+                      src={p.cover?.src}
+                      alt={p.title}
+                      glyph={p.hoverIllustration}
+                      bg={p.hoverColor ?? "#1a1a1a"}
+                      ink={p.hoverInk ?? "#f0eee8"}
+                      compact
+                      className="w-full aspect-[16/10]"
+                      cursorFlavor="accent"
+                    />
+                  </div>
+                  <div className="col-span-10 md:col-span-5 md:col-start-4 mt-3 md:mt-0">
+                    <h3 className="display text-[26px] md:text-[36px] lg:text-[44px] group-hover:text-[var(--accent)] transition-colors">
                       {p.title}
                     </h3>
                     <p className="body-prose mt-2">{p.subtitle}</p>
                   </div>
-                  <div className="col-span-12 md:col-span-4 mt-4 md:mt-0">
+                  <div className="col-span-12 md:col-span-3 mt-4 md:mt-0">
                     <p className="mono text-[var(--muted)]">
                       {p.year} · {p.role}
                     </p>
@@ -198,31 +212,50 @@ export function HomeExperience() {
             <Link
               key={p.slug}
               href={`/work/${p.slug}`}
-              className="work-tile group min-h-[140px] md:min-h-[180px]"
-              style={
-                {
-                  "--tile-hover": p.hoverColor ?? "#1a1a1a",
-                  "--tile-hover-ink": p.hoverInk ?? "#f0eee8",
-                } as React.CSSProperties
-              }
+              data-cursor="work"
+              className="group relative block min-h-[180px] md:min-h-[220px] overflow-hidden"
             >
-              <div className="flex items-start justify-between">
-                <span className="mono text-[var(--muted)] group-hover:text-current/70 transition-colors">
-                  0{i + 1}
-                </span>
-                <span
-                  aria-hidden
-                  className="mono text-[var(--muted)] group-hover:text-current/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                >
-                  {p.hoverIllustration ?? "→"}
-                </span>
+              {/* Cover background — graceful glyph fallback */}
+              <div className="absolute inset-0 z-0">
+                <CoverImage
+                  src={p.cover?.src}
+                  alt={p.title}
+                  glyph={p.hoverIllustration}
+                  bg={p.hoverColor ?? "#1a1a1a"}
+                  ink={p.hoverInk ?? "#f0eee8"}
+                  className="w-full h-full border-0"
+                  cursorFlavor="work"
+                />
               </div>
-              <h3 className="display text-[20px] md:text-[28px] mt-12 md:mt-16 leading-[1.05]">
-                {p.title}
-              </h3>
-              <p className="mono mt-2 text-[var(--muted)] group-hover:text-current/70">
-                {p.category}
-              </p>
+              {/* Scrim for legibility */}
+              <div
+                aria-hidden
+                className="absolute inset-0 z-[1] pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.65) 100%)",
+                }}
+              />
+              <div
+                className="relative z-[2] p-5 md:p-6 h-full min-h-[180px] md:min-h-[220px] flex flex-col"
+                style={{ color: p.hoverInk ?? "#f0eee8" }}
+              >
+                <div className="flex items-start justify-between">
+                  <span className="mono opacity-85">0{i + 1}</span>
+                  <span
+                    aria-hidden
+                    className="mono opacity-70 group-hover:opacity-100 transition-opacity"
+                  >
+                    {p.hoverIllustration ?? "→"}
+                  </span>
+                </div>
+                <div className="mt-auto">
+                  <h3 className="display text-[18px] md:text-[24px] leading-[1.05]">
+                    {p.title}
+                  </h3>
+                  <p className="mono mt-1.5 opacity-70">{p.category}</p>
+                </div>
+              </div>
             </Link>
           ))}
         </div>

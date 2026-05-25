@@ -26,6 +26,7 @@ import {
   FigmaScreens,
   CaseStudyTLDR,
 } from "@/components/CaseStudyRich";
+import { WorkLean } from "@/components/WorkLean";
 import { getProject, getAllSlugs, projects } from "@/lib/projects";
 import type { Project } from "@/lib/types";
 
@@ -61,6 +62,21 @@ export default async function CaseStudyPage(props: {
 
   const isLocked = project.access === "locked";
   const noStamp = project.access === "public";
+
+  /* Branch by track:
+       work  → lean template (cover hero + carousel + basic info)
+       case  → full case-study renderer below */
+  if (project.track === "work") {
+    return (
+      <>
+        <Masthead variant="compact" />
+        <main id="main">
+          <WorkLean project={project} next={next} />
+        </main>
+        <Folio pageNum={String(project.order).padStart(2, "0")} />
+      </>
+    );
+  }
 
   return (
     <>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CoverImage } from "@/components/CoverImage";
 import type { Project } from "@/lib/types";
 
 /**
@@ -57,7 +58,8 @@ export function WorkGrid({ projects }: { projects: Project[] }) {
           >
             <Link
               href={`/work/${p.slug}`}
-              className="group relative block min-h-[260px] md:min-h-[320px] p-7 md:p-9 bg-[var(--paper-2)] hover:bg-[var(--paper-3)] focus-visible:bg-[var(--paper-3)] transition-colors"
+              data-cursor="work"
+              className="group relative block min-h-[260px] md:min-h-[320px] bg-[var(--paper-2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] focus-visible:outline-offset-[-3px]"
               onMouseEnter={() => {
                 setActive(p.slug);
                 applyTint(p);
@@ -85,53 +87,74 @@ export function WorkGrid({ projects }: { projects: Project[] }) {
                 } as React.CSSProperties
               }
             >
-              {/* Top row — index + shortcode (glyph appears on hover) */}
-              <div className="flex items-start justify-between">
-                <span className="mono text-[var(--muted)] group-hover:text-[var(--ink)] transition-colors">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span
-                  aria-hidden
-                  className="mono font-medium tracking-[0.18em] text-[var(--muted-soft)] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500"
-                >
-                  {p.hoverIllustration ?? "→"}
-                </span>
+              {/* Background layer — cover image, full bleed. Falls back to
+                  glyph treatment automatically via CoverImage. */}
+              <div className="absolute inset-0 z-0">
+                <CoverImage
+                  src={p.cover?.src}
+                  alt={p.title}
+                  glyph={p.hoverIllustration}
+                  bg={p.hoverColor ?? "#1a1a1a"}
+                  ink={p.hoverInk ?? "#f0eee8"}
+                  className="w-full h-full border-0"
+                  cursorFlavor="work"
+                />
               </div>
 
-              {/* Illustration block — appears on hover. A simple geometric
-                  mark that reads as a brand identifier. */}
+              {/* Scrim — defaults visible, pulls up on hover so the cover
+                  reads more clearly. */}
               <div
                 aria-hidden
-                className="absolute inset-x-7 md:inset-x-9 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-end opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-700"
-              >
-                <span className="display text-[80px] md:text-[120px] leading-none text-[var(--ink)] opacity-[0.07]">
-                  {p.hoverIllustration ?? "—"}
-                </span>
-              </div>
+                className="absolute inset-0 z-[1] transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.6) 100%)",
+                  opacity: 1,
+                }}
+              />
 
-              {/* Title block — pinned bottom */}
-              <div className="absolute inset-x-7 md:inset-x-9 bottom-7 md:bottom-9">
-                <h3 className="display text-[26px] md:text-[34px] leading-[1.05]">
-                  {p.title}
-                </h3>
-                <div className="mt-3 flex items-baseline justify-between gap-3">
-                  <span className="mono text-[var(--muted)] group-hover:text-[var(--ink-soft)] transition-colors">
-                    {p.category} · {p.year}
+              {/* Content layer */}
+              <div className="relative z-[2] p-7 md:p-9 h-full min-h-[260px] md:min-h-[320px] flex flex-col">
+                {/* Top row — index + shortcode (always visible) */}
+                <div className="flex items-start justify-between">
+                  <span className="mono text-[var(--paper)]/85">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
                   <span
                     aria-hidden
-                    className="mono opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ color: "var(--accent)" }}
+                    className="mono font-medium tracking-[0.18em] text-[var(--paper)]/70"
                   >
-                    open →
+                    {p.hoverIllustration ?? "→"}
                   </span>
+                </div>
+
+                {/* Title block — pinned bottom */}
+                <div className="mt-auto">
+                  <h3
+                    className="display text-[26px] md:text-[34px] leading-[1.05]"
+                    style={{ color: p.hoverInk ?? "#f0eee8" }}
+                  >
+                    {p.title}
+                  </h3>
+                  <div className="mt-3 flex items-baseline justify-between gap-3">
+                    <span className="mono text-[var(--paper)]/70">
+                      {p.category} · {p.year}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="mono opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity"
+                      style={{ color: "var(--accent)" }}
+                    >
+                      open →
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Active indicator stripe along the top edge */}
               <span
                 aria-hidden
-                className={`absolute left-0 top-0 h-[3px] bg-[var(--accent)] transition-all duration-500 ${
+                className={`absolute left-0 top-0 h-[3px] bg-[var(--accent)] transition-all duration-500 z-[3] ${
                   isActive ? "w-full" : "w-0"
                 }`}
               />

@@ -1984,9 +1984,46 @@ const WORK_HOVERS: Record<string, { color: string; ink: string; glyph?: string }
   "patient-portal":    { color: "#1e6091", ink: "#f0eee8", glyph: "PP" },   // medical blue
 };
 
-/* Augment each project in place with track + hover metadata. Runs once at
-   module load. Done here (instead of inline on every entry) to keep the
-   2000-line catalog manageable. */
+/* ──────────────────────────────────────────────────────────
+   Cover-image map. Drop files into /public/projects/covers/<slug>.webp
+   (preferred) or .jpg. Add an entry here to wire it up. Order of the
+   `gallery` array drives the per-project Carousel on the work detail
+   page; cover is the index image used on /work, /gallery, /cases lists.
+
+   When the user ships photos, the only change needed is to:
+     1. drop the file into /public/projects/covers/<slug>.<ext>
+     2. add the slug → src mapping below
+   CoverImage handles the load-error fallback automatically, so
+   forgotten entries simply render the abstract glyph treatment.
+   ──────────────────────────────────────────────────────── */
+type CoverEntry = {
+  /** Main cover. Used as the tile image + first carousel slide. */
+  cover: string;
+  /** Optional additional gallery images for the carousel on the
+      detail page. The cover is ALWAYS the first slide; these come
+      after. Captions are optional. */
+  gallery?: { src: string; alt: string; caption?: string }[];
+};
+
+export const COVERS: Record<string, CoverEntry> = {
+  // Examples — left commented so the build doesn't 404 on missing files.
+  // Uncomment + drop files to enable.
+  //
+  // "ad-tools": {
+  //   cover: "/projects/covers/ad-tools.webp",
+  //   gallery: [
+  //     { src: "/projects/ad-tools/01-overview.png", alt: "AD console overview" },
+  //     { src: "/projects/ad-tools/02-policies.png", alt: "Policy editor" },
+  //   ],
+  // },
+  // "iga-platform": {
+  //   cover: "/projects/covers/iga-platform.webp",
+  // },
+};
+
+/* Augment each project in place with track + hover + cover metadata.
+   Runs once at module load — keeps the 2000-line catalog manageable
+   without inlining track/hover/cover on every entry. */
 for (const p of projects) {
   if (CASE_SLUGS.has(p.slug)) {
     p.track = "case";
@@ -1999,6 +2036,19 @@ for (const p of projects) {
     p.hoverInk = hov.ink;
     p.hoverIllustration = hov.glyph;
   }
+  const cv = COVERS[p.slug];
+  if (cv) {
+    p.cover = { src: cv.cover, alt: `${p.title} — cover image` };
+  }
+}
+
+/** Carousel slides for a given project — cover first, gallery after. */
+export function getCarouselSlides(slug: string) {
+  const cv = COVERS[slug];
+  if (!cv) return [];
+  const cover = { src: cv.cover, alt: `${slug} cover`, caption: undefined };
+  const rest = cv.gallery ?? [];
+  return [cover, ...rest];
 }
 
 /* ──────────────────────────────────────────────────────────
