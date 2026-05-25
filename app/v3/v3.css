@@ -1,0 +1,178 @@
+/*
+  V3 token layer — recruiter-first, calm register.
+
+  Off-white paper + deep slate ink + one vermilion accent. No
+  brutalist register, no holographic register, no olive synapserstudio
+  texture. Just clarity.
+
+  Scoped via .v3-root.
+*/
+
+.v3-root {
+  --v3-paper: #fafaf7;          /* near-white, warm */
+  --v3-paper-2: #f1ede4;        /* alt stripe, hover wash */
+  --v3-paper-3: #e6e0d2;        /* deeper stripe */
+  --v3-ink: #1a1916;            /* deep slate */
+  --v3-ink-soft: #4a4842;
+  --v3-ink-muted: #6e6a5e;
+  --v3-rule: #1a1916;
+  --v3-rule-soft: #ddd7c8;
+  --v3-accent: #c8351c;         /* vermilion, AA-safe */
+
+  background: var(--v3-paper);
+  color: var(--v3-ink);
+  min-height: 100vh;
+  font-family: var(--v3-sans), system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Suppress brutalist cursor flavors inside V3 — we want the OS cursor here.
+   The root Cursor component still mounts globally; it reads the closest
+   [data-cursor] ancestor, so setting data-cursor="hidden" at the v3-root
+   level makes the cursor fade. */
+.v3-root [data-cursor-hide-children] [data-cursor] {
+  /* no-op; v3 uses default OS cursor by avoiding data-cursor attrs */
+}
+
+/* Display utility — Inter at high weight, tight tracking */
+.v3-root .v3-display {
+  font-family: var(--v3-sans);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  color: var(--v3-ink);
+}
+
+/* Mono — for serial labels, eyebrows, meta */
+.v3-root .v3-mono {
+  font-family: var(--v3-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--v3-ink-muted);
+}
+
+.v3-root .v3-mono-ink {
+  color: var(--v3-ink);
+}
+.v3-root .v3-mono-accent {
+  color: var(--v3-accent);
+}
+
+/* Italic serif callout — used sparingly, for tone */
+.v3-root .v3-serif-italic {
+  font-family: var(--v3-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Body prose */
+.v3-root .v3-prose {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--v3-ink-soft);
+  max-width: 64ch;
+}
+.v3-root .v3-prose-lg {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--v3-ink-soft);
+  max-width: 56ch;
+}
+
+/* Section eyebrow — small mono with single accent dot */
+.v3-root .v3-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--v3-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--v3-ink-muted);
+}
+.v3-root .v3-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--v3-accent);
+}
+
+/* Buttons — primary + outlined */
+.v3-root .v3-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  font-family: var(--v3-sans);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0;
+  border-radius: 999px;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 200ms ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.v3-root .v3-btn-primary {
+  background: var(--v3-ink);
+  color: var(--v3-paper);
+  border: 1px solid var(--v3-ink);
+}
+.v3-root .v3-btn-primary:hover,
+.v3-root .v3-btn-primary:focus-visible {
+  background: var(--v3-accent);
+  border-color: var(--v3-accent);
+}
+.v3-root .v3-btn-outlined {
+  background: transparent;
+  color: var(--v3-ink);
+  border: 1px solid var(--v3-ink);
+}
+.v3-root .v3-btn-outlined:hover,
+.v3-root .v3-btn-outlined:focus-visible {
+  background: var(--v3-ink);
+  color: var(--v3-paper);
+}
+.v3-root .v3-btn-ghost {
+  background: transparent;
+  color: var(--v3-ink);
+  border: 1px solid transparent;
+  padding: 0 8px;
+  min-height: 36px;
+}
+.v3-root .v3-btn-ghost:hover {
+  color: var(--v3-accent);
+}
+
+/* Container */
+.v3-root .v3-container {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px) {
+  .v3-root .v3-container { padding-inline: 40px; }
+}
+
+/* Focus ring */
+.v3-root *:focus-visible {
+  outline: 2px solid var(--v3-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .v3-root *, .v3-root *::before, .v3-root *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
