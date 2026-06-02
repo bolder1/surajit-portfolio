@@ -463,6 +463,51 @@ body {
   opacity: 0.6;
 }
 
+/* ────────────────────────────────────────────────────────────
+   Case-study section thumbnail (browser-frame SVG decoration)
+   ─────────────────────────────────────────────────────── */
+.case-thumb {
+  color: var(--ink);
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.case-thumb .thumb-bg { fill: var(--paper-2); }
+.case-thumb .chrome-bar { fill: var(--paper); }
+.case-thumb .chrome-dot { fill: var(--muted-soft); }
+.case-thumb .chrome-addr { fill: var(--muted-soft); opacity: 0.5; }
+.case-thumb .chrome-rule { stroke: var(--rule-soft); }
+.case-thumb .thumb-frame { stroke: var(--rule-soft); }
+.case-thumb .thumb-page-el[fill="var(--bg)"] { fill: var(--paper); }
+
+/* ── V3-only: animate the interior content on hover ─────────
+   The chrome stays visible at rest; everything inside (.el)
+   fades + lifts in from below with a staggered delay driven
+   by each element's `--i` index. Target opacity is `--o`
+   (defaults to 1). Scoped under .v3-root so V1 stays static. */
+.v3-root .case-thumb .el {
+  opacity: 0;
+  transform: translateY(6px) scale(0.97);
+  transform-origin: center;
+  transform-box: fill-box;
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0ms;
+}
+.v3-root .group:hover .case-thumb .el,
+.v3-root .group:focus-visible .case-thumb .el {
+  opacity: var(--o, 1);
+  transform: none;
+  transition-delay: calc(var(--i, 0) * 26ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .v3-root .case-thumb .el {
+    transition-duration: 0ms;
+    transform: none;
+  }
+}
+
 /* Print */
 @media print {
   .marquee, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }

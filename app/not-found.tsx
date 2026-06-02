@@ -1,31 +1,70 @@
 import Link from "next/link";
-import { Masthead } from "@/components/Masthead";
-import { Folio } from "@/components/Folio";
 
 export default function NotFound() {
   return (
-    <>
-      <Masthead variant="compact" />
-      <main id="main" className="min-h-[70vh] flex items-center border-b border-[var(--rule)]">
-        <div className="max-w-page mx-auto px-6 md:px-10 py-20 md:py-32">
-          <div className="section-tag mb-8">▸ ERROR &middot; № 404</div>
-          <h1 className="display text-[14vw] md:text-[10vw] lg:text-[160px] tracking-tightest leading-[0.88] mb-8">
-            Lost a{" "}
-            <span className="display-italic text-[var(--accent)]">page</span>?
-          </h1>
-          <p className="body-prose max-w-md mb-10 drop-cap">
-            This route doesn&rsquo;t exist in the folio. The newsstand is back
-            home — start fresh from the masthead.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-[var(--ink)] text-white px-5 py-3 mono hover:bg-[var(--accent)] transition-colors"
-          >
-            BACK TO THE FOLIO <span aria-hidden>→</span>
-          </Link>
-        </div>
-      </main>
-      <Folio pageNum="404" />
-    </>
+    <main
+      id="main"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "20px",
+        textAlign: "center",
+        padding: "24px",
+      }}
+    >
+      <p
+        style={{
+          fontFamily: "var(--v5-mono), monospace",
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "var(--v5-accent-bright)",
+        }}
+      >
+        Error · 404
+      </p>
+      <h1
+        style={{
+          fontFamily: "var(--v5-sans), sans-serif",
+          fontWeight: 300,
+          fontSize: "clamp(40px, 8vw, 110px)",
+          lineHeight: 0.95,
+          letterSpacing: "-0.04em",
+          color: "var(--v5-ink)",
+        }}
+      >
+        Lost the{" "}
+        <em style={{ fontFamily: "var(--v5-serif), Georgia, serif", fontStyle: "italic" }}>
+          thread
+        </em>
+        .
+      </h1>
+      <p style={{ color: "var(--v5-ink-soft)", maxWidth: "44ch", lineHeight: 1.6 }}>
+        This page doesn&rsquo;t exist. Head back home and start fresh.
+      </p>
+      <Link
+        href="/"
+        style={{
+          marginTop: 8,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "14px 26px",
+          borderRadius: 999,
+          border: "1px solid var(--v5-ink)",
+          color: "var(--v5-ink)",
+          textDecoration: "none",
+          fontFamily: "var(--v5-mono), monospace",
+          fontSize: 12,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+        }}
+      >
+        Back home →
+      </Link>
+    </main>
   );
 }

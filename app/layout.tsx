@@ -1,37 +1,37 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
-// Custom Cursor disabled — falling back to OS default until the
-// holographic implementation is re-tuned. Component left in the repo
-// at components/Cursor.tsx for future re-enable.
-// import { Cursor } from "@/components/Cursor";
 import { HUD } from "@/components/HUD";
-import { VersionToggle } from "@/components/VersionToggle";
 import "./globals.css";
+import "./v5.css";
+import "./v5b.css";
+import "./v5c.css";
 
-/* Swiss Modernism — one grotesk family (Inter) for everything visible;
-   JetBrains Mono for labels, datelines, registration marks. Inter is
-   loaded with display variant weights for the hero, body weights for
-   prose, mono for the small-caps eyebrow vocabulary. */
+/*
+  Root layout — Surajit Dutta portfolio.
+  Single design system, scoped via .v5-root.
+  Inter (sans) · Instrument Serif (display italic) · JetBrains Mono (labels).
+*/
 
 const sans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--v5-sans",
   display: "swap",
 });
 
-const display = Inter({
+const serif = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-display",
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--v5-serif",
   display: "swap",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-mono",
+  variable: "--v5-mono",
   display: "swap",
 });
 
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: "%s · Surajit Dutta",
   },
   description:
-    "Surajit Dutta — product designer for enterprise software. IAM, UEM, PAM, design systems. Built on a strict grid.",
+    "Surajit Dutta — product designer for enterprise IT, identity and security teams. IAM, PAM, IGA, UEM, design systems.",
   keywords: [
     "Product Designer",
     "Surajit Dutta",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     "Design Systems",
     "IAM",
     "Security",
-    "Pune",
+    "Kolkata",
   ],
   authors: [{ name: "Surajit Dutta" }],
   creator: "Surajit Dutta",
@@ -81,27 +81,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+      className={`${sans.variable} ${serif.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        {/* No-flash theme script — reads stored or system preference before paint. */}
-        <script
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('folio.theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`,
-          }}
-        />
-      </head>
-      <body className="relative antialiased bg-paper text-ink">
+      <body style={{ background: "#0a0a0a" }}>
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
         <SmoothScroll />
-        {/* <Cursor /> — disabled; OS default cursor in use */}
         <HUD />
-        <VersionToggle />
-        {children}
+        <div className="v5-root">{children}</div>
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
  * Cursor — holographic, always-visible custom cursor.
  *
  * Rewritten from the mix-blend-mode: difference version which was
- * invisible on warm / mid-tone backgrounds (e.g. the v2 olive paper).
+ * invisible on warm / mid-tone backgrounds.
  *
  * Visual stack:
  *   1. Outer "halo" ring  — 1px translucent dark stroke for contrast
@@ -21,7 +21,6 @@ import { useEffect, useRef, useState } from "react";
  *
  * Layering with both a dark halo + white ring + holographic shimmer
  * means the cursor is legible on:
- *   - bright olive (v2 paper)
  *   - near-black (brutalist paper)
  *   - any imagery in between
  *

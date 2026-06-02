@@ -1,39 +1,34 @@
-import { Masthead } from "@/components/Masthead";
-import { Folio } from "@/components/Folio";
-import {
-  HomeHero,
-  HomeWhatIDo,
-  HomeSelectedWork,
-  HomeExperience,
-  HomeHowIWork,
-  HomeAIToolkit,
-  HomeContact,
-} from "@/components/HomeSections";
+import { MastheadHeroV5 } from "@/components/v5/MastheadHeroV5";
+import { KineticV5 } from "@/components/v5/KineticV5";
+import { AboutPortraitV5 } from "@/components/v5/AboutPortraitV5";
+import { CapabilitiesBentoV5 } from "@/components/v5/CapabilitiesBentoV5";
+import { ProcessV5 } from "@/components/v5/ProcessV5";
+import { CaseListV5 } from "@/components/v5/CaseListV5";
+import { GalleryV5 } from "@/components/v5/GalleryV5";
+import { AIWorkflowV5 } from "@/components/v5/AIWorkflowV5";
+import { KineticOutroV5 } from "@/components/v5/KineticOutroV5";
+import { FooterV5 } from "@/components/v5/FooterV5";
 
 /**
- * Home — Brutalist + Electric.
+ * Home — Surajit Dutta.
  *
- * Concise IA per the new spec:
- *   Hero · What I do · Cases (3) · Work preview · Gallery preview ·
- *   AI preview · Contact.
- *
- * Education + Beyond Work moved to /about; full AI workflow moved
- * to /ai; full work archive to /work; gallery to /gallery.
+ * Hero → Kinetic → About → Capabilities bento → Process → Case list →
+ * Gallery (3D ring → /gallery) → AI orchestration → More about me →
+ * Contact → Footer.
  */
 export default function HomePage() {
   return (
-    <>
-      <Masthead variant="large" />
-      <main id="main">
-        <HomeHero />
-        <HomeWhatIDo />
-        <HomeSelectedWork />
-        <HomeExperience />
-        <HomeHowIWork />
-        <HomeAIToolkit />
-        <HomeContact />
-      </main>
-      <Folio pageNum="01" />
-    </>
+    <main id="main">
+      <MastheadHeroV5 />
+      <KineticV5 />
+      <AboutPortraitV5 />
+      <CapabilitiesBentoV5 />
+      <ProcessV5 />
+      <CaseListV5 />
+      <GalleryV5 />
+      <AIWorkflowV5 />
+      <KineticOutroV5 />
+      <FooterV5 />
+    </main>
   );
 }
