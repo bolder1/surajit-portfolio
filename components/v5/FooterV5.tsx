@@ -8,11 +8,11 @@ const SOCIAL = [
   { label: "Dribbble", href: "https://dribbble.com/surajit3255" },
 ];
 const NAV = [
-  { label: "Work", href: "/#showcase" },
+  { label: "Work", href: "/work" },
   { label: "Gallery", href: "/gallery" },
   { label: "AI", href: "/ai" },
   { label: "Info", href: "/info" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function FooterV5() {

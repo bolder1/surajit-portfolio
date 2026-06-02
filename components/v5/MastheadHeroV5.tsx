@@ -26,11 +26,11 @@ const SOCIAL_LINKS = [
 ];
 
 const NAV_LINKS = [
-  { label: "Work",    href: "#showcase" },
+  { label: "Work",    href: "/work" },
   { label: "Gallery", href: "#gallery" },
   { label: "AI",      href: "/ai" },
   { label: "Info",    href: "/info" },
-  { label: "Contact", href: "#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));

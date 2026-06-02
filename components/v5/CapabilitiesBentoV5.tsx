@@ -86,8 +86,8 @@ export function CapabilitiesBentoV5() {
         const py = (e.clientY - r.top) / r.height - 0.5;
         if (!frame) frame = requestAnimationFrame(() => {
           frame = 0;
-          card.style.setProperty("--rx", `${(py * -5).toFixed(2)}deg`);
-          card.style.setProperty("--ry", `${(px * 5).toFixed(2)}deg`);
+          card.style.setProperty("--rx", `${(py * -8).toFixed(2)}deg`);
+          card.style.setProperty("--ry", `${(px * 8).toFixed(2)}deg`);
           card.style.setProperty("--lift", "1");
         });
       };
@@ -168,7 +168,11 @@ export function CapabilitiesBentoV5() {
             </p>
           </div>
 
-          <VideoTile area="area-svid" src="/v5/service-video.mp4" blend="lighten" />
+          {/* Image tile (transparent 3D torus) — replaces the service video */}
+          <div className="cap-card cap-video area-svid">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="cap-img" src="/v5/orb-torus.png" alt="" aria-hidden />
+          </div>
 
           {/* Toolbox marquee */}
           <div className="cap-card area-tools cap-text">

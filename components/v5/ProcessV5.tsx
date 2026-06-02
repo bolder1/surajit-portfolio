@@ -15,10 +15,12 @@ const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const STEPS = [
-  { n: "01", t1: "Discover", t2: "& frame", body: "Stakeholder interviews, JTBD, and the constraints that actually bind — before a single pixel.", color: "#3a1512" },
-  { n: "02", t1: "Define", t2: "the system", body: "Flows, IA, and the primitives. Decide what to ship and, harder, what not to.", color: "#661010" },
-  { n: "03", t1: "Design", t2: "& refine", body: "High-fidelity, production-ready screens — tokens, states, edge cases, the audit trail.", color: "#9e2b1c" },
-  { n: "04", t1: "Deliver", t2: "& support", body: "Spec that survives implementation, handoff that holds, iteration once it meets real use.", color: "#d9472f" },
+  { n: "01", t1: "Discover", t2: "& frame", body: "Stakeholder interviews, JTBD, and the constraints that actually bind — before a single pixel.", color: "#6a1518" },
+  { n: "02", t1: "Research", t2: "& test", body: "User interviews, usability testing, journey mapping — evidence over opinion, the whole way through.", color: "#0e504a" },
+  { n: "03", t1: "Define", t2: "the system", body: "Flows, IA, and the primitives. Decide what to ship and, harder, what not to.", color: "#26336e" },
+  { n: "04", t1: "Orchestrate", t2: "with AI", body: "Claude + Figma Make AI chained into a repeatable workflow — variants in hours, the taste stays human.", color: "#4a2370" },
+  { n: "05", t1: "Design", t2: "& refine", body: "High-fidelity, production-ready screens — tokens, states, edge cases, the audit trail.", color: "#8f3d12" },
+  { n: "06", t1: "Deliver", t2: "& support", body: "Spec that survives implementation, handoff that holds, iteration once it meets real use.", color: "#14543a" },
 ];
 
 export function ProcessV5() {
@@ -76,12 +78,9 @@ export function ProcessV5() {
         <div className="v5-pxstep-intro">
           <p className="v5-pxstep-eyebrow">/ how I work</p>
           <h2 id="v5-pxstep-title" className="v5-pxstep-title">
-            From brief to <em>shipped</em>, in four moves.
+            From brief to <em>shipped</em> — start to finish.
           </h2>
-          <p className="v5-pxstep-lead">
-            A repeatable path — research-led, decision-first, and fast.
-            AI-augmented where it earns its keep.
-          </p>
+          <p className="v5-pxstep-lead">Research-led, decision-first, AI-native.</p>
         </div>
 
         <div className="v5-pxstep-rail">

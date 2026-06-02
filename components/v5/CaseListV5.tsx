@@ -32,7 +32,7 @@ export function CaseListV5() {
           <p className="v5-caselist-intro">
             Detailed write-ups — role, research, decisions, trade-offs, and
             outcomes. Every other project lives in the{" "}
-            <Link href="#gallery">gallery</Link>.
+            <Link href="/work">work archive</Link>.
           </p>
         </div>
 
