@@ -4,6 +4,7 @@ import { AboutPortraitV5 } from "@/components/v5/AboutPortraitV5";
 import { CapabilitiesBentoV5 } from "@/components/v5/CapabilitiesBentoV5";
 import { ProcessV5 } from "@/components/v5/ProcessV5";
 import { RealtimeBannerV5 } from "@/components/v5/RealtimeBannerV5";
+import { DeskShowcaseV5 } from "@/components/v5/DeskShowcaseV5";
 import { CaseListV5 } from "@/components/v5/CaseListV5";
 import { GalleryV5 } from "@/components/v5/GalleryV5";
 import { AIWorkflowV5 } from "@/components/v5/AIWorkflowV5";
@@ -27,6 +28,7 @@ export default function HomePage() {
       <CapabilitiesBentoV5 />
       <ProcessV5 />
       <RealtimeBannerV5 />
+      <DeskShowcaseV5 />
       <CaseListV5 />
       <GalleryV5 />
       <AIWorkflowV5 />
