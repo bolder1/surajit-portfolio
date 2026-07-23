@@ -130,11 +130,6 @@ export function MastheadHeroV5() {
                 <a href={link.href} className="v5-navlink">{link.label}</a>
               </span>
             ))}
-            {/* Door to the drivable 3D world */}
-            <a href="/playground" className="v5-playbtn" aria-label="Enter the 3D playground">
-              <span className="v5-playbtn-glyph" aria-hidden />
-              3D Playground
-            </a>
           </div>
         </nav>
       </div>

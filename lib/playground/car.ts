@@ -23,10 +23,10 @@ const SPAWN = new CANNON.Vec3(0, 1.6, 0);
 const TUNING = {
   mass: 180,
   /** per wheel, ×4 (AWD) — keep below tyre grip so launches don't burn out */
-  engineForce: 950,
-  /** m/s — engine cuts beyond these so the arcade stays drivable */
-  maxForwardSpeed: 28,
-  maxReverseSpeed: 13,
+  engineForce: 760,
+  /** m/s — engine cuts beyond these so the arcade stays friendly */
+  maxForwardSpeed: 18,
+  maxReverseSpeed: 9,
   brakeForce: 52,
   maxSteer: 0.55,
   wheelRadius: 0.42,
@@ -141,14 +141,38 @@ export class Car {
     };
 
     // Deck + hood + bed — the pickup silhouette (front = +z).
-    add(new THREE.BoxGeometry(1.8, 0.42, 3.7), cream, 0, 0.02, 0); // main deck
-    add(new THREE.BoxGeometry(1.7, 0.34, 1.05), cream, 0, 0.4, 1.22); // hood
+    // Vermilion body so the car reads instantly against the bright world.
+    add(new THREE.BoxGeometry(1.8, 0.42, 3.7), accent, 0, 0.02, 0); // main deck
+    add(new THREE.BoxGeometry(1.7, 0.34, 1.05), accent, 0, 0.4, 1.22); // hood
     add(new THREE.BoxGeometry(1.72, 0.62, 1.25), dark, 0, 0.54, 0.08); // cabin
-    add(new THREE.BoxGeometry(1.78, 0.1, 1.3), accent, 0, 0.9, 0.08); // roof
-    add(new THREE.BoxGeometry(1.7, 0.5, 1.1), cream, 0, 0.36, -1.2); // bed walls
+    add(new THREE.BoxGeometry(1.78, 0.1, 1.3), cream, 0, 0.9, 0.08); // roof
+    add(new THREE.BoxGeometry(1.7, 0.5, 1.1), accent, 0, 0.36, -1.2); // bed walls
     add(new THREE.BoxGeometry(1.5, 0.52, 0.9), dark, 0, 0.38, -1.2); // bed cavity
-    add(new THREE.BoxGeometry(1.9, 0.18, 0.3), accent, 0, -0.1, 1.85); // front bumper
-    add(new THREE.BoxGeometry(1.9, 0.18, 0.24), accent, 0, -0.1, -1.85); // rear bumper
+    add(new THREE.BoxGeometry(1.9, 0.18, 0.3), cream, 0, -0.1, 1.85); // front bumper
+    add(new THREE.BoxGeometry(1.9, 0.18, 0.24), cream, 0, -0.1, -1.85); // rear bumper
+    // Racing stripes down the hood + deck.
+    add(new THREE.BoxGeometry(0.22, 0.02, 3.72), cream, -0.35, 0.24, 0);
+    add(new THREE.BoxGeometry(0.22, 0.02, 3.72), cream, 0.35, 0.24, 0);
+    add(new THREE.BoxGeometry(0.22, 0.02, 1.07), cream, -0.35, 0.58, 1.22);
+    add(new THREE.BoxGeometry(0.22, 0.02, 1.07), cream, 0.35, 0.58, 1.22);
+    // Rear spoiler.
+    add(new THREE.BoxGeometry(0.12, 0.3, 0.12), dark, -0.7, 0.72, -1.7);
+    add(new THREE.BoxGeometry(0.12, 0.3, 0.12), dark, 0.7, 0.72, -1.7);
+    add(new THREE.BoxGeometry(1.85, 0.08, 0.44), accent, 0, 0.9, -1.72);
+    // Twin exhausts.
+    const exhaustGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.3, 8);
+    exhaustGeo.rotateX(Math.PI / 2);
+    add(exhaustGeo, dark, -0.55, -0.18, -1.9);
+    add(exhaustGeo.clone(), dark, 0.55, -0.18, -1.9);
+    // Roof light bar — the little rally flair.
+    const lampMat = new THREE.MeshStandardMaterial({
+      color: 0xffe6a3,
+      emissive: 0xffd27a,
+      emissiveIntensity: 1.2,
+    });
+    for (const lx of [-0.45, -0.15, 0.15, 0.45]) {
+      add(new THREE.BoxGeometry(0.16, 0.1, 0.1), lampMat, lx, 0.99, 0.6);
+    }
 
     // Lights.
     add(new THREE.BoxGeometry(0.3, 0.14, 0.06), headlight, 0.62, 0.32, 1.78);
@@ -248,7 +272,7 @@ export class Car {
     const up = new CANNON.Vec3(0, 1, 0);
     const localUp = this.chassisBody.quaternion.vmult(up);
     this.upsideDownFor = localUp.y < 0.15 ? this.upsideDownFor + dt : 0;
-    if (this.upsideDownFor > 2.5 || this.chassisBody.position.y < -20) {
+    if (this.upsideDownFor > 1.2 || this.chassisBody.position.y < -20) {
       this.reset(true);
       return true;
     }

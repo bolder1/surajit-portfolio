@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { HUD } from "@/components/HUD";
+import { PlaygroundFab } from "@/components/PlaygroundFab";
 import "./globals.css";
 import "./v5.css";
 import "./v5b.css";
@@ -90,6 +91,7 @@ export default function RootLayout({
         </a>
         <SmoothScroll />
         <HUD />
+        <PlaygroundFab />
         <div className="v5-root">{children}</div>
       </body>
     </html>
