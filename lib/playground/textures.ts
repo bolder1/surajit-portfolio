@@ -175,6 +175,70 @@ export function makeCrateFaceTexture(
   });
 }
 
+/** Milestone pylon plate — index, title, sub-line. */
+export function makeMilestoneTexture(
+  no: string,
+  title: string,
+  sub: string,
+  accent = PALETTE.accent
+): THREE.CanvasTexture {
+  const fonts = resolveFonts();
+  return makeCanvasTexture(512, 640, (ctx, w, h) => {
+    ctx.fillStyle = "#161412";
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = PALETTE.inkSoft;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, w - 40, h - 40);
+    ctx.fillStyle = accent;
+    ctx.fillRect(20, 20, 56, 56);
+    ctx.fillStyle = "#161412";
+    ctx.textAlign = "center";
+    ctx.font = `500 26px ${fonts.mono}`;
+    ctx.fillText(no, 48, 56);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = PALETTE.ink;
+    ctx.font = `italic 400 52px ${fonts.serif}`;
+    wrapText(ctx, title, 44, 160, w - 88, 60);
+
+    ctx.font = `500 22px ${fonts.mono}`;
+    ctx.letterSpacing = "0.14em";
+    ctx.fillStyle = PALETTE.muted;
+    wrapText(ctx, sub.toUpperCase(), 44, h - 150, w - 88, 34);
+
+    // base rule + diamond
+    ctx.fillStyle = accent;
+    ctx.save();
+    ctx.translate(w / 2, h - 66);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillRect(-8, -8, 16, 16);
+    ctx.restore();
+  });
+}
+
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+) {
+  const words = text.split(" ");
+  let line = "";
+  for (const word of words) {
+    const probe = line ? `${line} ${word}` : word;
+    if (ctx.measureText(probe).width > maxWidth && line) {
+      ctx.fillText(line, x, y);
+      line = word;
+      y += lineHeight;
+    } else {
+      line = probe;
+    }
+  }
+  if (line) ctx.fillText(line, x, y);
+}
+
 /** Two-sided standing sign texture (zone gates, contact board). */
 export function makeSignTexture(
   title: string,
