@@ -5,6 +5,7 @@ import { EmpathyMapDiagram } from "@/components/v5/diagrams/EmpathyMapDiagram";
 import { UserFlowDiagram } from "@/components/v5/diagrams/UserFlowDiagram";
 import { FunnelDiagram } from "@/components/v5/diagrams/FunnelDiagram";
 import { CompressionFigure } from "@/components/v5/diagrams/CompressionFigure";
+import { WorkingSystemPlate } from "@/components/v5/diagrams/WorkingSystemPlate";
 import { ConvergenceDiagram } from "@/components/v5/diagrams/ConvergenceDiagram";
 import { AuditChainDiagram } from "@/components/v5/diagrams/AuditChainDiagram";
 import { RoutingGateDiagram } from "@/components/v5/diagrams/RoutingGateDiagram";
@@ -112,6 +113,11 @@ export function ProcessCaseStudyV5({
           <span className="v5-cs-diamond" aria-hidden /> WHY THIS IS NOT JUST A
           FIGMA FILE
         </p>
+      </section>
+
+      {/* the same claim, drawn rather than asserted */}
+      <section className="v5-cs-bleed">
+        <WorkingSystemPlate />
       </section>
 
       {/* ── the wall: what made it hard ──────────────────────── */}

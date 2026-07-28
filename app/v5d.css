@@ -683,3 +683,27 @@
   color: var(--v5-ink-muted);
   margin: 16px 0 0;
 }
+
+/* ── working-system plate: the thesis, drawn ── */
+.v5-wsp-svg { display: block; width: 100%; height: auto; min-width: 760px; }
+.v5-wsp-screen { fill: none; stroke: var(--v5-ink-soft); stroke-width: 1.5; }
+.v5-wsp-screen.is-comp { stroke: var(--v5-rule-soft); stroke-dasharray: 5 5; }
+.v5-wsp-placeholder { stroke: var(--v5-rule-soft); stroke-width: 5; }
+.v5-wsp-placeholder-box { fill: none; stroke: var(--v5-rule-soft); stroke-width: 1.5; }
+.v5-wsp-divider { stroke: var(--v5-rule-soft); stroke-width: 1; stroke-dasharray: 2 6; }
+.v5-wsp-void-rule { stroke: var(--v5-rule-soft); stroke-width: 1; stroke-dasharray: 4 6; }
+.v5-wsp-spine { stroke: var(--v5-accent-bright); stroke-width: 2; }
+.v5-wsp-rail { stroke: var(--v5-rule-soft); stroke-width: 1.25; }
+.v5-wsp-node { fill: none; stroke: var(--v5-accent-bright); stroke-width: 1.5; }
+.v5-wsp-title,
+.v5-wsp-sub,
+.v5-wsp-void,
+.v5-wsp-machine {
+  font-family: var(--v5-mono), monospace;
+  letter-spacing: 0.18em;
+}
+.v5-wsp-title { font-size: 12px; fill: var(--v5-ink); }
+.v5-wsp-sub { font-size: 9px; fill: var(--v5-ink-muted); text-anchor: end; }
+.v5-wsp-sub.is-hot { fill: var(--v5-accent-bright); }
+.v5-wsp-void { font-size: 10px; fill: var(--v5-ink-muted); text-anchor: middle; }
+.v5-wsp-machine { font-size: 10px; fill: var(--v5-ink-soft); letter-spacing: 0.12em; }
