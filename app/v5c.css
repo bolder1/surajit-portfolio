@@ -595,13 +595,13 @@
 .v5-rtb { border-top: 1px solid var(--v5-rule-soft); }
 .v5-rtb-link {
   display: block;
-  padding: 84px 56px 76px;
+  padding: 84px 56px 0;
   text-decoration: none;
   color: var(--v5-ink);
   transition: background 300ms ease;
 }
 .v5-rtb-link:hover { background: rgba(217, 71, 47, 0.05); }
-@media (max-width: 767px) { .v5-rtb-link { padding: 60px 24px 56px; } }
+@media (max-width: 767px) { .v5-rtb-link { padding: 60px 24px 0; } }
 
 .v5-rtb-top {
   display: flex;
@@ -689,13 +689,22 @@
 
 .v5-rtb-cases {
   margin: 0;
+  padding: 0 56px 76px;
   font-family: var(--v5-mono), monospace;
   font-size: 11px;
   letter-spacing: 0.2em;
   color: var(--v5-ink-muted);
 }
+@media (max-width: 767px) { .v5-rtb-cases { padding: 0 24px 56px; } }
 .v5-rtb-caseWrap { display: inline-flex; align-items: center; }
 .v5-rtb-sep { margin: 0 12px; color: var(--v5-accent-bright); }
+.v5-rtb-case.is-linked {
+  color: var(--v5-ink-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.v5-rtb-case.is-linked:hover { color: var(--v5-accent-bright); border-color: var(--v5-accent-bright); }
 
 /* ---- /process page ---- */
 
@@ -815,6 +824,21 @@
   font-style: italic;
   font-family: var(--v5-serif), Georgia, serif;
   color: var(--v5-ink-muted);
+}
+.v5-rt-case.is-linked {
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 200ms ease, background 200ms ease;
+}
+.v5-rt-case.is-linked:hover { transform: translateY(-3px); background: var(--v5-paper-2); }
+.v5-rt-case-full {
+  font-family: var(--v5-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--v5-accent-bright);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .v5-rt-cta { margin: 100px 56px 90px; text-align: center; position: relative; z-index: 1; }

@@ -365,6 +365,41 @@
 }
 .mapAccent { color: var(--v5-accent-bright, #d9472f) !important; }
 
+/* waypoint buttons — set the beacon + minimap toward a destination */
+.mapDests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 22px;
+}
+.mapDest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid var(--v5-rule-soft, #2a2a28);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v5-ink-soft, #c4c0b6);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.mapDest:hover {
+  border-color: var(--v5-accent-bright, #d9472f);
+  color: var(--v5-ink, #f0eee8);
+}
+.mapDest i {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  flex: none;
+  background: var(--v5-accent-bright, #d9472f);
+}
+
 .mapProducts {
   display: flex;
   flex-wrap: wrap;

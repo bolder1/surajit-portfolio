@@ -7,6 +7,7 @@ import "./globals.css";
 import "./v5.css";
 import "./v5b.css";
 import "./v5c.css";
+import "./v5d.css";
 
 /*
   Root layout — Surajit Dutta portfolio.
