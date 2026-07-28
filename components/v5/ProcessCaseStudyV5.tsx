@@ -152,18 +152,40 @@ export function ProcessCaseStudyV5({
           <h2 className="v5-cs-h2">{study.decision.headline}</h2>
           <p className="v5-cs-lede">{study.decision.body}</p>
 
+          <p className="v5-cs-rail-note">
+            {study.compression.note}
+            <span className="v5-cs-rail-ref">
+              STAGE 03 IS WHAT BUYS THE TIME — SEE FIG. 05
+            </span>
+          </p>
         </div>
 
+        {/* Stage 03 is the prototype in every case — the point where this
+            process stops resembling a design hand-off. It breaks the rhythm
+            deliberately; the other five keep it. */}
         <ol className="v5-cs-stages">
-          {study.decision.stages.map((s, i) => (
-            <li className="v5-cs-stage" key={s.title}>
-              <span className="v5-cs-stage-n">{String(i + 1).padStart(2, "0")}</span>
-              <div>
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-              </div>
-            </li>
-          ))}
+          {study.decision.stages.map((s, i) => {
+            const isPivot = i === 2;
+            return (
+              <li
+                className={`v5-cs-stage${isPivot ? " is-pivot" : ""}`}
+                key={s.title}
+              >
+                <span className="v5-cs-stage-n">
+                  {String(i + 1).padStart(2, "0")}
+                  <i
+                    className={`v5-cs-node${isPivot ? " is-filled" : ""}`}
+                    aria-hidden
+                  />
+                </span>
+                <div>
+                  {isPivot && <p className="v5-cs-pivot-tab">THE PIVOT</p>}
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </section>
 
