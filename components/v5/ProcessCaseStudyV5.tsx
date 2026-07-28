@@ -3,16 +3,34 @@ import type { ProcessCaseStudy } from "@/lib/processCases";
 import { JourneyMapDiagram } from "@/components/v5/diagrams/JourneyMapDiagram";
 import { EmpathyMapDiagram } from "@/components/v5/diagrams/EmpathyMapDiagram";
 import { UserFlowDiagram } from "@/components/v5/diagrams/UserFlowDiagram";
+import { FunnelDiagram } from "@/components/v5/diagrams/FunnelDiagram";
+import { CompressionFigure } from "@/components/v5/diagrams/CompressionFigure";
+import { ConvergenceDiagram } from "@/components/v5/diagrams/ConvergenceDiagram";
+import { AuditChainDiagram } from "@/components/v5/diagrams/AuditChainDiagram";
+import { RoutingGateDiagram } from "@/components/v5/diagrams/RoutingGateDiagram";
 
 /**
- * /process/[slug] — one full process case study.
+ * /process/[slug] — one process case study, told as a magazine spread.
  *
- * Sanitized, no screenshots. Structure is deliberately process-first:
- * problem → constraint → decision (the actual engagement loop) →
- * outcome (the lead → client → revenue funnel), with the differentiator
- * — a working prototype, not a picture of one — called out right under
- * the header, before anything else.
+ * The arc, not four identical blocks:
+ *   masthead -> cold open -> the figure (proof of technical grasp) ->
+ *   the old world (problem + empathy) -> pull quote -> the wall
+ *   (constraints) -> the session (journey) -> the loop (how it was made,
+ *   with the compression stat) -> what shipped (flow) -> what it earned
+ *   (funnel) -> next cases.
+ *
+ * Layout alternates deliberately — full-bleed figures, a 7/5 asymmetric
+ * split, a three-up numeral grid, a sticky-rail section — so the page has
+ * rhythm and never leaves half the screen empty.
  */
+
+/** Each case opens on its own bespoke technical figure — never a template. */
+const HERO_FIGURE: Record<string, () => React.JSX.Element> = {
+  itdr: ConvergenceDiagram,
+  "dpdp-compliance": AuditChainDiagram,
+  "function-os": RoutingGateDiagram,
+};
+
 export function ProcessCaseStudyV5({
   study,
   others,
@@ -20,78 +38,122 @@ export function ProcessCaseStudyV5({
   study: ProcessCaseStudy;
   others: ProcessCaseStudy[];
 }) {
+  const Figure = HERO_FIGURE[study.slug];
+
   return (
-    <main className="v5-info v5-rt v5-pc">
+    <main className="v5-cs">
       <div className="v5-hero-abstract" aria-hidden>
         <span />
       </div>
-      <div className="v5-info-scrim" aria-hidden />
 
-      <header className="v5-info-header">
-        <h1 className="v5-info-title">{study.name}</h1>
-        <Link href="/process" className="v5-info-back">
-          ← Real-time
-        </Link>
+      {/* ── masthead ─────────────────────────────────────────── */}
+      <header className="v5-cs-masthead">
+        <div className="v5-cs-mast-top">
+          <span className="v5-cs-kicker">
+            <span className="v5-cs-diamond" aria-hidden />
+            PROCESS CASE STUDY · {study.no}
+          </span>
+          <Link href="/process" className="v5-cs-back">
+            ← ALL CASES
+          </Link>
+        </div>
+
+        <h1 className="v5-cs-title">{study.name}</h1>
+        <p className="v5-cs-standfirst">{study.oneLiner}</p>
+
+        <dl className="v5-cs-dateline">
+          {[
+            ["DOMAIN", study.domain],
+            ["YEAR", study.year],
+            ["ROLE", study.role],
+            ["FIELD", study.tag],
+          ].map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
       </header>
 
-      {/* meta strip */}
-      <section className="v5-pc-meta">
-        <span className="v5-pc-meta-item">{study.no}</span>
-        <span className="v5-pc-meta-item accent">{study.tag}</span>
-        <span className="v5-pc-meta-item">{study.domain}</span>
-        <span className="v5-pc-meta-item">{study.year}</span>
-        <span className="v5-pc-meta-item">{study.role}</span>
+      {/* ── cold open ────────────────────────────────────────── */}
+      <section className="v5-cs-hook">
+        <p className="v5-cs-hook-text">{study.hook}</p>
       </section>
 
-      <section className="v5-pc-hero">
-        <p className="v5-info-eyebrow">/ process case study</p>
-        <h2 className="v5-pc-oneliner">{study.oneLiner}</h2>
+      {/* ── the figure: technical grasp, up front ────────────── */}
+      {Figure && (
+        <section className="v5-cs-bleed">
+          <Figure />
+        </section>
+      )}
+
+      {/* ── the old world: problem + who lived in it ─────────── */}
+      <section className="v5-cs-split">
+        <div className="v5-cs-split-main">
+          <p className="v5-cs-folio">01 — THE OLD WORLD</p>
+          <h2 className="v5-cs-h2">{study.problem.headline}</h2>
+          <p className="v5-cs-lede">{study.problem.body}</p>
+        </div>
+        <aside className="v5-cs-split-side">
+          <EmpathyMapDiagram map={study.empathyMap} />
+        </aside>
       </section>
 
-      {/* the differentiator — right up front */}
-      <section className="v5-pc-differentiator">
-        <span className="v5-pc-diff-glyph" aria-hidden />
-        <p>
-          <b>Why this isn&rsquo;t just a Figma file:</b> {study.differentiator}
+      {/* ── pull quote: the thesis ───────────────────────────── */}
+      <section className="v5-cs-quote">
+        <blockquote>
+          <span className="v5-cs-quote-mark" aria-hidden>
+            &ldquo;
+          </span>
+          {study.pullQuote}
+        </blockquote>
+        <p className="v5-cs-quote-attr">
+          <span className="v5-cs-diamond" aria-hidden /> WHY THIS IS NOT JUST A
+          FIGMA FILE
         </p>
       </section>
 
-      {/* problem */}
-      <section className="v5-pc-block">
-        <p className="v5-pc-block-tag">01 / PROBLEM</p>
-        <h3 className="v5-pc-block-head">{study.problem.headline}</h3>
-        <p className="v5-pc-block-body">{study.problem.body}</p>
-      </section>
-
-      {/* constraint */}
-      <section className="v5-pc-block">
-        <p className="v5-pc-block-tag">02 / CONSTRAINT</p>
-        <h3 className="v5-pc-block-head">{study.constraint.headline}</h3>
-        <p className="v5-pc-block-body">{study.constraint.body}</p>
-        <ul className="v5-pc-points">
-          {study.constraint.points.map((point) => (
-            <li key={point}>{point}</li>
+      {/* ── the wall: what made it hard ──────────────────────── */}
+      <section className="v5-cs-wall">
+        <div className="v5-cs-wall-head">
+          <p className="v5-cs-folio">02 — THE WALL</p>
+          <h2 className="v5-cs-h2">{study.constraint.headline}</h2>
+          <p className="v5-cs-lede">{study.constraint.body}</p>
+        </div>
+        <ol className="v5-cs-wall-grid">
+          {study.constraint.points.map((point, i) => (
+            <li key={point}>
+              <span className="v5-cs-wall-n">{String(i + 1).padStart(2, "0")}</span>
+              <p>{point}</p>
+            </li>
           ))}
-        </ul>
+        </ol>
       </section>
 
-      {/* empathy map + journey map — grounding artifacts before the decision */}
-      <section className="v5-pc-artifacts">
-        <EmpathyMapDiagram map={study.empathyMap} />
-        <JourneyMapDiagram persona={study.journeyMap.persona} stages={study.journeyMap.stages} />
+      {/* ── the session ──────────────────────────────────────── */}
+      <section className="v5-cs-bleed">
+        <JourneyMapDiagram
+          persona={study.journeyMap.persona}
+          stages={study.journeyMap.stages}
+        />
       </section>
 
-      {/* decision — the engagement loop itself */}
-      <section className="v5-pc-block">
-        <p className="v5-pc-block-tag">03 / DECISION</p>
-        <h3 className="v5-pc-block-head">{study.decision.headline}</h3>
-        <p className="v5-pc-block-body">{study.decision.body}</p>
-        <ol className="v5-pc-stages">
+      {/* ── the loop: how it actually got made ───────────────── */}
+      <section className="v5-cs-loop">
+        <div className="v5-cs-loop-rail">
+          <p className="v5-cs-folio">03 — THE LOOP</p>
+          <h2 className="v5-cs-h2">{study.decision.headline}</h2>
+          <p className="v5-cs-lede">{study.decision.body}</p>
+
+        </div>
+
+        <ol className="v5-cs-stages">
           {study.decision.stages.map((s, i) => (
-            <li className="v5-pc-stage" key={s.title}>
-              <span className="v5-pc-stage-n">{String(i + 1).padStart(2, "0")}</span>
+            <li className="v5-cs-stage" key={s.title}>
+              <span className="v5-cs-stage-n">{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h4>{s.title}</h4>
+                <h3>{s.title}</h3>
                 <p>{s.body}</p>
               </div>
             </li>
@@ -99,72 +161,74 @@ export function ProcessCaseStudyV5({
         </ol>
       </section>
 
-      {/* the product's own flow, once the decisions are made */}
-      <section className="v5-pc-artifacts single">
+      {/* ── the compression, drawn to scale ──────────────────── */}
+      <section className="v5-cs-bleed">
+        <CompressionFigure
+          theirs={study.compression.theirs}
+          mine={study.compression.mine}
+          note={study.compression.note}
+        />
+      </section>
+
+      {/* ── what shipped ─────────────────────────────────────── */}
+      <section className="v5-cs-bleed">
         <UserFlowDiagram flow={study.userFlow} />
       </section>
 
-      {/* outcome */}
-      <section className="v5-pc-block">
-        <p className="v5-pc-block-tag">04 / OUTCOME</p>
-        <h3 className="v5-pc-block-head">{study.outcome.headline}</h3>
-        <p className="v5-pc-block-body">{study.outcome.body}</p>
+      {/* ── what it earned ───────────────────────────────────── */}
+      <section className="v5-cs-split is-reverse">
+        <div className="v5-cs-split-main">
+          <p className="v5-cs-folio">04 — WHAT IT EARNED</p>
+          <h2 className="v5-cs-h2">{study.outcome.headline}</h2>
+          <p className="v5-cs-lede">{study.outcome.body}</p>
 
-        <div className="v5-pc-funnel">
-          {study.outcome.funnel.map((stage, i) => (
-            <div className="v5-pc-funnel-stage" key={stage.label}>
-              {i > 0 && <span className="v5-pc-funnel-arrow" aria-hidden>→</span>}
-              <div className="v5-pc-funnel-box">
-                <span className="v5-pc-funnel-n">{i + 1}</span>
-                <p className="v5-pc-funnel-label">{stage.label}</p>
-                <p className="v5-pc-funnel-note">{stage.note}</p>
+          <dl className="v5-cs-metrics">
+            {study.outcome.metrics.map((m) => (
+              <div key={m.label}>
+                <dt>{m.label}</dt>
+                <dd>{m.value}</dd>
               </div>
-            </div>
-          ))}
+            ))}
+          </dl>
+
+          <p className="v5-cs-delivered">
+            {study.deliverables.map((d, i) => (
+              <span key={d}>
+                {i > 0 && <span className="v5-cs-arrow">→</span>}
+                {d}
+              </span>
+            ))}
+          </p>
         </div>
-
-        <dl className="v5-pc-metrics">
-          {study.outcome.metrics.map((m) => (
-            <div className="v5-pc-metric" key={m.label}>
-              <dt>{m.label}</dt>
-              <dd>{m.value}</dd>
-            </div>
-          ))}
-        </dl>
-
-        <p className="v5-pc-chips">
-          {study.deliverables.map((d, i) => (
-            <span key={d}>
-              {i > 0 && <span className="v5-rt-chip-sep">→</span>}
-              <span className="v5-rt-chip">{d}</span>
-            </span>
-          ))}
-        </p>
+        <aside className="v5-cs-split-side">
+          <FunnelDiagram stages={study.outcome.funnel} />
+        </aside>
       </section>
 
-      {/* other cases */}
+      {/* ── next ─────────────────────────────────────────────── */}
       {others.length > 0 && (
-        <section className="v5-pc-others">
-          <p className="v5-info-eyebrow">/ other process case studies</p>
-          <div className="v5-pc-others-grid">
+        <section className="v5-cs-next">
+          <p className="v5-cs-folio">NEXT CASE</p>
+          <div className="v5-cs-next-grid">
             {others.map((o) => (
-              <Link href={`/process/${o.slug}`} className="v5-pc-others-card" key={o.slug}>
-                <span className="v5-pc-meta-item accent">{o.tag}</span>
-                <h4>{o.name}</h4>
+              <Link href={`/process/${o.slug}`} className="v5-cs-next-card" key={o.slug}>
+                <span className="v5-cs-next-tag">{o.tag}</span>
+                <h3>{o.name}</h3>
                 <p>{o.oneLiner}</p>
-                <span className="v5-pc-others-arrow" aria-hidden>↗</span>
+                <span className="v5-cs-next-go">
+                  READ <span aria-hidden>↗</span>
+                </span>
               </Link>
             ))}
           </div>
         </section>
       )}
 
-      {/* CTA */}
-      <section className="v5-rt-cta">
-        <p className="v5-rt-cta-line">
+      <section className="v5-cs-cta">
+        <p className="v5-cs-cta-line">
           Have a product that needs to exist <em>this quarter?</em>
         </p>
-        <div className="v5-rt-cta-actions">
+        <div className="v5-cs-cta-actions">
           <Link href="/contact" className="v5-btn-primary">
             START ONE&nbsp;↗
           </Link>
@@ -174,8 +238,9 @@ export function ProcessCaseStudyV5({
         </div>
       </section>
 
-      <footer className="v5-info-footer">
+      <footer className="v5-cs-foot">
         <span>SURAJIT DUTTA</span>
+        <span>{study.no} · {study.name.toUpperCase()}</span>
         <span>REAL-TIME BUILDS</span>
       </footer>
     </main>

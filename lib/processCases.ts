@@ -71,6 +71,13 @@ export interface ProcessCaseStudy {
   role: string;
   deliverables: string[];
 
+  /** Cold open — the scene, before any framing. Set large, sets the stakes. */
+  hook: string;
+  /** The thesis, sharpened into one line. Runs as a full-width pull quote. */
+  pullQuote: string;
+  /** Timeline compression, in the site's established framing. */
+  compression: { theirs: string; mine: string; note: string };
+
   differentiator: string;
 
   problem: { headline: string; body: string };
@@ -94,6 +101,15 @@ export const processCases: ProcessCaseStudy[] = [
     year: "2024 — present",
     role: "Product Designer · miniOrange",
     deliverables: ["STAKEHOLDER DISCUSSIONS", "OWN PRD", "PRODUCTION PROTOTYPE", "EVENT DEMO", "FIGMA + CODE HANDOFF"],
+
+    hook: "An identity attack never announces itself in one place. It leaves one trace in IAM, one in EDR, one in SIEM — and an analyst with three tabs open, rebuilding a timeline that already happened.",
+    pullQuote:
+      "Anyone can draw the console. The question is whether the thing you drew can survive three systems disagreeing about what happened, and in what order.",
+    compression: {
+      theirs: "WEEKS — MONTHS",
+      mine: "≈ 2 DAYS",
+      note: "Prototype-to-demo, not design-to-ship.",
+    },
 
     differentiator:
       "The prototype had to solve the real IAM / EDR / SIEM data-join problem, live, not just look like it did. That's the gap between a comp and a working system — and it's why engineering inherited a validated model instead of an open question.",
@@ -178,6 +194,15 @@ export const processCases: ProcessCaseStudy[] = [
     role: "Product Designer · miniOrange",
     deliverables: ["STAKEHOLDER DISCUSSIONS", "REGULATORY RESEARCH", "OWN PRD", "PRODUCTION PROTOTYPE", "EVENT DEMO", "FIGMA + CODE HANDOFF"],
 
+    hook: "A regulator asks one question: show me. The privacy officer has the answer somewhere — across a consent tool, an export log, and a folder of screenshots assembled after the fact.",
+    pullQuote:
+      "A compliance tool that looks compliant is a liability. This one had to write the audit row while the buyer watched — because that is the only version a regulator accepts.",
+    compression: {
+      theirs: "WEEKS — MONTHS",
+      mine: "≈ 2 DAYS",
+      note: "Statutory logic validated before engineering started.",
+    },
+
     differentiator:
       "The audit trail had to actually write a tamper-evident row on every action, live, in the room — not get described in a spec. Most design deliverables stop at “looks compliant”; this one behaved compliant, in front of the buyer.",
 
@@ -260,6 +285,15 @@ export const processCases: ProcessCaseStudy[] = [
     year: "Internal build",
     role: "Product Designer · miniOrange",
     deliverables: ["INTERNAL STAKEHOLDER DISCUSSIONS", "OWN PRD", "CLAUDE-CODE-ORCHESTRATED BUILD", "INTERNAL ROLLOUT", "FIGMA + CODE REFERENCE"],
+
+    hook: "Every prospective client asks the same question before they buy: does this actually work, or does it just demo well? The honest answer required building something our own finance team would have to trust with real numbers.",
+    pullQuote:
+      "A demo gets forgiven for cutting corners. A tool the finance team runs every month does not. That is the whole reason this one exists.",
+    compression: {
+      theirs: "WEEKS — MONTHS",
+      mine: "≈ 2 DAYS",
+      note: "Built by one designer, adopted the same week.",
+    },
 
     differentiator:
       "Financially sensitive automation doesn't get a 'looks right' pass — it has to compute and route correctly from day one. Orchestrating that build myself, end to end, is the same skill that makes the client-facing prototypes credible: shipping production code, not a picture of it.",
