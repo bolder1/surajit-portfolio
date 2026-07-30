@@ -1,18 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import {
+  Inter,
+  Instrument_Serif,
+  JetBrains_Mono,
+  Archivo,
+  Geist,
+  Geist_Mono,
+} from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { HUD } from "@/components/HUD";
 import { PlaygroundFab } from "@/components/PlaygroundFab";
+import { VersionToggle } from "@/components/VersionToggle";
 import "./globals.css";
 import "./v5.css";
 import "./v5b.css";
 import "./v5c.css";
 import "./v5d.css";
+import "./v2.css";
+import "./v2b.css";
 
 /*
   Root layout — Surajit Dutta portfolio.
-  Single design system, scoped via .v5-root.
-  Inter (sans) · Instrument Serif (display italic) · JetBrains Mono (labels).
+
+  Two design systems live side by side so they can be compared:
+    .v5-root  — V1, the shipped warm-dark editorial system.
+    .v2-root  — V2, the "volt" system on /v2 (nested inside .v5-root,
+                overriding every token it inherits).
+
+  V1 faces: Inter · Instrument Serif · JetBrains Mono.
+  V2 faces: Archivo (variable wght + wdth) · Geist · Geist Mono.
 */
 
 const sans = Inter({
@@ -34,6 +50,27 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--v5-mono",
+  display: "swap",
+});
+
+/* V2 — Archivo carries the display voice. The width axis is what makes the
+   headlines move: compressed at rest, expanding as they settle. */
+const v2Display = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--v2-display",
+  display: "swap",
+});
+
+const v2Sans = Geist({
+  subsets: ["latin"],
+  variable: "--v2-sans",
+  display: "swap",
+});
+
+const v2Mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--v2-mono",
   display: "swap",
 });
 
@@ -83,7 +120,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${serif.variable} ${mono.variable}`}
+      className={`${sans.variable} ${serif.variable} ${mono.variable} ${v2Display.variable} ${v2Sans.variable} ${v2Mono.variable}`}
       suppressHydrationWarning
     >
       <body style={{ background: "#0a0a0a" }}>
@@ -93,6 +130,7 @@ export default function RootLayout({
         <SmoothScroll />
         <HUD />
         <PlaygroundFab />
+        <VersionToggle />
         <div className="v5-root">{children}</div>
       </body>
     </html>

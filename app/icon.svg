@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Site mark: a T. Depth down, range across. Drawn as rects rather than
+       text so it renders identically everywhere and stays legible at 16px. -->
+  <rect width="32" height="32" rx="6" fill="#0a0d0e"/>
+  <rect x="6" y="8" width="20" height="4.5" fill="#c8f24e"/>
+  <rect x="13.75" y="8" width="4.5" height="17" fill="#c8f24e"/>
+</svg>

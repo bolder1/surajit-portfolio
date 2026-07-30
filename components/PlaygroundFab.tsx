@@ -8,10 +8,13 @@ import { usePathname } from "next/navigation";
  * A small, quiet pill pinned to the bottom-right corner of every page
  * (except the playground itself) — matches the hero's .v5-playbtn pill,
  * just fixed instead of inline.
+ *
+ * Suppressed on /v2, which carries its own chrome and links to the world from
+ * its footer instead; on a narrow viewport the two controls would collide.
  */
 export function PlaygroundFab() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/playground")) return null;
+  if (pathname?.startsWith("/playground") || pathname?.startsWith("/v2")) return null;
 
   return (
     <a

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
@@ -11,12 +12,15 @@ import { useEffect, useState } from "react";
  *
  * Lives above page content (z-50 / below cursor). Disabled when the
  * cursor isn't usable (touch devices) — the small mono text is too
- * crowded on phones.
+ * crowded on phones. Also disabled on /v2, which brings its own chrome
+ * (top bar + scroll rail) and would otherwise collide with this.
  */
 export function HUD() {
+  const pathname = usePathname();
   const [scrollPct, setScrollPct] = useState(0);
   const [time, setTime] = useState("");
   const [enabled, setEnabled] = useState(true);
+  const suppressed = pathname?.startsWith("/v2") ?? false;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -61,7 +65,7 @@ export function HUD() {
     return () => window.clearInterval(id);
   }, [enabled]);
 
-  if (!enabled) return null;
+  if (!enabled || suppressed) return null;
 
   return (
     <>
