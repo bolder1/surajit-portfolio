@@ -328,7 +328,9 @@
   transform: translateX(-50%);
   border: 1px solid #262b28;
   border-radius: 999px;
-  background: rgba(9, 12, 11, 0.86);
+  /* Same reasoning as the top bar: the fill has to carry legibility on its
+     own, because this control floats over full-bleed display type. */
+  background: rgba(9, 12, 11, 0.97);
   backdrop-filter: blur(14px) saturate(1.2);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -411,10 +413,14 @@
 }
 @media (min-width: 768px) { .v2-topbar { padding: 20px 40px; } }
 @media (min-width: 1200px) { .v2-topbar { padding: 20px 64px; } }
+/* Near-opaque rather than translucent: display type here runs to 120px in
+   near-white, and at 0.78 alpha it read straight through the bar wherever
+   backdrop-filter was unsupported or disabled. The blur is a refinement on
+   top of a fill that already works without it. */
 .v2-topbar.is-stuck {
   padding-top: 12px;
   padding-bottom: 12px;
-  background: rgba(7, 9, 10, 0.78);
+  background: rgba(7, 9, 10, 0.96);
   backdrop-filter: blur(18px) saturate(1.3);
   border-bottom-color: var(--v2-line);
 }
