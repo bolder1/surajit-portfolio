@@ -23,54 +23,58 @@ type Station = {
   model: string;
 };
 
+/* Sixteen fifteen-word sentences on a conveyor that moves past you is
+   reading nobody does. Each station is now a phrase you can take in during
+   the second it is in front of you. The split — who decides, who executes —
+   is the argument; the prose was never carrying it. */
 const STATIONS: Station[] = [
   {
     n: "01",
     title: "Requirements",
-    mine: "Sit with the stakeholder, not a brief once removed. Find the constraint that actually binds.",
-    model: "Transcribe, cluster by theme, surface every place two stakeholders contradicted each other.",
+    mine: "Find the constraint that actually binds.",
+    model: "Transcribe, cluster, surface contradictions.",
   },
   {
     n: "02",
     title: "My own PRD",
-    mine: "Decide what ships and, harder, what does not. The reframe lives here or nowhere.",
-    model: "Draft against my outline, tear down four competing consoles, flag the gaps I left open.",
+    mine: "Decide what ships. Harder: what does not.",
+    model: "Draft it, tear down four competitors.",
   },
   {
     n: "03",
     title: "Brand read",
-    mine: "Set the register. What this product should feel like in the operator's hands.",
-    model: "Pull the brand's real tokens and type, generate direction that is already on-brand.",
+    mine: "Set the register.",
+    model: "Pull real tokens and type. Generate on-brand.",
   },
   {
     n: "04",
     title: "Working prototype",
-    mine: "Own the interaction model. Which object is primary, what the operator holds in their head.",
-    model: "Build it for real, multi-frame, against representative data shapes rather than lorem rows.",
+    mine: "Own the interaction model.",
+    model: "Build it multi-frame, on real data shapes.",
   },
   {
     n: "05",
     title: "End-to-end test",
-    mine: "Define what correct means, including the states nobody demos.",
-    model: "Drive the entire prototype like a user, log every dead end, empty state and broken path.",
+    mine: "Define what correct means.",
+    model: "Drive every path. Log every dead end.",
   },
   {
     n: "06",
     title: "Design audit",
-    mine: "Judge which flags are real and which are the model being pedantic.",
-    model: "Catch my own mistakes: contrast, missing states, inconsistent spacing, unreachable screens.",
+    mine: "Judge which flags are real.",
+    model: "Catch contrast, missing states, dead screens.",
   },
   {
     n: "07",
     title: "Figma push",
-    mine: "Own naming and structure. A library nobody can navigate is a library nobody uses.",
-    model: "Generate the file: tokens, components, mapped variants, the whole matrix.",
+    mine: "Own naming and structure.",
+    model: "Generate tokens, components, the matrix.",
   },
   {
     n: "08",
     title: "Handoff + A/B",
-    mine: "Pick the variation that wins and write the spec that survives implementation.",
-    model: "Produce the variations, wire the comparison, keep the handoff file honest as it changes.",
+    mine: "Pick the winner. Write the spec.",
+    model: "Produce variations. Wire the comparison.",
   },
 ];
 
@@ -126,7 +130,7 @@ export function PipelineV2() {
         <div className="v2-wrap v2-pipe-head">
           <div>
             <p className="v2-eyebrow">
-              <b>05</b> The operating system
+              <b>06</b> The operating system
             </p>
             <h2 id="v2-pipe-h" className="v2-pipe-title">
               Judgement above the line.
@@ -135,8 +139,8 @@ export function PipelineV2() {
             </h2>
           </div>
           <p className="v2-pipe-note">
-            Eight stations, one loop, run on every project. Nothing on the top
-            row is delegated. Nothing on the bottom row is done by hand.
+            Nothing on the top row is delegated. Nothing on the bottom row is
+            done by hand.
             <span className="v2-pipe-count">
               <b>{String(active + 1).padStart(2, "0")}</b> / {STATIONS.length}
             </span>

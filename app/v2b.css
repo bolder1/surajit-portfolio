@@ -11,7 +11,7 @@
 /* Hero fallback when WebGL2 is unavailable — a radial wash, not a flat block */
 .v2-hero-canvas[data-fallback="1"] {
   background:
-    radial-gradient(ellipse 70% 55% at 66% 26%, rgba(200, 242, 78, 0.13), transparent 62%),
+    radial-gradient(ellipse 70% 55% at 66% 26%, rgba(160, 255, 153, 0.13), transparent 62%),
     radial-gradient(ellipse 80% 60% at 16% 74%, rgba(86, 128, 52, 0.16), transparent 68%),
     var(--v2-void);
 }
@@ -40,7 +40,7 @@
   line-height: 0.86;
   letter-spacing: -0.038em;
 }
-.v2-t-title em { font-style: normal; color: var(--v2-volt); }
+.v2-t-title em { font-style: normal; color: var(--v2-bone); }
 .v2-t-note { margin: 22px 0 0; }
 
 /* Held inside the page container rather than run full-bleed, so the crossbar
@@ -57,10 +57,10 @@
 
 .v2-t-axis-lbl {
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
   margin: 0;
 }
 .v2-t-axis-lbl span { color: var(--v2-volt); }
@@ -74,7 +74,7 @@
   background: var(--v2-volt);
   transform: scaleX(var(--bar, 0));
   transform-origin: left center;
-  box-shadow: 0 0 22px -4px rgba(200, 242, 78, 0.55);
+  box-shadow: 0 0 22px -4px rgba(160, 255, 153, 0.55);
 }
 /* Rules are drawn as inset shadows on the cells rather than as grid gaps over
    a coloured track: when the cell count doesn't divide evenly by the column
@@ -125,7 +125,7 @@
   padding-top: 14px;
   font-size: 12.5px;
   line-height: 1.48;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
   transition: color 280ms ease, transform 340ms var(--v2-ease);
   text-wrap: pretty;
 }
@@ -159,7 +159,7 @@
   width: 100%;
   height: calc(var(--stem, 0) * 100%);
   background: var(--v2-volt);
-  box-shadow: 0 0 20px -4px rgba(200, 242, 78, 0.5);
+  box-shadow: 0 0 20px -4px rgba(160, 255, 153, 0.5);
 }
 .v2-t-token {
   position: absolute;
@@ -172,7 +172,7 @@
   background: var(--v2-volt);
   transform: rotate(45deg);
   opacity: var(--tokon, 0);
-  box-shadow: 0 0 18px 2px rgba(200, 242, 78, 0.45);
+  box-shadow: 0 0 18px 2px rgba(160, 255, 153, 0.45);
   transition: opacity 300ms ease;
 }
 /* Fills the T's right-hand negative space with the one thing worth saying
@@ -227,7 +227,7 @@
 .v2-t-depth-n {
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   color: var(--v2-volt);
 }
@@ -287,7 +287,7 @@
 .v2-t-depth-mlbl {
   margin: 10px 0 0;
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -371,7 +371,7 @@
   background: none;
   cursor: pointer;
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--v2-bone-2);
@@ -395,15 +395,15 @@
 }
 .v2-axis-var {
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
 }
 .v2-axis-count {
   margin-left: auto;
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   color: var(--v2-volt);
 }
 .v2-axis-vals { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -416,7 +416,7 @@
   background: transparent;
   color: var(--v2-mute);
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -429,11 +429,15 @@
 .v2-chip:hover { border-color: var(--v2-line-3); color: var(--v2-bone-2); }
 .v2-chip:active { transform: scale(0.95); }
 .v2-chip[aria-pressed="true"] {
+  background: var(--v2-bone);
+  border-color: var(--v2-bone);
+  color: #0a0a0a;
+}
+.v2-chip[aria-pressed="true"]:hover {
   background: var(--v2-volt);
   border-color: var(--v2-volt);
   color: var(--v2-volt-ink);
 }
-.v2-chip[aria-pressed="true"]:hover { background: #d6fb63; }
 
 .v2-engine-out {
   background: var(--v2-void);
@@ -461,7 +465,7 @@
 .v2-engine-fig.is-lead .n { font-size: 42px; color: var(--v2-volt); }
 .v2-engine-fig .l {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -493,7 +497,7 @@
 .v2-engine-empty .k {
   margin: 0;
   font-family: var(--v2-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--v2-volt);
@@ -522,7 +526,7 @@
   margin: 0;
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -549,7 +553,7 @@
 }
 .v2-engine-preview-spec {
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--v2-bone-2);
@@ -625,7 +629,7 @@
 .v2-bt.is-danger { background: #7a2318; border-color: #99301f; color: #ffe9e4; }
 .v2-bt.is-link { background: transparent; border-color: transparent; color: var(--v2-volt); text-decoration: underline; text-underline-offset: 3px; }
 /* states — forced so the matrix can display them statically */
-.v2-bt.st-hover.is-primary { background: #d6fb63; }
+.v2-bt.st-hover.is-primary { background: #b6ffb0; }
 .v2-bt.st-hover.is-secondary,
 .v2-bt.st-hover.is-tertiary { background: var(--v2-slab-2); border-color: var(--v2-volt-edge); }
 .v2-bt.st-hover.is-ghost { background: var(--v2-slab); color: var(--v2-bone); }
@@ -670,7 +674,7 @@
   letter-spacing: -0.036em;
   text-transform: uppercase;
 }
-.v2-pipe-title em { font-style: normal; color: var(--v2-volt); }
+.v2-pipe-title em { font-style: normal; color: var(--v2-bone); }
 .v2-pipe-note {
   margin: 0;
   font-size: 14.5px;
@@ -775,7 +779,7 @@
 .v2-st-lane-lbl {
   display: block;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -814,7 +818,7 @@
 .v2-st-n {
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.18em;
   color: var(--v2-mute);
 }
@@ -860,7 +864,7 @@
   letter-spacing: -0.038em;
   text-transform: uppercase;
 }
-.v2-receipts-title em { font-style: normal; color: var(--v2-volt); }
+.v2-receipts-title em { font-style: normal; color: var(--v2-bone); }
 
 .v2-receipts-body { position: relative; margin-top: clamp(36px, 5vh, 60px); }
 .v2-receipts-list {
@@ -909,7 +913,7 @@
 .v2-receipt-tag,
 .v2-receipt-year {
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -918,7 +922,7 @@
 .v2-receipt-go {
   justify-self: end;
   font-size: 15px;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
   transition: color 240ms ease, transform 300ms var(--v2-ease);
 }
 .v2-receipt:hover .v2-receipt-go { color: var(--v2-volt); transform: translate(3px, -3px); }
@@ -985,7 +989,7 @@
   letter-spacing: -0.038em;
   text-transform: uppercase;
 }
-.v2-offer-title em { font-style: normal; color: var(--v2-volt); }
+.v2-offer-title em { font-style: normal; color: var(--v2-bone); }
 
 .v2-offer-grid {
   margin-top: clamp(40px, 6vh, 64px);
@@ -1009,7 +1013,7 @@
 .v2-eng.is-featured {
   border-color: var(--v2-volt-edge);
   background:
-    linear-gradient(172deg, rgba(200, 242, 78, 0.07) 0%, var(--v2-slab) 42%, var(--v2-void-2) 100%);
+    linear-gradient(172deg, rgba(160, 255, 153, 0.07) 0%, var(--v2-slab) 42%, var(--v2-void-2) 100%);
   box-shadow: inset 3px 0 0 var(--v2-volt), var(--v2-sh-2);
 }
 .v2-eng.is-featured:hover { box-shadow: inset 3px 0 0 var(--v2-volt), var(--v2-sh-3); }
@@ -1024,14 +1028,14 @@
 .v2-eng-n {
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   color: var(--v2-mute);
 }
 .v2-eng.is-featured .v2-eng-n { color: var(--v2-volt); }
 .v2-eng-flag {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--v2-volt);
@@ -1067,7 +1071,7 @@
 .v2-eng-meta { margin: 16px 0 0; padding: 14px 0; border-top: 1px solid var(--v2-line); border-bottom: 1px solid var(--v2-line); }
 .v2-eng-meta dt {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -1082,7 +1086,7 @@
 .v2-eng-gets-lbl {
   margin: 18px 0 0;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -1120,10 +1124,10 @@
 .v2-eng-replaces span {
   display: block;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
   margin-bottom: 6px;
 }
 .v2-eng-cta { margin-top: 22px; align-self: flex-start; }
@@ -1151,7 +1155,7 @@
   display: block;
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   color: var(--v2-volt);
 }
@@ -1178,12 +1182,15 @@
    ═══════════════════════════════════════════════════════ */
 .v2-outro { position: relative; background: var(--v2-void); border-top: 1px solid var(--v2-line); }
 
+/* Inverted, not accented. A full-bleed band of brand colour is the single
+   loudest thing a page can do, and spending it on a decorative marquee left
+   nothing in reserve for the things that are actually clickable. */
 .v2-belt {
   overflow: hidden;
   padding: 22px 0;
   border-bottom: 1px solid var(--v2-line);
-  background: var(--v2-volt);
-  color: var(--v2-volt-ink);
+  background: var(--v2-bone);
+  color: #0a0a0a;
 }
 .v2-belt-track { transform: translateX(var(--shift, 0%)); }
 .v2-belt-row {
@@ -1221,7 +1228,7 @@
   letter-spacing: -0.042em;
   text-transform: uppercase;
 }
-.v2-outro-title em { font-style: normal; color: var(--v2-volt); }
+.v2-outro-title em { font-style: normal; color: var(--v2-bone); }
 .v2-outro-lead { margin: 24px 0 0; }
 .v2-outro-actions {
   margin-top: 32px;
@@ -1245,10 +1252,10 @@
 .v2-foot-lbl {
   margin: 0 0 5px;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
 }
 .v2-foot-col a {
   width: fit-content;
@@ -1277,10 +1284,10 @@
   gap: 18px;
   flex-wrap: wrap;
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
 }
 .v2-foot-base p { margin: 0; }
 .v2-foot-built a { color: var(--v2-bone-2); text-decoration: none; border-bottom: 1px solid var(--v2-line-3); }

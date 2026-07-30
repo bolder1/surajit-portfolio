@@ -80,7 +80,7 @@ export function ReceiptsV2() {
         <div className="v2-receipts-head">
           <div>
             <p className="v2-eyebrow">
-              <b>06</b> Receipts
+              <b>07</b> Receipts
             </p>
             <h2 id="v2-receipts-h" className="v2-receipts-title">
               Everything here is <em>deployed.</em>

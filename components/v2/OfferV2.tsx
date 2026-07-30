@@ -18,25 +18,25 @@ type Engagement = {
   n: string;
   name: string;
   duration: string;
-  lead: string;
-  who: string;
   gets: string[];
   replaces: string;
   featured?: boolean;
 };
 
+/* Each card used to carry a lead sentence, a "who it is for" definition
+   list, and five deliverables. Three columns of that is a page of reading
+   at the exact moment someone is deciding whether to email you. What is
+   left is the shape of the deal: how long, what lands, what it replaces. */
 const ENGAGEMENTS: Engagement[] = [
   {
     n: "01",
     name: "Prototype sprint",
     duration: "5 days",
-    lead: "A scope walks in on Monday. A working, tested product walks out on Friday.",
-    who: "Teams with a decision to make and no calendar to make it in.",
     gets: [
-      "Requirements session with your stakeholders",
-      "My own PRD, written before anything is drawn",
-      "A real multi-frame prototype, not a comp",
-      "End-to-end test pass with the broken paths logged",
+      "Requirements session",
+      "My own PRD",
+      "A working multi-frame build",
+      "End-to-end test pass",
       "The fix list, and the fixes",
     ],
     replaces: "A three-week discovery phase that ends in a deck.",
@@ -46,14 +46,12 @@ const ENGAGEMENTS: Engagement[] = [
     n: "02",
     name: "Design system build",
     duration: "3 weeks",
-    lead: "Tokens, mapped variable components, and a matrix that generates instead of being drawn.",
-    who: "Product teams whose UI has quietly drifted into forty button styles.",
     gets: [
-      "Token architecture with modes and semantic layers",
-      "Multi-mapped variable components, axis by axis",
+      "Token architecture, modes and all",
+      "Multi-mapped variable components",
       "The full variant matrix, published",
-      "A documentation surface your team can actually read",
-      "Handoff files engineering does not have to re-derive",
+      "Documentation your team reads",
+      "Hand-off engineering can use as-is",
     ],
     replaces: "A year of we-will-clean-it-up-later.",
   },
@@ -61,23 +59,21 @@ const ENGAGEMENTS: Engagement[] = [
     n: "03",
     name: "AI workflow install",
     duration: "2 weeks",
-    lead: "The chain itself, set up inside your team, run twice on your own product while I watch.",
-    who: "Design teams who want this speed in-house rather than rented.",
     gets: [
-      "The full chain, research through Figma push",
-      "Skill and tooling setup on your stack",
-      "Two live runs on your real product",
-      "The audit and A/B loop, wired up",
-      "A playbook your team owns after I leave",
+      "The chain, research to Figma push",
+      "Tooling set up on your stack",
+      "Two live runs on your product",
+      "The audit and A/B loop, wired",
+      "A playbook you own after I leave",
     ],
     replaces: "Hiring for output when the gap was judgement.",
   },
 ];
 
 const START = [
-  { k: "One call", d: "Thirty minutes. You describe the problem, I tell you if I am the wrong person for it." },
-  { k: "A written scope", d: "One page: what ships, what does not, which day each thing lands." },
-  { k: "Day one", d: "No onboarding month. The first working artefact exists inside the first week." },
+  { k: "One call", d: "Thirty minutes." },
+  { k: "A written scope", d: "One page, dated." },
+  { k: "Day one", d: "No onboarding month." },
 ];
 
 export function OfferV2() {
@@ -87,16 +83,14 @@ export function OfferV2() {
         <div className="v2-offer-head">
           <div>
             <p className="v2-eyebrow">
-              <b>07</b> Work with the process
+              <b>08</b> Work with the process
             </p>
             <h2 id="v2-offer-h" className="v2-offer-title">
               Three ways to <em>buy the speed.</em>
             </h2>
           </div>
           <p className="v2-prose">
-            Scoped as sprints, not retainers, because the whole argument is that
-            the calendar is negotiable. Rates are quoted per engagement once the
-            scope is on one page.
+            Sprints, not retainers. Rates quoted per scope.
           </p>
         </div>
 
@@ -115,12 +109,6 @@ export function OfferV2() {
 
               <h3 className="v2-eng-name">{e.name}</h3>
               <p className="v2-eng-dur">{e.duration}</p>
-              <p className="v2-eng-lead">{e.lead}</p>
-
-              <dl className="v2-eng-meta">
-                <dt>Who it is for</dt>
-                <dd>{e.who}</dd>
-              </dl>
 
               <p className="v2-eng-gets-lbl">What you get</p>
               <ul className="v2-eng-gets">

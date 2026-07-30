@@ -8,17 +8,24 @@
   nested inside `.v5-root` and therefore has to re-declare every token it
   inherits.
 
-  Palette — "volt on void". Deliberately not the V1 warm orange/maroon.
-  A cool graphite-green near-black (never #000) carries the page; one
-  high-chroma chartreuse accent does all the signalling. Greens read as
-  voltage and as terminal-heritage precision, and they are the one family
-  the AI-portfolio default palette never reaches for.
+  Palette — black, white, and one green that mostly stays out of the way.
 
-    void      #07090a   page base, faint green cast
-    slab      #101413   raised surface
-    bone      #eef1e9   primary text
-    volt      #c8f24e   THE accent. Hairlines, one word per headline,
-                        hover, meters, the T-bar draw. Never a gradient.
+  The page is carried by neutral near-black and white. That is the whole
+  contrast system: hierarchy is built from value and weight, never from
+  hue. Headlines set their quiet half in grey and their loud half in pure
+  white, so emphasis survives greyscale, colour-blindness and a bad
+  projector.
+
+  Green is an INTERACTION colour, not a decoration. It is allowed on:
+  hover, focus, the active item in a set, a live meter fill, and small
+  marks. It is not allowed to paint headlines, large fills, or more than
+  one element in a viewport at rest.
+
+    void      #0a0a0a   page base, neutral
+    slab      #131313   raised surface
+    bone      #ffffff   primary text
+    grey      #8a8a8a   the quiet half of a headline
+    volt      #a0ff99   interaction only. Never a gradient.
 
   Faces: Archivo (variable wght 100–900 + wdth 62–125) for display,
   Geist for prose/UI, Geist Mono for labels and every number.
@@ -26,36 +33,38 @@
 
 .v2-root {
   /* ── surfaces ─────────────────────────────────────────── */
-  --v2-void: #07090a;
-  --v2-void-2: #0a0d0e;
-  --v2-slab: #101413;
-  --v2-slab-2: #161b19;
-  --v2-slab-3: #1c2220;
+  --v2-void: #0a0a0a;
+  --v2-void-2: #0d0d0d;
+  --v2-slab: #131313;
+  --v2-slab-2: #1a1a1a;
+  --v2-slab-3: #222222;
 
   /* ── rules ────────────────────────────────────────────── */
-  --v2-line: #1b2120;
-  --v2-line-2: #283029;
-  --v2-line-3: #3a443c;
+  --v2-line: #1f1f1f;
+  --v2-line-2: #2b2b2b;
+  --v2-line-3: #3d3d3d;
 
-  /* ── ink ──────────────────────────────────────────────── */
-  --v2-bone: #eef1e9;
-  --v2-bone-2: #a8afa5;
-  --v2-mute: #6c7470;
-  --v2-faint: #454d49;
+  /* ── ink. 4.5:1 on --v2-void is the floor for anything a
+        reader has to parse; --v2-faint is decoration only. ── */
+  --v2-bone: #ffffff;
+  --v2-bone-2: #c9c9c9;  /* 12.1:1 */
+  --v2-grey: #8a8a8a;    /*  5.4:1 — the quiet half of a headline */
+  --v2-mute: #7d7d7d;    /*  4.6:1 — smallest passing body colour */
+  --v2-faint: #4a4a4a;   /*  hairlines and inactive marks only */
 
-  /* ── the one accent ──────────────────────────────────── */
-  --v2-volt: #c8f24e;
-  --v2-volt-2: #a6cd2f;
-  --v2-volt-deep: #4c6416;
-  --v2-volt-ink: #080d02;
-  --v2-volt-wash: rgba(200, 242, 78, 0.09);
-  --v2-volt-edge: rgba(200, 242, 78, 0.3);
+  /* ── the interaction colour ──────────────────────────── */
+  --v2-volt: #a0ff99;
+  --v2-volt-2: #7ee075;
+  --v2-volt-deep: #2f5c2b;
+  --v2-volt-ink: #05130a;
+  --v2-volt-wash: rgba(160, 255, 153, 0.08);
+  --v2-volt-edge: rgba(160, 255, 153, 0.28);
 
-  /* ── tinted shadows: one light source, top-left, green-black ── */
-  --v2-sh-1: 0 1px 1px rgba(4, 8, 5, 0.6);
-  --v2-sh-2: 0 2px 4px rgba(4, 8, 5, 0.5), 0 10px 28px -14px rgba(4, 8, 5, 0.9);
-  --v2-sh-3: 0 4px 8px rgba(4, 8, 5, 0.5), 0 26px 60px -24px rgba(3, 7, 4, 0.95);
-  --v2-glow: 0 0 0 1px var(--v2-volt-edge), 0 12px 40px -18px rgba(200, 242, 78, 0.28);
+  /* ── shadows: neutral black, one light source, top-left ── */
+  --v2-sh-1: 0 1px 1px rgba(0, 0, 0, 0.6);
+  --v2-sh-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 10px 28px -14px rgba(0, 0, 0, 0.9);
+  --v2-sh-3: 0 4px 8px rgba(0, 0, 0, 0.5), 0 26px 60px -24px rgba(0, 0, 0, 0.95);
+  --v2-glow: 0 0 0 1px var(--v2-volt-edge), 0 12px 40px -18px rgba(160, 255, 153, 0.26);
 
   /* ── radii: tighter inside, softer outside ───────────── */
   --v2-r-xs: 2px;
@@ -136,7 +145,7 @@
 
 .v2-mono {
   font-family: var(--v2-mono), ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -163,7 +172,7 @@
   align-items: center;
   gap: 10px;
   font-family: var(--v2-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -188,12 +197,15 @@
   align-items: center;
   gap: 10px;
   padding: 14px 22px 14px 24px;
-  border: 1px solid var(--v2-volt);
+  /* At rest the primary action is white on black — the strongest thing on
+     the page without spending the accent on it. Green is what happens when
+     you touch it. */
+  border: 1px solid var(--v2-bone);
   border-radius: var(--v2-r-sm);
-  background: var(--v2-volt);
-  color: var(--v2-volt-ink);
+  background: var(--v2-bone);
+  color: #0a0a0a;
   font-family: var(--v2-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -203,6 +215,7 @@
   transition:
     transform 220ms var(--v2-ease),
     box-shadow 220ms var(--v2-ease),
+    border-color 220ms var(--v2-ease),
     background 220ms var(--v2-ease);
 }
 .v2-btn .v2-btn-arrow {
@@ -210,9 +223,11 @@
   transition: transform 260ms var(--v2-ease);
 }
 .v2-btn:hover {
-  background: #d6fb63;
+  background: var(--v2-volt);
+  border-color: var(--v2-volt);
+  color: var(--v2-volt-ink);
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px -12px rgba(200, 242, 78, 0.5);
+  box-shadow: 0 10px 26px -12px rgba(160, 255, 153, 0.45);
 }
 .v2-btn:hover .v2-btn-arrow { transform: translateX(4px); }
 .v2-btn:active { transform: translateY(1px) scale(0.985); box-shadow: var(--v2-sh-1); }
@@ -338,11 +353,11 @@
     0 18px 40px -20px rgba(0, 0, 0, 0.9);
 }
 .vt-shell[data-v="1"] { --vt-on: #d9472f; --vt-on-ink: #100604; }
-.vt-shell[data-v="2"] { --vt-on: #c8f24e; --vt-on-ink: #080d02; }
+.vt-shell[data-v="2"] { --vt-on: #a0ff99; --vt-on-ink: #05130a; }
 
 .vt-legend {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -376,7 +391,7 @@
   padding: 7px 15px;
   border-radius: 999px;
   font-family: var(--v2-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -388,7 +403,7 @@
 .vt-seg:hover { color: #dfe4dc; }
 .vt-seg[aria-current="page"] { color: var(--vt-on-ink); }
 .vt-seg[aria-current="page"]:hover { color: var(--vt-on-ink); }
-.vt-seg-key { opacity: 0.55; font-size: 9px; }
+.vt-seg-key { opacity: 0.55; font-size: 11px; }
 @media (max-width: 759px) {
   .vt-shell { top: auto; bottom: max(16px, env(safe-area-inset-bottom)); }
 }
@@ -465,7 +480,7 @@
 }
 .v2-mark-role {
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -484,7 +499,7 @@
   padding-left: 26px;
   border-left: 1px solid var(--v2-line-2);
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -508,7 +523,7 @@
   position: relative;
   padding: 9px 12px;
   font-family: var(--v2-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -573,10 +588,10 @@
 }
 .v2-rail .lbl {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
   opacity: 0;
   transform: translateX(-5px);
   transition: opacity 260ms ease, transform 300ms var(--v2-ease), color 260ms ease;
@@ -636,14 +651,18 @@
 .v2-hero-top {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 40px;
   padding-bottom: 20px;
 }
+/* Standfirst: sits UNDER the headline, and is set at reading size rather
+   than the 14.5px it used to be. If a line is worth keeping it is worth
+   setting large enough to actually read. */
 .v2-hero-claim {
-  max-width: 44ch;
-  font-size: 14.5px;
-  line-height: 1.55;
+  margin: 22px 0 0;
+  max-width: 46ch;
+  font-size: 18px;
+  line-height: 1.5;
   color: var(--v2-bone-2);
   text-wrap: pretty;
 }
@@ -655,7 +674,7 @@
   align-items: center;
   gap: 9px;
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--v2-bone-2);
@@ -702,9 +721,17 @@
   animation: v2-widen 1150ms var(--v2-ease) forwards;
 }
 .v2-hero-h1 span:nth-child(2) { animation-delay: 140ms; }
+/* The hero is the one headline set entirely in white. Section headings
+   split grey/white to mark their emphasis; the hero does not need to,
+   because nothing is competing with it — and being the only fully-white
+   headline on the page is itself the hierarchy.
+
+   This used to put "FRIDAY." in the accent. With the toggle and the status
+   dot also on screen, that made three green elements above the fold on a
+   page whose whole rule is black and white. */
 .v2-hero-h1 em {
   font-style: normal;
-  color: var(--v2-volt);
+  color: var(--v2-bone);
 }
 @keyframes v2-widen {
   0% { font-variation-settings: "wdth" 62, "wght" 850; opacity: 0; transform: translateY(0.16em); }
@@ -732,7 +759,7 @@
   padding: 0;
   list-style: none;
   font-family: var(--v2-mono), monospace;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.17em;
   text-transform: uppercase;
@@ -794,7 +821,7 @@
 }
 .v2-fig .l {
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -842,7 +869,7 @@
   line-height: 0.88;
   letter-spacing: -0.035em;
 }
-.v2-ledger-title em { font-style: normal; color: var(--v2-volt); }
+.v2-ledger-title em { font-style: normal; color: var(--v2-bone); }
 .v2-ledger-note {
   font-size: 14.5px;
   line-height: 1.6;
@@ -882,10 +909,12 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  width: min(80vw, 450px);
+  width: min(80vw, 420px);
   /* Height is deliberate: the cards should own the pinned stage rather than
-     float in the middle of it. */
-  min-height: min(58vh, 486px);
+     float in the middle of it. Trimmed once the body paragraph came out —
+     at the old 486px the cut copy left a third of every card empty above
+     the clock, which reads as a rendering fault rather than as space. */
+  min-height: min(46vh, 384px);
   align-self: center;
   padding: 28px 28px 24px;
   border: 1px solid var(--v2-line);
@@ -908,7 +937,7 @@
   border-radius: inherit;
   background: radial-gradient(
     240px circle at var(--mx, 50%) var(--my, 50%),
-    rgba(200, 242, 78, 0.4),
+    rgba(160, 255, 153, 0.4),
     transparent 62%
   );
   opacity: 0;
@@ -928,13 +957,13 @@
 .v2-run-idx {
   font-family: var(--v2-mono), monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.2em;
   color: var(--v2-volt);
 }
 .v2-run-kind {
   font-family: var(--v2-mono), monospace;
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -950,15 +979,17 @@
   letter-spacing: -0.025em;
   text-transform: uppercase;
 }
-.v2-run-body {
-  margin: 12px 0 0;
-  font-size: 14.5px;
-  line-height: 1.58;
-  color: var(--v2-bone-2);
+/* One line, set larger than the old paragraph was. It is scannable at a
+   glance, which is the only way it gets read inside a sideways scroll. */
+.v2-run-hard {
+  margin: 14px 0 0;
+  font-size: 17px;
+  line-height: 1.42;
+  color: var(--v2-grey);
   text-wrap: pretty;
 }
 
-/* The clock: conventional estimate struck through, actual in volt.
+/* The clock: conventional estimate struck through, actual in white.
    `margin-top: auto` drops it to the card's floor so the clocks line up
    across all four runs regardless of how long the blurb above runs. */
 .v2-run-clock {
@@ -979,7 +1010,7 @@
 .v2-run-clock .k {
   display: block;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--v2-mute);
@@ -990,11 +1021,21 @@
   font-variant-numeric: tabular-nums;
   font-size: 19px;
   letter-spacing: -0.02em;
-  color: var(--v2-faint);
+  /* Struck through already signals "not the real number" — it does not also
+     need to be too faint to read. */
+  color: var(--v2-bone-2);
+  opacity: 0.62;
   text-decoration: line-through;
   text-decoration-thickness: 1px;
 }
-.v2-run-clock .is-actual .v { color: var(--v2-volt); text-decoration: none; }
+/* The actual figure is the loud one, so it gets the loudest VALUE — white
+   at a larger size — rather than the accent. The struck-through estimate
+   beside it already carries the contrast. */
+.v2-run-clock .is-actual .v {
+  color: var(--v2-bone);
+  font-size: 23px;
+  text-decoration: none;
+}
 
 .v2-run-meter {
   margin-top: 14px;
@@ -1008,29 +1049,38 @@
   height: 100%;
   width: var(--w, 20%);
   border-radius: inherit;
-  background: var(--v2-volt);
+  background: var(--v2-bone);
+  transition: background 240ms var(--v2-ease);
 }
+.v2-run:hover .v2-run-meter i { background: var(--v2-volt); }
 .v2-run-meter-lbl {
   margin-top: 9px;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--v2-mute);
 }
-.v2-run-meter-lbl b { color: var(--v2-volt); font-weight: 500; }
+.v2-run-meter-lbl b { color: var(--v2-bone-2); font-weight: 500; }
+.v2-run:hover .v2-run-meter-lbl b { color: var(--v2-volt); }
 
-/* Closing card: the summary of the run */
+/* Closing card: the summary of the run.
+
+   This was a solid green slab — a full card of accent sitting in the middle
+   of an otherwise black-and-white row, which is precisely the overuse the
+   palette rule forbids. It is inverted instead: white card, black type. That
+   still makes it the loudest thing in the track, because everything around
+   it is a dark card, and it costs no accent to do it. */
 .v2-run.is-sum {
-  background: var(--v2-volt);
-  border-color: var(--v2-volt);
-  color: var(--v2-volt-ink);
+  background: var(--v2-bone);
+  border-color: var(--v2-bone);
+  color: #0a0a0a;
 }
 .v2-run.is-sum::before { display: none; }
 .v2-run.is-sum .v2-run-idx,
-.v2-run.is-sum .v2-run-kind { color: rgba(8, 13, 2, 0.62); }
-.v2-run.is-sum .v2-run-top { border-bottom-color: rgba(8, 13, 2, 0.18); }
-.v2-run.is-sum .v2-run-body { color: rgba(8, 13, 2, 0.78); }
+.v2-run.is-sum .v2-run-kind { color: rgba(10, 10, 10, 0.58); }
+.v2-run.is-sum .v2-run-top { border-bottom-color: rgba(10, 10, 10, 0.16); }
+.v2-run.is-sum .v2-run-hard { color: rgba(10, 10, 10, 0.72); }
 .v2-run-sum-cta {
   margin-top: auto;
   align-self: flex-start;
@@ -1039,16 +1089,23 @@
   gap: 9px;
   padding: 12px 18px;
   border-radius: var(--v2-r-sm);
-  background: var(--v2-volt-ink);
-  color: var(--v2-volt);
+  background: #0a0a0a;
+  color: var(--v2-bone);
+  transition: background 220ms var(--v2-ease), color 220ms var(--v2-ease),
+              transform 220ms var(--v2-ease), gap 220ms var(--v2-ease);
   font-family: var(--v2-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
   transition: transform 220ms var(--v2-ease), gap 220ms var(--v2-ease);
 }
-.v2-run-sum-cta:hover { transform: translateY(-2px); gap: 14px; }
+.v2-run-sum-cta:hover {
+  transform: translateY(-2px);
+  gap: 14px;
+  background: var(--v2-volt);
+  color: var(--v2-volt-ink);
+}
 .v2-run-sum-cta:active { transform: translateY(1px) scale(0.985); }
 
 /* Horizontal-scroll affordance */
@@ -1060,10 +1117,10 @@
   align-items: center;
   gap: 9px;
   font-family: var(--v2-mono), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--v2-faint);
+  color: var(--v2-mute);
 }
 @media (min-width: 768px) { .v2-ledger-hint { right: 40px; } }
 @media (min-width: 1200px) { .v2-ledger-hint { right: 64px; } }

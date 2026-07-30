@@ -154,10 +154,10 @@ export function EngineV2() {
         // Dormant: a faint, unevenly lit lattice so an un-run matrix still
         // reads as loaded rather than as a broken canvas.
         const a = 0.05 + jitter(i + 991) * 0.06;
-        ctx.fillStyle = `rgba(200, 242, 78, ${a.toFixed(3)})`;
+        ctx.fillStyle = `rgba(160, 255, 153, ${a.toFixed(3)})`;
       } else {
         const a = 0.22 + local * 0.78;
-        ctx.fillStyle = `rgba(200, 242, 78, ${a.toFixed(3)})`;
+        ctx.fillStyle = `rgba(160, 255, 153, ${a.toFixed(3)})`;
       }
       ctx.fillRect(c * (cw + gap), offY + r * (ch + gap), Math.max(1, cw), Math.max(1, ch));
     }
@@ -210,7 +210,7 @@ export function EngineV2() {
         <div className="v2-engine-head">
           <div>
             <p className="v2-eyebrow">
-              <b>04</b> The engine
+              <b>05</b> The engine
             </p>
             <h2 id="v2-engine-h" className="v2-engine-title">
               One button.

@@ -24,15 +24,17 @@ const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const seg = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-/** The crossbar: range. Breadth that used to need a second hire. */
+/** The crossbar: range. Breadth that used to need a second hire.
+ *  Each cell is a list, not a sentence — the crossbar's job is to show HOW
+ *  MANY things sit on it, and seven sentences fight that. */
 const RANGE = [
-  { k: "Brand systems", d: "Identity, logo systems, usage rules, the whole kit as tokens." },
-  { k: "Data sheets", d: "Product one-pagers and spec sheets sales can actually send." },
-  { k: "Decks", d: "Pitch and launch narrative, built as a system not 40 loose slides." },
-  { k: "Event branding", d: "Backdrops, standees, booth walls, signage, stage graphics." },
-  { k: "Print", d: "Brochures, leaflets, folders, print-ready and pre-flighted." },
-  { k: "Merch", d: "Goodies, apparel, kits. Mockups through to vendor files." },
-  { k: "Motion", d: "Lottie loops and UI motion specs handed off with the build." },
+  { k: "Brand systems", d: "Identity, logo, usage rules" },
+  { k: "Data sheets", d: "One-pagers, spec sheets" },
+  { k: "Decks", d: "Pitch and launch narrative" },
+  { k: "Event branding", d: "Backdrops, standees, signage" },
+  { k: "Print", d: "Brochures, folders, pre-flighted" },
+  { k: "Merch", d: "Goodies, apparel, vendor files" },
+  { k: "Motion", d: "Lottie loops, UI motion specs" },
 ];
 
 /** The stem: depth. The two things everything else hangs off. */
@@ -44,8 +46,8 @@ const DEPTH = [
     lead: "Enterprise workflows where being wrong is expensive.",
     points: [
       "IAM, PAM, IGA, UEM, ITDR, compliance",
-      "Stakeholder interviews to my own PRD",
-      "Flows, IA, states, edge cases, the audit trail",
+      "Stakeholder interviews to PRD",
+      "Flows, states, edge cases, audit trail",
     ],
     meter: 0.94,
     meterLabel: "12+ products in production",
@@ -57,8 +59,8 @@ const DEPTH = [
     lead: "Multi-mapped variable components, not a page of styles.",
     points: [
       "One button set, 1,296 mapped variants",
-      "Tokens, modes, semantic layers, naming that survives",
-      "Handoff files engineering does not have to re-derive",
+      "Tokens, modes, semantic layers",
+      "Hand-off engineering can use as-is",
     ],
     meter: 0.97,
     meterLabel: "4 systems, 3 of them still in use",
@@ -126,7 +128,7 @@ export function TSectionV2() {
     <section ref={sceneRef} id="v2-range" className="v2-tscene" aria-labelledby="v2-t-h">
       <div className="v2-t-head v2-wrap">
         <p className="v2-eyebrow">
-          <b>03</b> The shape of it
+          <b>04</b> The shape of it
         </p>
         <h2 id="v2-t-h" className="v2-t-title">
           Deep on two things.
@@ -134,9 +136,8 @@ export function TSectionV2() {
           <em>Dangerous</em> across the rest.
         </h2>
         <p className="v2-prose v2-t-note">
-          Product design and design systems are where I go all the way down.
-          Everything on the crossbar is work I used to hand to a specialist and
-          now ship myself, at the standard the specialist set.
+          The crossbar is work I used to hand to a specialist. I ship it
+          myself now, at the standard they set.
         </p>
       </div>
 
@@ -169,9 +170,8 @@ export function TSectionV2() {
               <span>Depth</span> down
             </p>
             <p className="v2-t-aside-note">
-              The crossbar is what AI put back within reach. The stem is the
-              part it cannot do for you: knowing which of the 1,296 variants
-              should exist, and which screen the operator actually needs.
+              AI put the crossbar back within reach. The stem is the part it
+              cannot do for you: knowing which screen the operator needs.
             </p>
           </div>
 

@@ -19,7 +19,8 @@ type Run = {
   n: string;
   kind: string;
   name: string;
-  body: string;
+  /** what the prototype had to survive — one line, not a paragraph */
+  hard: string;
   typical: string;
   actual: string;
   /** how much of the typical timeline was left on the table, 0..1 */
@@ -28,49 +29,52 @@ type Run = {
   href: string;
 };
 
+/* Each card used to carry a paragraph nobody was going to read at speed.
+   What survives is the only thing that differentiates the run: the hard
+   part the prototype had to actually solve. Everything else is numbers. */
 const RUNS: Run[] = [
   {
     n: "01",
     kind: "Identity · AD tooling",
     name: "Active Directory console",
-    body: "A stakeholder walked in with a scope, not a spec. Five days later they clicked through the real multi-frame flow, not a deck about it.",
+    hard: "A scope, not a spec.",
     typical: "3 weeks",
     actual: "5 days",
     saved: 0.76,
-    savedLabel: "76% of the calendar back",
+    savedLabel: "76% back",
     href: "/cases/ad-tools",
   },
   {
     n: "02",
     kind: "Security · analyst console",
     name: "ITDR investigation",
-    body: "Built the triage queue and investigation timeline against representative multi-source signal, so the prototype had to solve the real ordering problem. Demoed live to analysts at a security event.",
+    hard: "Three signal sources, out of order.",
     typical: "6 weeks",
     actual: "9 days",
     saved: 0.79,
-    savedLabel: "79% of the calendar back",
+    savedLabel: "79% back",
     href: "/process/itdr",
   },
   {
     n: "03",
     kind: "Compliance · DPDP Act",
     name: "Deadline-first compliance",
-    body: "Read the Act's timelines directly, wrote my own PRD, then shipped a working consent ledger and audit trail privacy officers could watch update in real time.",
+    hard: "A statutory clock, and an audit trail.",
     typical: "5 weeks",
     actual: "8 days",
     saved: 0.77,
-    savedLabel: "77% of the calendar back",
+    savedLabel: "77% back",
     href: "/process/dpdp-compliance",
   },
   {
     n: "04",
     kind: "Internal · finance ops",
     name: "Function OS",
-    body: "One surface for dashboards, workflows and automations, orchestrated with Claude Code. It shipped as a tool the finance team actually runs on, not a pitch for one.",
+    hard: "Money. It has to be right.",
     typical: "11 weeks",
     actual: "17 days",
     saved: 0.78,
-    savedLabel: "78% of the calendar back",
+    savedLabel: "78% back",
     href: "/process/function-os",
   },
 ];
@@ -145,16 +149,17 @@ export function LedgerV2() {
           <div className="v2-ledger-head">
             <div>
               <p className="v2-eyebrow">
-                <b>02</b> The velocity ledger
+                <b>03</b> The runs
               </p>
+              {/* "How fast, exactly." was a question, not a claim — it made
+                  the reader do the work of finding the answer further down.
+                  The headline now IS the answer. */}
               <h2 id="v2-ledger-h" className="v2-ledger-title">
-                How fast, <em>exactly.</em>
+                Quoted in weeks. <em>Shipped in days.</em>
               </h2>
             </div>
             <p className="v2-ledger-note">
-              Four real runs. Left column is what the same scope is normally
-              quoted at. Right column is what it took. Nothing here was a
-              mockup at the end of it.
+              Four real runs. Quoted against actual.
             </p>
           </div>
           <div className="v2-ledger-bar" ref={barRef}>
@@ -170,7 +175,7 @@ export function LedgerV2() {
                 <span className="v2-run-kind">{r.kind}</span>
               </div>
               <h3 className="v2-run-name">{r.name}</h3>
-              <p className="v2-run-body">{r.body}</p>
+              <p className="v2-run-hard">{r.hard}</p>
 
               <div className="v2-run-clock">
                 <div>
@@ -196,25 +201,24 @@ export function LedgerV2() {
             </article>
           ))}
 
+          {/* The old summary card held a five-line explanation of WHY the
+              compression happens. That belongs on a poster where it is the
+              only thing on screen, not as a wall of text at the end of a
+              sideways scroll. What is left is the one sentence and the door. */}
           <article className="v2-run is-sum">
             <div className="v2-run-top">
               <span className="v2-run-idx">SUMMARY</span>
-              <span className="v2-run-kind">Why it holds up</span>
             </div>
             <h3 className="v2-run-name">
               Speed is the
               <br />
               by-product.
             </h3>
-            <p className="v2-run-body">
-              The compression does not come from working longer hours or
-              skipping research. It comes from one thing: the prototype is the
-              artefact everything else is derived from. Research feeds it,
-              tests run against it, Figma is generated from it, and engineering
-              gets it as a reference implementation.
+            <p className="v2-run-hard">
+              The prototype is the artefact everything else is derived from.
             </p>
             <a href="#v2-process" className="v2-run-sum-cta">
-              See how the process runs
+              See the loop
               <span aria-hidden>→</span>
             </a>
           </article>

@@ -1,0 +1,396 @@
+/*
+  ════════════════════════════════════════════════════════════════════
+  V2 layer 3 — the numbers, and the interstitials between sections
+  ════════════════════════════════════════════════════════════════════
+
+  Two things live here:
+
+  §MX   the metrics wall. A waffle chart carrying the headline figure,
+        with four abstract cards beside it. Filled = white, ground =
+        #2b2b2b, green only under the pointer.
+
+  §PST  the poster interstitial. One statement, one pressable keycap.
+
+  Both obey the same rule the rest of V2 now obeys: hierarchy comes from
+  value and size, not from hue. If you desaturate this file, nothing is
+  lost except the hover states.
+*/
+
+/* ════════════════════════════════════════════════════════
+   §MX — the metrics wall
+   ═══════════════════════════════════════════════════════ */
+.v2-mx {
+  position: relative;
+  padding: 120px 0 128px;
+  background: var(--v2-void);
+  border-top: 1px solid var(--v2-line);
+}
+@media (min-width: 900px) {
+  .v2-mx { padding: 168px 0 176px; }
+}
+
+.v2-mx-head {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 56px;
+}
+@media (min-width: 900px) {
+  .v2-mx-head { margin-bottom: 72px; }
+}
+
+.v2-mx-title {
+  /* Never smaller than 40px. A heading that has to be squinted at is not
+     a heading, it is a caption with ambitions. */
+  margin: 0;
+  font-size: clamp(40px, 6.4vw, 92px);
+  color: var(--v2-grey);
+  max-width: 18ch;
+}
+.v2-mx-title em { font-style: normal; color: var(--v2-bone); }
+
+/* ── grid: lead figure + four cards ─────────────────────── */
+.v2-mx-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+@media (min-width: 700px) {
+  .v2-mx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1060px) {
+  .v2-mx-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, auto);
+  }
+  /* the lead figure takes half the wall and both rows */
+  .v2-mx-lead { grid-column: span 2; grid-row: span 2; }
+}
+
+/* ── the lead: big number + waffle ──────────────────────── */
+.v2-mx-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  margin: 0;
+  padding: 34px 30px 30px;
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-r-lg);
+  background: var(--v2-slab);
+  box-shadow: var(--v2-sh-2);
+}
+@media (min-width: 1060px) {
+  .v2-mx-lead {
+    flex-direction: row;
+    /* Centred, not bottom-aligned. This card is twice the height of the
+       ones beside it, and flex-end left the top third of it empty. */
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 40px 36px;
+  }
+}
+.v2-mx-lead figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.v2-mx-lead-n {
+  margin: 0;
+  font-family: var(--v2-display), "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 88, "wght" 800;
+  font-size: clamp(64px, 9.4vw, 132px);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  color: var(--v2-bone);
+}
+.v2-mx-lead-n span {
+  font-size: 0.44em;
+  color: var(--v2-grey);
+  margin-left: 0.06em;
+}
+
+.v2-mx-lead-lbl {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--v2-grey);
+  max-width: 24ch;
+}
+.v2-mx-lead-lbl b {
+  display: block;
+  color: var(--v2-bone);
+  font-weight: 500;
+}
+
+.v2-mx-lead-sub {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--v2-mute);
+  max-width: 34ch;
+}
+
+/* the waffle itself */
+.v2-mx-waffle {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+  width: min(100%, 268px);
+  flex: none;
+  align-self: flex-start;
+}
+@media (min-width: 1060px) {
+  .v2-mx-waffle { align-self: center; width: min(46%, 236px); }
+}
+.v2-mx-waffle i {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--v2-line-2);
+  transition: background 260ms var(--v2-ease);
+}
+.v2-mx-waffle i[data-on="1"] { background: var(--v2-bone); }
+/* Pointing at the figure recolours only the counted cells — the ground
+   stays neutral, so the proportion is still legible while lit. */
+.v2-mx-lead:hover .v2-mx-waffle i[data-on="1"] { background: var(--v2-volt); }
+
+/* ── the abstract cards ─────────────────────────────────── */
+.v2-mx-card {
+  position: relative;
+  display: grid;
+  /* number / figure / label — the figure gets a whole row of its own so it
+     can run the full card width. */
+  grid-template-rows: auto 1fr auto;
+  gap: 22px;
+  min-height: 238px;
+  padding: 26px 24px 24px;
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-r-lg);
+  background: var(--v2-slab);
+  box-shadow: var(--v2-sh-2);
+  transition: border-color 240ms var(--v2-ease), transform 240ms var(--v2-ease);
+}
+.v2-mx-card:hover {
+  border-color: var(--v2-volt-edge);
+  transform: translateY(-3px);
+}
+
+.v2-mx-card-n {
+  margin: 0;
+  font-family: var(--v2-display), "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 90, "wght" 800;
+  font-size: clamp(38px, 3.6vw, 50px);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  color: var(--v2-bone);
+}
+.v2-mx-card-n span {
+  font-size: 0.4em;
+  color: var(--v2-grey);
+  margin-left: 0.12em;
+  letter-spacing: 0;
+}
+
+.v2-mx-card-lbl {
+  margin: 0 0 5px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--v2-bone);
+}
+.v2-mx-card-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--v2-mute);
+}
+
+/* ── card figures. All full-width, all bottom-aligned in their row. ── */
+.v2-mx-fig { align-self: end; width: 100%; }
+
+/* matrix: a dense block standing in for the variant grid */
+.v2-mx-matrix {
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  gap: 2px;
+}
+.v2-mx-matrix i {
+  aspect-ratio: 1;
+  background: var(--v2-line-3);
+  transition: background 240ms var(--v2-ease);
+}
+.v2-mx-card:hover .v2-mx-matrix i { background: var(--v2-volt-2); }
+
+/* bars: quoted vs actual, to scale, horizontal */
+.v2-mx-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.v2-mx-bars span {
+  width: var(--w);
+  height: 15px;
+  background: var(--v2-bone);
+  border-radius: 2px;
+  transition: background 240ms var(--v2-ease);
+}
+.v2-mx-bars span[data-ghost="1"] { background: var(--v2-line-3); }
+.v2-mx-card:hover .v2-mx-bars span:not([data-ghost]) { background: var(--v2-volt); }
+
+/* stack: a counted row of dots, with a trailing mark for the "+" */
+.v2-mx-stack {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.v2-mx-stack i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--v2-bone);
+  transition: background 240ms var(--v2-ease);
+}
+.v2-mx-stack b {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px dashed var(--v2-line-3);
+}
+.v2-mx-card:hover .v2-mx-stack i { background: var(--v2-volt); }
+
+/* segments: eight stations, the first three solid */
+.v2-mx-seg {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+.v2-mx-seg i {
+  height: 26px;
+  border-radius: 2px;
+  background: var(--v2-line-2);
+  transition: background 240ms var(--v2-ease);
+}
+.v2-mx-seg i[data-on="1"] { background: var(--v2-bone); }
+.v2-mx-card:hover .v2-mx-seg i[data-on="1"] { background: var(--v2-volt); }
+
+/* ════════════════════════════════════════════════════════
+   §PST — the poster interstitial
+   ═══════════════════════════════════════════════════════ */
+.v2-poster {
+  position: relative;
+  padding: 118px 0 122px;
+  background: var(--v2-void-2);
+  border-top: 1px solid var(--v2-line);
+  border-bottom: 1px solid var(--v2-line);
+  overflow: hidden;
+}
+@media (min-width: 900px) {
+  .v2-poster { padding: 168px 0 172px; }
+}
+
+.v2-poster .v2-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+.v2-poster-eyebrow {
+  margin: 0 0 26px;
+  color: var(--v2-mute);
+}
+
+.v2-poster-h {
+  margin: 0;
+  /* This is the largest type on the page on purpose. It is one sentence
+     and it is the only thing in the viewport. */
+  font-size: clamp(46px, 9.2vw, 148px);
+  line-height: 0.84;
+  color: var(--v2-grey);
+  max-width: 15ch;
+}
+.v2-poster-h em { font-style: normal; color: var(--v2-bone); }
+
+.v2-poster-note {
+  margin: 40px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--v2-mute);
+  max-width: 46ch;
+}
+
+/* ── the keycap ─────────────────────────────────────────── */
+.v2-cap {
+  position: relative;
+  margin-top: 44px;
+  width: 138px;
+  height: 132px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+@media (min-width: 900px) {
+  .v2-cap { width: 168px; height: 160px; margin-top: 52px; }
+}
+
+/* the extruded body, sitting under the top face */
+.v2-cap-side {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 13%;
+  bottom: 0;
+  border-radius: 18px;
+  background: #d2d2d2;
+  box-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.95);
+  transition: transform 130ms var(--v2-ease), background 200ms var(--v2-ease);
+}
+
+.v2-cap-top {
+  position: absolute;
+  inset: 0 0 18% 0;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  /* One light source, top-left, same as every other surface in V2. */
+  background: linear-gradient(158deg, #ffffff 0%, #ededed 52%, #d8d8d8 100%);
+  color: #0a0a0a;
+  font-family: var(--v2-mono), ui-monospace, monospace;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.14),
+    0 10px 22px -12px rgba(0, 0, 0, 0.8);
+  transition:
+    transform 130ms var(--v2-ease),
+    background 200ms var(--v2-ease),
+    color 200ms var(--v2-ease);
+}
+@media (min-width: 900px) {
+  .v2-cap-top { font-size: 33px; }
+}
+
+.v2-cap:hover .v2-cap-top { transform: translateY(-3px); }
+
+/* Pressed: the cap travels down onto its own base and takes the accent.
+   The only full-surface green on the page, and only while held. */
+.v2-cap.is-down .v2-cap-top {
+  transform: translateY(11%);
+  background: linear-gradient(158deg, #c4ffbe 0%, var(--v2-volt) 54%, #7ee075 100%);
+  color: var(--v2-volt-ink);
+}
+.v2-cap.is-down .v2-cap-side { background: #7ee075; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-cap-top,
+  .v2-cap-side,
+  .v2-mx-waffle i,
+  .v2-mx-card { transition: none; }
+  .v2-mx-card:hover { transform: none; }
+}

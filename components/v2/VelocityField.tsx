@@ -101,10 +101,15 @@ void main() {
   float gx = abs(fract(p.x * 7.0 + t * 1.6) * 2.0 - 1.0);
   float grid = smoothstep(0.972, 1.0, gx) * 0.05;
 
-  vec3 col = vec3(0.027, 0.035, 0.039);              // void
-  col += vec3(0.058, 0.094, 0.048) * fg * 1.7;       // moss body
-  col += vec3(0.784, 0.949, 0.306) * fila * 0.84;    // volt filaments
-  col += vec3(0.784, 0.949, 0.306) * grid;
+  // Light is WHITE. The field is a black-and-white photograph of speed; the
+  // brand green only ever survives in the very brightest crest cores, which
+  // is where a real lens would show its coating. Painting the whole hero in
+  // accent is what made this read as decoration instead of light.
+  vec3 col = vec3(0.039);                            // void
+  col += vec3(0.085) * fg * 1.7;                     // grey body
+  col += vec3(1.0) * fila * 0.80;                    // white filaments
+  col += vec3(0.627, 1.0, 0.6) * pow(fila, vec3(4.0)) * 0.34;  // green core only
+  col += vec3(0.42) * grid;
 
   // Exposure falls as the hero hands off to the page.
   col *= 1.0 - uScroll * 0.62;
@@ -112,7 +117,7 @@ void main() {
   // Vignette + a floor so the section can dissolve into the page colour.
   float vig = smoothstep(1.38, 0.24, length(vec2(p.x * 0.72, p.y)));
   col *= 0.44 + vig * 0.56;
-  col = mix(col, vec3(0.027, 0.035, 0.039), smoothstep(0.62, 1.0, uv.y) * 0.55);
+  col = mix(col, vec3(0.039), smoothstep(0.62, 1.0, uv.y) * 0.55);
 
   // Per-pixel dither so the dark ramp never bands.
   col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.012;
@@ -190,7 +195,15 @@ export function VelocityField({ className }: { className?: string }) {
     let scroll = 0;
     let visible = true;
     let frame = 0;
-    const t0 = performance.now();
+
+    // The shader clock is ACCUMULATED, not derived from a fixed epoch. When
+    // the hero scrolls out we stop drawing; if the clock kept running off a
+    // t0, scrolling back up resumed it seconds ahead and the whole field
+    // jumped to an unrelated state. Advancing only on drawn frames — and
+    // clamping the step so a long pause or a background tab cannot push a
+    // huge dt through — makes scroll-out/scroll-in continuous.
+    let clock = 0;
+    let last = performance.now();
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -205,10 +218,14 @@ export function VelocityField({ className }: { className?: string }) {
 
     const draw = (now: number) => {
       resize();
+      // Cap the step at ~2 frames. Anything longer is a pause, not motion.
+      const dt = Math.min((now - last) / 1000, 0.034);
+      last = now;
+      clock += dt;
       eased.x += (target.x - eased.x) * 0.055;
       eased.y += (target.y - eased.y) * 0.055;
       gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform1f(uTime, reduced ? 8.4 : (now - t0) / 1000);
+      gl.uniform1f(uTime, reduced ? 8.4 : clock);
       gl.uniform2f(uMouse, eased.x, 1.0 - eased.y);
       gl.uniform1f(uScroll, scroll);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -216,7 +233,12 @@ export function VelocityField({ className }: { className?: string }) {
 
     const loop = (now: number) => {
       frame = requestAnimationFrame(loop);
-      if (!visible) return;
+      if (!visible) {
+        // Keep the clock's reference point current while parked, so the
+        // first visible frame computes a normal dt instead of a jump.
+        last = now;
+        return;
+      }
       draw(now);
     };
 
@@ -224,9 +246,13 @@ export function VelocityField({ className }: { className?: string }) {
       target.x = e.clientX / window.innerWidth;
       target.y = e.clientY / window.innerHeight;
     };
+    // Progress is measured against the hero's own box, not window.scrollY, so
+    // the fade is correct no matter where the hero sits in the document and
+    // never goes stale when the canvas is resized or re-laid-out.
     const onScroll = () => {
-      const h = canvas.clientHeight || window.innerHeight;
-      scroll = Math.min(1, Math.max(0, window.scrollY / h));
+      const r = canvas.getBoundingClientRect();
+      const h = r.height || window.innerHeight;
+      scroll = Math.min(1, Math.max(0, -r.top / h));
     };
 
     const io = new IntersectionObserver(
@@ -235,9 +261,11 @@ export function VelocityField({ className }: { className?: string }) {
     );
     io.observe(canvas);
 
+    const onResize = () => draw(performance.now());
+
     draw(performance.now());
     if (reduced) {
-      window.addEventListener("resize", () => draw(performance.now()));
+      window.addEventListener("resize", onResize);
     } else {
       frame = requestAnimationFrame(loop);
       window.addEventListener("pointermove", onMove, { passive: true });
@@ -250,6 +278,7 @@ export function VelocityField({ className }: { className?: string }) {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
       gl.deleteProgram(prog);
       gl.deleteShader(vs);
       gl.deleteShader(fs);

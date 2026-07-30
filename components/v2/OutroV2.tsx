@@ -97,7 +97,7 @@ export function OutroV2() {
 
       <div className="v2-wrap v2-outro-body">
         <p className="v2-eyebrow">
-          <b>08</b> Next
+          <b>09</b> Next
         </p>
         <h2 id="v2-outro-h" className="v2-outro-title">
           Bring me the
