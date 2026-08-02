@@ -1350,3 +1350,147 @@
 .v5-fs-chapter.is-on { background: var(--v5-paper-2); }
 .v5-fs-chapter.is-on .n { color: var(--v5-accent-bright); }
 .v5-fs-chapter.is-on .t { color: var(--v5-ink); }
+
+/* ════════════════════════════════════════════════════════════
+   §RC — receipts on the home page.
+   Replaces the pinned desk reel. A row list has no failure mode: the
+   name and the URL carry the claim and the capture is a bonus on hover,
+   so a screenshot taken before an app loaded can no longer make shipped
+   work look like a mockup.
+   ═══════════════════════════════════════════════════════════ */
+
+.v5-rc {
+  padding: clamp(64px, 9vw, 128px) 0;
+  border-bottom: 1px solid var(--v5-rule-soft);
+}
+.v5-rc-wrap {
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 56px);
+}
+.v5-rc-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(20px, 4vw, 60px);
+  align-items: end;
+  padding-bottom: 34px;
+}
+@media (max-width: 900px) { .v5-rc-head { grid-template-columns: 1fr; gap: 18px; } }
+.v5-rc-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 16px;
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v5-accent-bright);
+}
+.v5-rc-title {
+  margin: 0;
+  font-family: var(--v5-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(32px, 4.6vw, 66px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--v5-ink);
+}
+.v5-rc-title em { font-style: italic; color: var(--v5-accent-bright); }
+.v5-rc-lede {
+  margin: 0;
+  font-size: clamp(14.5px, 1.3vw, 16.5px);
+  line-height: 1.68;
+  color: var(--v5-ink-soft);
+  max-width: 54ch;
+}
+
+.v5-rc-body { position: relative; }
+.v5-rc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--v5-rule-soft);
+}
+.v5-rc-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 92px 24px;
+  gap: 18px;
+  align-items: baseline;
+  padding: 20px 6px;
+  border-bottom: 1px solid var(--v5-rule-soft);
+  text-decoration: none;
+  transition: background 0.22s ease, padding-left 0.22s ease;
+}
+@media (max-width: 760px) {
+  .v5-rc-row { grid-template-columns: minmax(0, 1fr) 74px 20px; gap: 10px; padding: 16px 4px; }
+  .v5-rc-kind { grid-column: 1 / -1; order: 3; }
+}
+.v5-rc-row:hover,
+.v5-rc-row:focus-visible {
+  background: var(--v5-paper-2);
+  padding-left: 16px;
+  outline: none;
+}
+.v5-rc-name {
+  font-family: var(--v5-serif), Georgia, serif;
+  font-size: clamp(19px, 2vw, 27px);
+  line-height: 1.15;
+  color: var(--v5-ink);
+  letter-spacing: -0.015em;
+}
+.v5-rc-kind,
+.v5-rc-tag {
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--v5-ink-muted);
+}
+.v5-rc-go { font-size: 14px; color: var(--v5-ink-muted); justify-self: end; transition: color 0.2s ease; }
+.v5-rc-row:hover .v5-rc-go,
+.v5-rc-row:focus-visible .v5-rc-go { color: var(--v5-accent-bright); }
+.v5-rc-row:hover .v5-rc-tag { color: var(--v5-ink-soft); }
+
+/* cursor-trailing capture — desktop hover only */
+.v5-rc-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(38vw, 460px);
+  aspect-ratio: 16 / 10;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 3;
+  border: 1px solid var(--v5-rule-soft);
+  background: var(--v5-paper-2);
+  overflow: hidden;
+  transition: opacity 0.24s ease;
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
+}
+.v5-rc-preview.is-on { opacity: 1; }
+.v5-rc-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.v5-rc-preview img.is-shown { opacity: 1; }
+@media (max-width: 900px), (pointer: coarse) { .v5-rc-preview { display: none; } }
+
+.v5-rc-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: baseline;
+  margin: 26px 0 0;
+  font-family: var(--v5-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--v5-ink-muted);
+}
+.v5-rc-foot a { color: var(--v5-ink-soft); text-decoration: none; transition: color 0.2s ease; }
+.v5-rc-foot a:hover { color: var(--v5-accent-bright); }
