@@ -9,6 +9,9 @@ import { WorkingSystemPlate } from "@/components/v5/diagrams/WorkingSystemPlate"
 import { ConvergenceDiagram } from "@/components/v5/diagrams/ConvergenceDiagram";
 import { AuditChainDiagram } from "@/components/v5/diagrams/AuditChainDiagram";
 import { RoutingGateDiagram } from "@/components/v5/diagrams/RoutingGateDiagram";
+import { LegacyVaultDiagram } from "@/components/v5/diagrams/LegacyVaultDiagram";
+import { PersonaLedgerDiagram } from "@/components/v5/diagrams/PersonaLedgerDiagram";
+import { ScaleModelFigure } from "@/components/v5/diagrams/ScaleModelFigure";
 
 /**
  * /process/[slug] — one process case study, told as a magazine spread.
@@ -30,6 +33,7 @@ const HERO_FIGURE: Record<string, () => React.JSX.Element> = {
   itdr: ConvergenceDiagram,
   "dpdp-compliance": AuditChainDiagram,
   "function-os": RoutingGateDiagram,
+  "design-system": LegacyVaultDiagram,
 };
 
 export function ProcessCaseStudyV5({
@@ -40,6 +44,20 @@ export function ProcessCaseStudyV5({
   others: ProcessCaseStudy[];
 }) {
   const Figure = HERO_FIGURE[study.slug];
+
+  // Folios run in reading order, so a case carrying the optional system
+  // sections renumbers the spine instead of interleaving 02a / 02b.
+  const spine = [
+    "THE OLD WORLD",
+    ...(study.personas ? ["THE ROSTER"] : []),
+    "THE WALL",
+    ...(study.vault ? ["THE VAULT"] : []),
+    "THE LOOP",
+    ...(study.scaleModel ? ["HOW IT SCALES"] : []),
+    "WHAT IT EARNED",
+  ];
+  const folio = (label: string) =>
+    `${String(spine.indexOf(label) + 1).padStart(2, "0")} — ${label}`;
 
   return (
     <main className="v5-cs">
@@ -92,7 +110,7 @@ export function ProcessCaseStudyV5({
       {/* ── the old world: problem + who lived in it ─────────── */}
       <section className="v5-cs-split">
         <div className="v5-cs-split-main">
-          <p className="v5-cs-folio">01 — THE OLD WORLD</p>
+          <p className="v5-cs-folio">{folio("THE OLD WORLD")}</p>
           <h2 className="v5-cs-h2">{study.problem.headline}</h2>
           <p className="v5-cs-lede">{study.problem.body}</p>
         </div>
@@ -100,6 +118,18 @@ export function ProcessCaseStudyV5({
           <EmpathyMapDiagram map={study.empathyMap} />
         </aside>
       </section>
+
+      {/* ── the roster: several audiences, in tension ────────── */}
+      {study.personas && (
+        <section className="v5-cs-roster">
+          <div className="v5-cs-roster-head">
+            <p className="v5-cs-folio">{folio("THE ROSTER")}</p>
+            <h2 className="v5-cs-h2">{study.personas.headline}</h2>
+            <p className="v5-cs-lede">{study.personas.body}</p>
+          </div>
+          <PersonaLedgerDiagram people={study.personas.people} />
+        </section>
+      )}
 
       {/* ── pull quote: the thesis ───────────────────────────── */}
       <section className="v5-cs-quote">
@@ -115,15 +145,19 @@ export function ProcessCaseStudyV5({
         </p>
       </section>
 
-      {/* the same claim, drawn rather than asserted */}
-      <section className="v5-cs-bleed">
-        <WorkingSystemPlate />
-      </section>
+      {/* The plate argues comp-vs-working-prototype, which is the product
+          cases' differentiator. A system case argues something else and
+          swaps it for the vault below. */}
+      {!study.vault && (
+        <section className="v5-cs-bleed">
+          <WorkingSystemPlate />
+        </section>
+      )}
 
       {/* ── the wall: what made it hard ──────────────────────── */}
       <section className="v5-cs-wall">
         <div className="v5-cs-wall-head">
-          <p className="v5-cs-folio">02 — THE WALL</p>
+          <p className="v5-cs-folio">{folio("THE WALL")}</p>
           <h2 className="v5-cs-h2">{study.constraint.headline}</h2>
           <p className="v5-cs-lede">{study.constraint.body}</p>
         </div>
@@ -137,6 +171,41 @@ export function ProcessCaseStudyV5({
         </ol>
       </section>
 
+      {/* ── the vault: what is held fixed so the rest can move ─ */}
+      {study.vault && (
+        <section className="v5-cs-vault">
+          <div className="v5-cs-vault-head">
+            <p className="v5-cs-folio">{folio("THE VAULT")}</p>
+            <h2 className="v5-cs-h2">{study.vault.headline}</h2>
+            <p className="v5-cs-lede">{study.vault.body}</p>
+          </div>
+
+          <ol className="v5-cs-vault-list">
+            {study.vault.layers.map((l, i) => (
+              <li key={l.name}>
+                <span className="v5-cs-vault-n">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{l.name}</h3>
+                <dl>
+                  <div>
+                    <dt>HOLDS FIXED</dt>
+                    <dd>{l.preserves}</dd>
+                  </div>
+                  <div>
+                    <dt>FREES UP</dt>
+                    <dd>{l.frees}</dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+          </ol>
+
+          <p className="v5-cs-vault-cost">
+            <span className="v5-cs-vault-cost-k">WHAT PRESERVATION COSTS</span>
+            {study.vault.cost}
+          </p>
+        </section>
+      )}
+
       {/* ── the session ──────────────────────────────────────── */}
       <section className="v5-cs-bleed">
         <JourneyMapDiagram
@@ -148,14 +217,16 @@ export function ProcessCaseStudyV5({
       {/* ── the loop: how it actually got made ───────────────── */}
       <section className="v5-cs-loop">
         <div className="v5-cs-loop-rail">
-          <p className="v5-cs-folio">03 — THE LOOP</p>
+          <p className="v5-cs-folio">{folio("THE LOOP")}</p>
           <h2 className="v5-cs-h2">{study.decision.headline}</h2>
           <p className="v5-cs-lede">{study.decision.body}</p>
 
           <p className="v5-cs-rail-note">
             {study.compression.note}
             <span className="v5-cs-rail-ref">
-              STAGE 03 IS WHAT BUYS THE TIME — SEE FIG. 05
+              {study.scaleModel
+                ? "STAGE 03 IS THE ONE THAT UNLOCKS THE REST"
+                : "STAGE 03 IS WHAT BUYS THE TIME — SEE FIG. 05"}
             </span>
           </p>
         </div>
@@ -189,14 +260,31 @@ export function ProcessCaseStudyV5({
         </ol>
       </section>
 
-      {/* ── the compression, drawn to scale ──────────────────── */}
-      <section className="v5-cs-bleed">
-        <CompressionFigure
-          theirs={study.compression.theirs}
-          mine={study.compression.mine}
-          note={study.compression.note}
-        />
-      </section>
+      {/* ── the compression ──────────────────────────────────────
+          A product case compressed a timeline, so it is drawn to scale on a
+          working-week ruler. A system case compressed a dependency, which
+          has no ruler — it gets the instrument set instead. */}
+      {study.scaleModel ? (
+        <section className="v5-cs-scale">
+          <div className="v5-cs-scale-head">
+            <p className="v5-cs-folio">{folio("HOW IT SCALES")}</p>
+            <h2 className="v5-cs-h2">{study.scaleModel.headline}</h2>
+            <p className="v5-cs-lede">{study.scaleModel.body}</p>
+          </div>
+          <ScaleModelFigure
+            metrics={study.scaleModel.metrics}
+            curve={study.scaleModel.curve}
+          />
+        </section>
+      ) : (
+        <section className="v5-cs-bleed">
+          <CompressionFigure
+            theirs={study.compression.theirs}
+            mine={study.compression.mine}
+            note={study.compression.note}
+          />
+        </section>
+      )}
 
       {/* ── what shipped ─────────────────────────────────────── */}
       <section className="v5-cs-bleed">
@@ -206,7 +294,7 @@ export function ProcessCaseStudyV5({
       {/* ── what it earned ───────────────────────────────────── */}
       <section className="v5-cs-split is-reverse">
         <div className="v5-cs-split-main">
-          <p className="v5-cs-folio">04 — WHAT IT EARNED</p>
+          <p className="v5-cs-folio">{folio("WHAT IT EARNED")}</p>
           <h2 className="v5-cs-h2">{study.outcome.headline}</h2>
           <p className="v5-cs-lede">{study.outcome.body}</p>
 

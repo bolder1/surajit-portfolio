@@ -101,6 +101,15 @@ const CASES = [
     delivered: ["FIGMA", "BUILD", "DEMO"],
     outcome: "Full demonstration used in client pitches.",
   },
+  {
+    no: "C-06",
+    tag: "DESIGN SYSTEMS",
+    name: "Central Design System",
+    slug: "design-system",
+    line: "One definition behind five products — new work without redrawing what already shipped.",
+    delivered: ["AUDIT", "TOKENS", "COMPONENTS", "GOVERNANCE"],
+    outcome: "Screens shipped with no designer on the ticket.",
+  },
 ];
 
 export function ProcessShowcaseV5() {

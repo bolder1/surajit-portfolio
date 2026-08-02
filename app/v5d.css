@@ -36,6 +36,9 @@
 .v5-cs-wall,
 .v5-cs-loop,
 .v5-cs-quote,
+.v5-cs-roster,
+.v5-cs-vault,
+.v5-cs-scale,
 .v5-cs-next,
 .v5-cs-cta,
 .v5-cs-foot {
@@ -795,3 +798,320 @@
   letter-spacing: 0.2em;
   color: var(--v5-accent-bright);
 }
+
+/* ════════════════════════════════════════════════════════════
+   §SYS — system-engagement sections
+   Only /process/design-system uses these. A product case argues
+   comp-vs-working-system; a system case argues several audiences in
+   tension, a legacy held fixed, and a scaling claim that is measured
+   rather than clocked.
+   ═══════════════════════════════════════════════════════════ */
+
+.v5-cs-roster { padding-top: 92px; }
+.v5-cs-roster-head { max-width: 46em; margin-bottom: 44px; }
+
+/* ── the roster: ledger rows, deliberately not five equal cards ── */
+.v5-plg-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--v5-rule-soft);
+}
+.v5-plg-row {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 0 28px;
+  padding: 34px 0;
+  border-bottom: 1px solid var(--v5-rule-soft);
+}
+@media (max-width: 700px) {
+  .v5-plg-row { grid-template-columns: 1fr; gap: 14px; }
+}
+.v5-plg-n {
+  font-family: var(--v5-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--v5-ink-muted);
+  padding-top: 6px;
+}
+.v5-plg-role {
+  font-family: var(--v5-serif), Georgia, serif;
+  font-size: clamp(21px, 2.1vw, 27px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--v5-ink);
+  margin: 0;
+}
+.v5-plg-ctx {
+  margin: 9px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--v5-ink-soft);
+  max-width: 62ch;
+}
+/* The quote is the person, so it gets the display face and the accent rule. */
+.v5-plg-says {
+  margin: 18px 0 0;
+  padding-left: 18px;
+  border-left: 2px solid var(--v5-accent-bright);
+  font-family: var(--v5-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.4;
+  color: var(--v5-ink);
+  max-width: 46ch;
+}
+.v5-plg-says::before { content: "\201C"; }
+.v5-plg-says::after { content: "\201D"; }
+.v5-plg-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin: 20px 0 0;
+}
+@media (max-width: 760px) { .v5-plg-pair { grid-template-columns: 1fr; gap: 14px; } }
+.v5-plg-pair dt {
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: var(--v5-ink-muted);
+  margin-bottom: 6px;
+}
+.v5-plg-pair dd {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--v5-ink-soft);
+}
+.v5-plg-risk {
+  margin: 20px 0 0;
+  padding-left: 16px;
+  border-left: 1px solid var(--v5-rule-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--v5-ink-muted);
+  max-width: 74ch;
+}
+
+/* ── the vault: what each layer holds fixed and what it frees ── */
+.v5-cs-vault { padding-top: 92px; }
+.v5-cs-vault-head { max-width: 46em; }
+.v5-cs-vault-list {
+  list-style: none;
+  margin: 44px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--v5-rule-soft);
+}
+.v5-cs-vault-list > li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 15em) minmax(0, 1fr);
+  gap: 0 28px;
+  align-items: start;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--v5-rule-soft);
+}
+@media (max-width: 860px) {
+  .v5-cs-vault-list > li { grid-template-columns: 1fr; gap: 12px; }
+}
+.v5-cs-vault-n {
+  font-family: var(--v5-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--v5-ink-muted);
+  padding-top: 4px;
+}
+.v5-cs-vault-list h3 {
+  margin: 0;
+  font-family: var(--v5-mono), monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v5-ink);
+  padding-top: 3px;
+}
+.v5-cs-vault-list dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin: 0;
+  min-width: 0;
+}
+@media (max-width: 760px) { .v5-cs-vault-list dl { grid-template-columns: 1fr; gap: 12px; } }
+.v5-cs-vault-list dt {
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: var(--v5-ink-muted);
+  margin-bottom: 6px;
+}
+.v5-cs-vault-list dd {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--v5-ink-soft);
+}
+/* The cost paragraph is the honest half; it gets the weight of an aside. */
+.v5-cs-vault-cost {
+  margin: 40px 0 0;
+  max-width: 78ch;
+  font-size: 15px;
+  line-height: 1.72;
+  color: var(--v5-ink-soft);
+  padding-left: 20px;
+  border-left: 2px solid var(--v5-accent);
+}
+.v5-cs-vault-cost-k {
+  display: block;
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--v5-accent-bright);
+  margin-bottom: 10px;
+}
+
+/* ── the scale model: instruments, no readings ── */
+.v5-cs-scale { padding-top: 92px; }
+.v5-cs-scale-head { max-width: 46em; margin-bottom: 40px; }
+.v5-sm-caveat {
+  margin-left: auto;
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: var(--v5-accent-bright);
+  border: 1px solid var(--v5-accent);
+  border-radius: 2px;
+  padding: 3px 8px;
+}
+.v5-sm-table {
+  border-top: 1px solid var(--v5-rule-soft);
+  border-bottom: 1px solid var(--v5-rule-soft);
+}
+.v5-sm-head,
+.v5-sm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 13em) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 24px;
+}
+.v5-sm-head {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--v5-rule-soft);
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: var(--v5-ink-muted);
+}
+.v5-sm-row {
+  padding: 22px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--v5-ink-soft);
+}
+.v5-sm-row + .v5-sm-row { border-top: 1px solid var(--v5-rule-soft); }
+@media (max-width: 900px) {
+  .v5-sm-head { display: none; }
+  .v5-sm-row { grid-template-columns: 1fr; gap: 10px; }
+  .v5-sm-inst::before { content: "INSTRUMENT — "; }
+  .v5-sm-good::before { content: "READS WELL — "; }
+  .v5-sm-bad::before { content: "BAD READING — "; }
+  .v5-sm-inst::before,
+  .v5-sm-good::before,
+  .v5-sm-bad::before {
+    font-family: var(--v5-mono), monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: var(--v5-ink-muted);
+  }
+}
+.v5-sm-name {
+  position: relative;
+  display: block;
+  font-family: var(--v5-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--v5-ink);
+  padding-left: 18px;
+}
+/* Hollow tick: the gauge exists, the needle deliberately does not. */
+.v5-sm-tick {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--v5-accent-bright);
+  transform: rotate(45deg);
+}
+.v5-sm-i {
+  display: block;
+  margin-top: 6px;
+  font-size: 9.5px;
+  font-style: normal;
+  letter-spacing: 0.18em;
+  color: var(--v5-ink-muted);
+}
+.v5-sm-bad { color: var(--v5-ink-muted); }
+.v5-sm-curve {
+  margin: 40px 0 0;
+  max-width: 80ch;
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.7;
+  color: var(--v5-ink);
+  padding-left: 20px;
+  border-left: 2px solid var(--v5-accent-bright);
+}
+.v5-sm-curve-k {
+  display: block;
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--v5-accent-bright);
+  margin-bottom: 10px;
+}
+
+/* ── FIG. 01 — the legacy vault plate ── */
+.v5-lv-svg { display: block; width: 100%; height: auto; }
+.v5-lv-screen {
+  fill: none;
+  stroke: var(--v5-rule-soft);
+  stroke-width: 1;
+}
+.v5-lv-screen.is-new { stroke: var(--v5-ink-muted); }
+.v5-lv-ph { stroke: var(--v5-rule-soft); stroke-width: 4; stroke-linecap: round; }
+.v5-lv-band {
+  fill: none;
+  stroke: var(--v5-ink-muted);
+  stroke-width: 1;
+}
+.v5-lv-head,
+.v5-lv-band-n {
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  fill: var(--v5-ink);
+}
+.v5-lv-band-h,
+.v5-lv-tiny,
+.v5-lv-note,
+.v5-lv-vert {
+  font-family: var(--v5-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  fill: var(--v5-ink-muted);
+}
+.v5-lv-wire { stroke: var(--v5-rule-soft); stroke-width: 1; }
+.v5-lv-arrow { fill: var(--v5-ink-muted); }
+.v5-lv-rule { stroke: var(--v5-rule-soft); stroke-width: 1; }
+/* Accent is spent only here: re-pointing a role is the whole mechanism. */
+.v5-lv-repoint {
+  stroke: var(--v5-accent-bright);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+.v5-lv-repoint-t {
+  font-family: var(--v5-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  fill: var(--v5-accent-bright);
+}
+.v5-lv-repoint-head { fill: var(--v5-accent-bright); }

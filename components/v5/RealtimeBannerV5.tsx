@@ -24,6 +24,7 @@ const CASES: { label: string; slug: string | null }[] = [
   { label: "DPDP COMPLIANCE", slug: "dpdp-compliance" },
   { label: "FUNCTION OS", slug: "function-os" },
   { label: "HEALTHCARE", slug: null },
+  { label: "DESIGN SYSTEM", slug: "design-system" },
 ];
 
 export function RealtimeBannerV5() {
