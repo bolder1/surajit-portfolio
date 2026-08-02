@@ -1494,3 +1494,35 @@
 }
 .v5-rc-foot a { color: var(--v5-ink-soft); text-decoration: none; transition: color 0.2s ease; }
 .v5-rc-foot a:hover { color: var(--v5-accent-bright); }
+
+/* ── masthead shader: two litho plates, out of register ────────
+   Sits over .v5-hero-abstract, which stays as the no-WebGL2 wash.
+   Fades with --split on the same curve the old backdrop used, so the
+   hand-off to the About section is unchanged. */
+.v5-hero-shader {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: calc(1 - var(--split, 0) * 0.92);
+  pointer-events: none;
+}
+/* No WebGL2: hide the canvas and let the image backdrop below carry it. */
+.v5-hero-shader[data-fallback="1"] { display: none; }
+
+/* Sits above the shader canvas and below the hero content. Darkens only
+   where copy lands — top-left for the tagline, the two horizontal bands for
+   the nav strip and name — so the field keeps its punch in the middle. */
+.v5-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(1 - var(--split, 0) * 0.92);
+  background:
+    radial-gradient(58% 42% at 16% 10%, rgba(7, 7, 7, 0.88), transparent 72%),
+    linear-gradient(180deg, rgba(7, 7, 7, 0.62) 0%, transparent 28%),
+    linear-gradient(0deg, rgba(7, 7, 7, 0.68) 0%, transparent 26%);
+}

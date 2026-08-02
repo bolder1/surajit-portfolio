@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { InkPlateField } from "@/components/v5/InkPlateField";
 
 /**
  * §01 MastheadHeroV5 — scroll-driven masthead.
@@ -93,8 +94,15 @@ export function MastheadHeroV5() {
   return (
     <section ref={sceneRef} id="hero" className="v5-hero-scene" aria-label="Intro">
       <div ref={stageRef} className="v5-hero-sticky">
-        {/* Gradient background */}
+        {/* Backdrop: two litho plates slightly out of register.
+            The static wash behind it is the no-WebGL2 fallback. */}
         <div className="v5-hero-abstract" aria-hidden />
+        <InkPlateField />
+        {/* Type-safety scrim. The shader is bright enough that the
+            tagline dropped to 1.7:1 in its hottest patches; this pulls
+            the corners the copy sits in back down without flattening
+            the middle of the field. */}
+        <div className="v5-hero-scrim" aria-hidden />
 
         {/* 3D object = provided render; tilts toward the cursor (--mx/--my) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

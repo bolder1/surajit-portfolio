@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import {
   Inter,
-  Instrument_Serif,
+  Fraunces,
   JetBrains_Mono,
   Archivo,
   Geist,
@@ -29,7 +29,7 @@ import "./system.css";
     .v2-root  — V2, the "volt" system on /v2 (nested inside .v5-root,
                 overriding every token it inherits).
 
-  V1 faces: Inter · Instrument Serif · JetBrains Mono.
+  V1 faces: Inter · Fraunces (variable) · JetBrains Mono.
   V2 faces: Archivo (variable wght + wdth) · Geist · Geist Mono.
 */
 
@@ -40,10 +40,16 @@ const sans = Inter({
   display: "swap",
 });
 
-const serif = Instrument_Serif({
+/* Fraunces carries the V1 display voice. Instrument Serif was a single
+   400 weight, so headings could never actually be bold — this is variable
+   across 400–800 with a true italic, and its optical-size axis keeps the
+   big masthead settings from looking like blown-up body type. */
+const serif = Fraunces({
   subsets: ["latin"],
-  weight: ["400"],
   style: ["normal", "italic"],
+  // No explicit weight list: next/font serves the full variable range
+  // (wght included by default), which is what makes real bold possible.
+  axes: ["SOFT", "WONK", "opsz"],
   variable: "--v5-serif",
   display: "swap",
 });
