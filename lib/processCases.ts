@@ -132,6 +132,8 @@ export interface ProcessCaseStudy {
      scaling argument that is measured rather than clocked. Cases carrying
      `scaleModel` render it in place of the compression ruler, because the
      thing being compressed is a dependency, not a timeline. */
+  /** A case that also has a standalone scroll experience links out to it. */
+  story?: { href: string; label: string; blurb: string };
   personas?: { headline: string; body: string; people: Persona[] };
   vault?: { headline: string; body: string; layers: VaultLayer[]; cost: string };
   scaleModel?: { headline: string; body: string; metrics: ScaleMetric[]; curve: string };
@@ -501,6 +503,13 @@ export const processCases: ProcessCaseStudy[] = [
         { label: "Cost of a brand", value: "3 brands from 46 tokens" },
         { label: "Adoption + velocity", value: "Under NDA — shared on request" },
       ],
+    },
+
+    story: {
+      href: "/system",
+      label: "PLAY THE SCROLL VERSION",
+      blurb:
+        "The same case built to be watched instead of read — six chapters where every claim is demonstrated by the thing on screen, including two you can try to break yourself.",
     },
 
     personas: {

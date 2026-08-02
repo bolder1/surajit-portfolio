@@ -95,6 +95,19 @@ export function ProcessCaseStudyV5({
         </dl>
       </header>
 
+      {/* ── standalone experience, when the case has one ─────── */}
+      {study.story && (
+        <section className="v5-cs-story">
+          <Link href={study.story.href} className="v5-cs-story-link">
+            <span className="v5-cs-story-k">{study.story.label}</span>
+            <p className="v5-cs-story-b">{study.story.blurb}</p>
+            <span className="v5-cs-story-go" aria-hidden>
+              ↗
+            </span>
+          </Link>
+        </section>
+      )}
+
       {/* ── cold open ────────────────────────────────────────── */}
       <section className="v5-cs-hook">
         <p className="v5-cs-hook-text">{study.hook}</p>

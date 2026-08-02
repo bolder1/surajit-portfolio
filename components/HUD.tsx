@@ -20,7 +20,8 @@ export function HUD() {
   const [scrollPct, setScrollPct] = useState(0);
   const [time, setTime] = useState("");
   const [enabled, setEnabled] = useState(true);
-  const suppressed = pathname?.startsWith("/v2") ?? false;
+  const suppressed =
+    (pathname?.startsWith("/v2") || pathname?.startsWith("/system")) ?? false;
 
   useEffect(() => {
     if (typeof window === "undefined") return;

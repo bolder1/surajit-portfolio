@@ -36,6 +36,7 @@
 .v5-cs-wall,
 .v5-cs-loop,
 .v5-cs-quote,
+.v5-cs-story,
 .v5-cs-roster,
 .v5-cs-vault,
 .v5-cs-scale,
@@ -1115,3 +1116,38 @@
   fill: var(--v5-accent-bright);
 }
 .v5-lv-repoint-head { fill: var(--v5-accent-bright); }
+
+/* ── the standalone-experience door ─────────────────────────── */
+.v5-cs-story { padding-top: 34px; }
+.v5-cs-story-link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 22px;
+  align-items: center;
+  padding: 22px 24px;
+  border: 1px solid var(--v5-accent);
+  text-decoration: none;
+  transition: background 0.22s ease, border-color 0.22s ease;
+}
+.v5-cs-story-link:hover { background: var(--v5-paper-2); border-color: var(--v5-accent-bright); }
+.v5-cs-story-k {
+  grid-column: 1;
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--v5-accent-bright);
+}
+.v5-cs-story-b {
+  grid-column: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--v5-ink-soft);
+  max-width: 74ch;
+}
+.v5-cs-story-go {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 20px;
+  color: var(--v5-accent-bright);
+}

@@ -9,12 +9,17 @@ import { usePathname } from "next/navigation";
  * (except the playground itself) — matches the hero's .v5-playbtn pill,
  * just fixed instead of inline.
  *
- * Suppressed on /v2, which carries its own chrome and links to the world from
+ * Suppressed on /v2 and /system, which carry their own chrome and links to the world from
  * its footer instead; on a narrow viewport the two controls would collide.
  */
 export function PlaygroundFab() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/playground") || pathname?.startsWith("/v2")) return null;
+  if (
+    pathname?.startsWith("/playground") ||
+    pathname?.startsWith("/v2") ||
+    pathname?.startsWith("/system")
+  )
+    return null;
 
   return (
     <a
