@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
  * nested clamp() calc proved unreliable across engines).
  */
 
-const WORDS = ["I", "make", "complex", "software", "feel", "simple."];
+const WORDS = ["I", "ship", "the", "prototype,", "not", "a", "picture", "of", "one."];
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 
 export function KineticV5() {

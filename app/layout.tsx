@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Inter,
+  Space_Grotesk,
   Fraunces,
-  JetBrains_Mono,
+  Martian_Mono,
   Archivo,
   Geist,
   Geist_Mono,
@@ -29,13 +29,17 @@ import "./system.css";
     .v2-root  — V2, the "volt" system on /v2 (nested inside .v5-root,
                 overriding every token it inherits).
 
-  V1 faces: Inter · Fraunces (variable) · JetBrains Mono.
+  V1 faces: Space Grotesk · Fraunces (variable) · Martian Mono (variable).
   V2 faces: Archivo (variable wght + wdth) · Geist · Geist Mono.
 */
 
-const sans = Inter({
+/* Space Grotesk replaces Inter. Inter is the default of every AI-built
+   portfolio and has no opinion; this is drawn from a monospace skeleton, so
+   it keeps a machined edge at UI sizes while staying readable in paragraphs
+   — which a true display face like Orbitron would not. */
+const sans = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--v5-sans",
   display: "swap",
 });
@@ -54,9 +58,13 @@ const serif = Fraunces({
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
+/* Martian Mono is the robotic voice — wide, squared, engineered-looking, and
+   variable on both width and weight. Every label, eyebrow and figure on the
+   site is set in it, and the width axis is what the hover animation moves. */
+const mono = Martian_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  // No weight list: the full variable range, so wdth/wght can be animated.
+  axes: ["wdth"],
   variable: "--v5-mono",
   display: "swap",
 });

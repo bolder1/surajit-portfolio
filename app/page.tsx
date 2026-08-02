@@ -17,7 +17,7 @@ import { FooterV5 } from "@/components/v5/FooterV5";
  *
  * Hero → Kinetic → About → Capabilities bento → Process →
  * Real-time builds (→ /process) → Featured case (→ /system) →
- * Receipts (live URLs) → Case list →
+ * Case list → Receipts (live URLs) →
  * Gallery (3D ring → /gallery) → AI orchestration → More about me →
  * Contact → Footer.
  */
@@ -31,8 +31,8 @@ export default function HomePage() {
       <ProcessV5 />
       <RealtimeBannerV5 />
       <FeaturedSystemV5 />
-      <ReceiptsV5 />
       <CaseListV5 />
+      <ReceiptsV5 />
       <GalleryV5 />
       <AIWorkflowV5 />
       <KineticOutroV5 />

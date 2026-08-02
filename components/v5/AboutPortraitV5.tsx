@@ -61,8 +61,8 @@ export function AboutPortraitV5() {
       </div>
 
       <h2 id="v5-about-heading" className="v5-about-quote">
-        As a <em>creative Builder</em>, I craft tailor-made product
-        experiences, blending technical precision and emotion.
+        I do the research, write the PRD, and then <em>build the thing</em>
+        — before anyone asks me to prove it works.
       </h2>
 
       <p className="v5-about-bio">

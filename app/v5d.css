@@ -1526,3 +1526,51 @@
     linear-gradient(180deg, rgba(7, 7, 7, 0.62) 0%, transparent 28%),
     linear-gradient(0deg, rgba(7, 7, 7, 0.68) 0%, transparent 26%);
 }
+
+/* ── animated width on the mono voice ──────────────────────────
+   Martian Mono is variable on wdth, so labels can physically stretch
+   rather than just change colour. Applied to the interactive mono
+   elements only — eyebrows and figures hold still, because type that
+   moves while you are reading it is noise, not craft. */
+.v5-navlink,
+.v5-rc-tag,
+.v5-fs-chapter .n,
+.v5-cs-back,
+.sys-rail a .n {
+  font-variation-settings: "wdth" 100;
+  transition: font-variation-settings 260ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    color 200ms ease;
+}
+.v5-navlink:hover,
+.v5-navlink:focus-visible,
+.v5-rc-row:hover .v5-rc-tag,
+.v5-fs-chapter:hover .n,
+.v5-fs-chapter.is-on .n,
+.v5-cs-back:hover,
+.sys-rail li[data-on="1"] a .n {
+  font-variation-settings: "wdth" 112;
+}
+
+/* The masthead eyebrows expand once, on reveal — a machine settling into
+   position rather than a permanent wobble. */
+@keyframes v5-mono-settle {
+  from { font-variation-settings: "wdth" 87; opacity: 0; }
+  to   { font-variation-settings: "wdth" 100; opacity: 1; }
+}
+/* Deliberately NOT on .v5-navlink: an animation with fill:both keeps its
+   final keyframe applied at a higher priority than a :hover rule, so the
+   settle would silently win and the hover stretch would never fire. The
+   eyebrows have no hover state, so they can keep it. */
+.v5-rc-eyebrow,
+.v5-fs-eyebrow {
+  animation: v5-mono-settle 620ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v5-navlink,
+  .v5-rc-tag,
+  .v5-fs-chapter .n,
+  .v5-cs-back,
+  .sys-rail a .n { transition: color 200ms ease; }
+  .v5-rc-eyebrow,
+  .v5-fs-eyebrow { animation: none; }
+}

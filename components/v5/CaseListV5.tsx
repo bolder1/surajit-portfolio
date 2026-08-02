@@ -26,7 +26,7 @@ export function CaseListV5() {
           <div>
             <p className="v5-caselist-eyebrow">/ selected work</p>
             <h2 id="v5-caselist-heading" className="v5-caselist-title">
-              Case studies, <em>told in depth.</em>
+              The <em>long versions.</em>
             </h2>
           </div>
           <p className="v5-caselist-intro">

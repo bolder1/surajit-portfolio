@@ -114,7 +114,7 @@ export function CapabilitiesBentoV5() {
           <div>
             <p className="v5-cap-eyebrow">/ capabilities</p>
             <h2 id="v5-cap-heading" className="v5-cap-title">
-              What I bring to <em>the table.</em>
+              The parts of the job <em>I own.</em>
             </h2>
           </div>
           <button

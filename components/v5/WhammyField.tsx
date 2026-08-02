@@ -3,23 +3,22 @@
 import { useEffect, useRef } from "react";
 
 /**
- * InkPlateField — the masthead backdrop, as a misprinted page.
+ * WhammyField — the masthead backdrop, bent like a whammy bar.
  *
- * Concept 02's hero runs a velocity field, which is right for a page about
- * speed and wrong for this one. V1's whole register is print: folio numbers,
- * diamond glyphs, printer's registration ticks. So this is the same idea
- * carried into that language rather than the same shader recoloured.
+ * A whammy bar does two things: it BENDS everything elastically, and it
+ * WOBBLES while it does it. Both are here. Two detuned oscillators drive a
+ * vibrato that never settles into a loop you can hear coming, and the
+ * pointer is the bar itself — grab anywhere and the field pulls toward you,
+ * with the bend falling off exponentially so it stays local.
  *
- * Three plates of one image, badly out of register. Separation is what
- * produces the colour: bone, vermilion and deep maroon are the same ridged
- * field sampled at increasing offsets, so every filament carries a chromatic
- * fringe. The register drifts on a slow lissajous, and the pointer is a lens
- * that tears the plates apart around the cursor — move it and the misprint
- * follows you.
+ * The field is a set of strings: a warped sine stack, crushed to hard crests
+ * so it reads as filament rather than fog. Colour comes from a cosine
+ * palette sampled by band phase, which is what makes it iridescent instead
+ * of tinted — amber running into vermilion running into magenta, all warm,
+ * so it stays inside V1's world while behaving nothing like it.
  *
- * Cost control: the domain warp is computed once and both plates are sampled
- * from it with an offset. Misregistration IS a translation of one image, so
- * this is both cheaper and more accurate than warping twice.
+ * Each channel samples the band at a different phase offset, so the strings
+ * carry real chromatic fringing that widens as you pull the bar.
  *
  * Without WebGL2 it sets data-fallback and CSS paints a static wash. Under
  * prefers-reduced-motion it draws one frame and stops.
@@ -61,11 +60,10 @@ float fbm(vec2 p) {
   return v;
 }
 
-// Ridged noise. Soft fbm gives clouds; folding it about its midpoint gives
-// filaments with hard crests, which is what makes the plates read as printed
-// structure rather than fog.
-float ridged(vec2 p) {
-  return 1.0 - abs(fbm(p) * 2.0 - 1.0);
+// Cosine palette. Phase offsets per channel are what make it iridescent
+// rather than tinted — the hue travels instead of the brightness.
+vec3 pal(float x) {
+  return 0.55 + 0.45 * cos(6.28318 * (x + vec3(0.00, 0.13, 0.24)));
 }
 
 void main() {
@@ -74,52 +72,46 @@ void main() {
   float aspect = uRes.x / uRes.y;
   vec2 m = (uMouse - 0.5) * vec2(aspect, 1.0);
 
-  // The pointer is a lens that tears the plates apart. Tight falloff so the
-  // effect belongs to the cursor rather than washing the whole field.
-  float md = length(p - m);
-  float lens = exp(-md * md * 3.4);
+  // Vibrato: two detuned oscillators, so the wobble never settles into a
+  // period you can predict.
+  float vib = sin(t * 1.9) * 0.6 + sin(t * 3.1 + 1.3) * 0.4;
 
-  // One domain warp, shared by every plate.
-  vec2 q = vec2(fbm(p * 1.35 + vec2(0.0, t * 0.060)),
-                fbm(p * 1.35 + vec2(5.2, 1.3) - t * 0.050));
-  vec2 r = vec2(fbm(p * 1.35 + 2.4 * q + vec2(1.7, 9.2) + t * 0.035),
-                fbm(p * 1.35 + 2.4 * q + vec2(8.3, 2.8) - t * 0.028));
-  vec2 base = p * 1.35 + 2.0 * r;
+  // The bar. Grab anywhere and the field bends toward the pointer; the
+  // falloff keeps the bend local instead of dragging the whole page.
+  vec2 d = p - m;
+  float md = length(d);
+  float pull = exp(-md * md * 2.2);
+  vec2 q = p - normalize(d + 1e-5) * pull * (0.30 + 0.14 * vib);
 
-  // Register error: a slow drift, plus a hard pull away from the cursor.
-  vec2 drift = vec2(sin(t * 0.23), cos(t * 0.19)) * 0.20;
-  vec2 away  = (p - m) / max(md, 0.001);
-  vec2 reg   = drift + away * lens * 0.90;
+  // A slow global bend, so it breathes with no pointer at all.
+  q.y += 0.11 * sin(q.x * 1.7 + t * 0.60) + 0.06 * sin(q.x * 3.3 - t * 0.90);
+  q.x += 0.08 * sin(q.y * 2.1 - t * 0.70);
 
-  // Three plates off one image. Separation is what produces the colour.
-  float a = ridged(base);
-  float b = ridged(base + reg);
-  float c = ridged(base + reg * 2.0);
+  // The strings.
+  float warp  = fbm(q * 1.5 + vec2(0.0, t * 0.09));
+  float phase = q.y * 7.2 + warp * 2.8 + t * 0.55 + vib * 0.25;
 
-  vec3 col = vec3(0.035, 0.034, 0.033);
-  col += vec3(0.94, 0.91, 0.86) * pow(a, 3.4) * 0.62;  // bone plate
-  col += vec3(0.85, 0.28, 0.18) * pow(b, 2.4) * 1.35;  // vermilion plate
-  col += vec3(0.42, 0.06, 0.05) * pow(c, 2.0) * 0.95;  // deep maroon plate
+  // Chromatic split, widening as the bar is pulled.
+  float o = 0.06 + pull * 0.22;
+  float rr = max(sin(phase + o), 0.0);
+  float gg = max(sin(phase),     0.0);
+  float bb = max(sin(phase - o), 0.0);
+  vec3 band = vec3(pow(rr, 7.0), pow(gg, 7.0), pow(bb, 7.0));
 
-  // Heat where the tear is widest, so the cursor reads as the cause.
-  col += vec3(0.85, 0.28, 0.18) * lens * 0.30 * (0.55 + 0.45 * sin(t * 0.9));
+  vec3 hue = pal(phase * 0.055 + t * 0.035 + warp * 0.18);
 
-  // Halftone: a fine screen, angled like a real separation, biting only into
-  // the lit areas so the darks stay clean.
-  float lum = dot(col, vec3(0.299, 0.587, 0.114));
-  vec2 sp = (gl_FragCoord.xy) * 0.9;
-  float ang = 0.4;
-  vec2 rot = vec2(sp.x * cos(ang) - sp.y * sin(ang), sp.x * sin(ang) + sp.y * cos(ang));
-  float screenDots = sin(rot.x) * sin(rot.y);
-  col *= 1.0 - smoothstep(0.05, 0.45, lum) * 0.16 * smoothstep(0.0, 1.0, screenDots);
+  vec3 col = vec3(0.034, 0.033, 0.032);
+  col += hue * band * 1.75;                        // the strings themselves
+  col += hue * pow(gg, 2.2) * 0.16;                // soft halo around them
+  col += hue * pull * 0.34 * (0.6 + 0.4 * vib);    // heat where the bar bites
 
-  // Grain, so it reads as printed rather than rendered.
+  // Grain, so it stays a printed page rather than a render.
   float g = hash(gl_FragCoord.xy + fract(t) * vec2(37.0, 17.0));
   col += (g - 0.5) * 0.030;
 
   // Vignette blends the edges into the page.
   float v = smoothstep(1.34, 0.20, length(p * vec2(0.86, 1.0)));
-  col *= mix(0.30, 1.0, v);
+  col *= mix(0.28, 1.0, v);
 
   // Hand off to the section below, matching the old backdrop's fade.
   col *= (1.0 - uScroll * 0.92);
@@ -139,7 +131,7 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   return sh;
 }
 
-export function InkPlateField() {
+export function WhammyField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
