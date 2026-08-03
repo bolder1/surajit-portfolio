@@ -105,10 +105,6 @@ export function MastheadHeroV5() {
             the middle of the field. */}
         <div className="v5-hero-scrim" aria-hidden />
 
-        {/* 3D object = provided render; tilts toward the cursor (--mx/--my) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="v5-hero-object" src="/v5/img-b.avif" alt="" aria-hidden />
-
         {/* Tagline */}
         <p className="v5-hero-tagline">
           Product designer for <em>IT, identity &amp; security teams.</em> I
