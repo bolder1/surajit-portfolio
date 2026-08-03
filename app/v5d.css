@@ -1456,29 +1456,74 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: min(38vw, 460px);
-  aspect-ratio: 16 / 10;
+  width: min(40vw, 520px);
   pointer-events: none;
   opacity: 0;
   z-index: 3;
   border: 1px solid var(--v5-rule-soft);
+  border-radius: 6px;
   background: var(--v5-paper-2);
   overflow: hidden;
   transition: opacity 0.24s ease;
   box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
 }
 .v5-rc-preview.is-on { opacity: 1; }
-.v5-rc-preview img {
+/* Browser chrome, with the product's real host in it. */
+.v5-rc-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--v5-rule-soft);
+  background: var(--v5-paper);
+}
+.v5-rc-preview-bar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--v5-rule-soft);
+}
+.v5-rc-preview-bar em {
+  margin-left: 8px;
+  font-style: normal;
+  font-family: var(--v5-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--v5-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v5-rc-preview-stage {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+}
+.v5-rc-preview-stage img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
+  /* Captures are a whole page — 1280 x 2800 — so a fixed crop showed only the
+     top eighth of the product. The shown image pans its full height instead,
+     so hovering walks the entire screen rather than a letterboxed sliver. */
+  object-position: center top;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
-.v5-rc-preview img.is-shown { opacity: 1; }
+.v5-rc-preview-stage img.is-shown {
+  opacity: 1;
+  animation: v5-rc-pan 6.5s cubic-bezier(0.4, 0, 0.6, 1) 0.35s infinite alternate;
+}
+@keyframes v5-rc-pan {
+  from { object-position: center top; }
+  to   { object-position: center bottom; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v5-rc-preview-stage img.is-shown { animation: none; }
+}
 @media (max-width: 900px), (pointer: coarse) { .v5-rc-preview { display: none; } }
 
 .v5-rc-foot {

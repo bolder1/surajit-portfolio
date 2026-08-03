@@ -99,14 +99,24 @@ export function ScrambleText({
     ...(interactive ? { onFocus: run, onBlur: stop } : {}),
   };
 
+  // The accessible copy exists ONLY while the glyphs are scrambled.
+  //
+  // Keeping it mounted permanently put the words in the DOM twice, so
+  // selecting a heading and copying it produced every word doubled —
+  // "Everything here isEverything here is deployed.deployed." At rest the
+  // painted copy already holds the real text, so a second one buys nothing
+  // and costs correct selection, correct copy, and a clean crawlable heading.
+  // During the scramble it comes back, so assistive tech never sees noise.
+  const scrambling = display !== text;
+
   const inner = (
     <>
-      {/* The accessible copy. Never scrambled, never hidden from AT — it is
-          painted transparent, not `visibility: hidden`, so it stays in the
-          accessibility tree and keeps the heading's name intact. */}
-      <span className="v5-scr-a11y">{text}</span>
-      {/* The painted copy. */}
-      <span className="v5-scr-ink" aria-hidden>
+      {scrambling && <span className="v5-scr-a11y">{text}</span>}
+      {/* The painted copy. Hidden from assistive tech ONLY while it is showing
+          noise — at rest it holds the real text and is the heading's only
+          child, so hiding it unconditionally left the heading with no
+          accessible name at all. */}
+      <span className="v5-scr-ink" aria-hidden={scrambling || undefined}>
         {display}
       </span>
     </>

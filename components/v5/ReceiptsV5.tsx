@@ -147,16 +147,34 @@ export function ReceiptsV5() {
             ref={previewRef}
             aria-hidden
           >
-            {SHOWCASE_PRODUCTS.map((p) => (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                key={p.slug}
-                src={`/showcase/${p.slug}-d.jpg`}
-                alt=""
-                loading="lazy"
-                className={hovered === p.slug ? "is-shown" : ""}
-              />
-            ))}
+            {/* Chrome bar carrying the real host. The capture alone floats as
+                a picture of a screen; framed and addressed, it reads as the
+                product itself — which is the claim this section is making. */}
+            <span className="v5-rc-preview-bar">
+              <i />
+              <i />
+              <i />
+              <em>
+                {hovered
+                  ? SHOWCASE_PRODUCTS.find((p) => p.slug === hovered)?.url.replace(
+                      /^https?:\/\//,
+                      ""
+                    )
+                  : ""}
+              </em>
+            </span>
+            <span className="v5-rc-preview-stage">
+              {SHOWCASE_PRODUCTS.map((p) => (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={p.slug}
+                  src={`/showcase/${p.slug}-d.jpg`}
+                  alt=""
+                  loading="lazy"
+                  className={hovered === p.slug ? "is-shown" : ""}
+                />
+              ))}
+            </span>
           </div>
         </div>
 

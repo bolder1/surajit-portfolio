@@ -223,7 +223,8 @@
    the cursor (--mx / --my), lifts away + fades as the name splits. */
 .v5-hero-object {
   position: absolute;
-  z-index: 1;
+  /* Above the wash, the shader and the scrim, all of which sit at 0. */
+  z-index: 2;
   top: -8%;
   right: -7%;
   left: auto;
@@ -236,8 +237,17 @@
     translateY(calc(var(--split, 0) * -14vh))
     scale(calc(0.98 + var(--rise, 0) * 0.06 - var(--split, 0) * 0.08));
   transform-origin: top right;
-  opacity: calc((0.62 + var(--rise, 0) * 0.38) * (1 - var(--split, 0) * 0.85));
-  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.55));
+  /* Near-opaque. At 0.62 the shader read straight through the object's dark
+     faces, so the field looked like it was painted over the render rather than
+     behind it — the object has always been the top layer by z-index, it just
+     was not solid enough to look like one. */
+  opacity: calc((0.92 + var(--rise, 0) * 0.08) * (1 - var(--split, 0) * 0.85));
+  /* The second, offsetless shadow hugs the silhouette. That dark halo is what
+     separates the render from a bright, moving backdrop; a cast shadow alone
+     does not, because the field behind is lit from everywhere at once. */
+  filter:
+    drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 30px rgba(0, 0, 0, 0.55));
   will-change: transform, opacity;
   animation: v5-object-float 9s ease-in-out infinite alternate;
 }

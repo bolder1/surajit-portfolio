@@ -29,7 +29,8 @@ button.v5-scr {
 /* The accessible copy: off-canvas but still in the accessibility tree, so the
    heading keeps its real name while the ink layer shows noise. Clipped rather
    than `visibility: hidden` or `display: none`, both of which would remove it
-   from that tree — the one thing this layer exists to prevent. */
+   from that tree — the one thing this layer exists to prevent. It is mounted
+   only while the glyphs are scrambled; see ScrambleText for why. */
 .v5-scr-a11y {
   position: absolute;
   width: 1px;
@@ -362,10 +363,51 @@ body:has(.v2-root) { --cursor-accent: #a0ff99; }
   /* Isolate so the difference-blended disc inverts this section only, rather
      than reaching through to whatever the page painted underneath it. */
   isolation: isolate;
-  padding: clamp(88px, 15vh, 172px) 0;
+  /* Nearly a full viewport. The other sections are read; this one is a pause,
+     and a pause that shares the screen with the section above it is not a
+     pause. Holding the statement alone is what makes it land. */
+  min-height: 92svh;
+  display: grid;
+  align-content: center;
+  padding: clamp(88px, 12vh, 150px) 0;
   border-top: 1px solid var(--v5-rule-soft);
   border-bottom: 1px solid var(--v5-rule-soft);
   background: var(--v5-paper);
+}
+
+/* The caustic field. Sits under everything, including the difference disc,
+   which therefore inverts the shader as well as the type. */
+.v5-poster-shader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+/* No WebGL2: a static warm wash rather than a black hole. */
+.v5-poster-shader[data-fallback="true"] {
+  background:
+    radial-gradient(120% 80% at 12% 22%, rgba(217, 71, 47, 0.16), transparent 60%),
+    radial-gradient(100% 70% at 88% 78%, rgba(240, 163, 92, 0.10), transparent 62%);
+}
+/* Legibility floor. The field is already dim, but a 62px serif statement over
+   a live shader is exactly where contrast quietly fails, so the centre gets a
+   measured hold-down while the edges keep their light. */
+.v5-poster-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Deliberately light. The shader already darkens its own centre, and a
+     heavy scrim on top of that read as a grey smudge sitting over the field
+     rather than as depth. This only tops up what the vignette leaves. */
+  background: radial-gradient(
+    58% 44% at 50% 48%,
+    rgba(10, 10, 10, 0.62) 0%,
+    rgba(10, 10, 10, 0.42) 48%,
+    rgba(10, 10, 10, 0.08) 80%,
+    transparent 100%
+  );
 }
 /* Positioned but z-index auto, so the disc — later in the DOM — paints above
    it and the type inverts as it passes. */

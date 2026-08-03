@@ -3,6 +3,7 @@
 import { KineticCenterBuild } from "./KineticCenterBuild";
 import { ClippedCircle } from "./ClippedCircle";
 import { ScrambleText } from "./ScrambleText";
+import { CausticField } from "./CausticField";
 
 /**
  * §P PosterV5 — the interstitial, brought over from V2's poster beat.
@@ -32,6 +33,12 @@ const PHRASES = [
 export function PosterV5() {
   return (
     <section className="v5-poster" aria-labelledby="v5-poster-h">
+      {/* Wave interference, not the masthead's filament. It wakes as the
+          section centres and takes the pointer as a fourth wave source, so
+          the beat is a room you walk into rather than a band you scroll past. */}
+      <CausticField />
+      <div className="v5-poster-scrim" aria-hidden />
+
       <div className="v5-poster-wrap">
         <p className="v5-poster-eyebrow">
           <ScrambleText text="( the short version )" />
