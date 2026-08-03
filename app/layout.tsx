@@ -8,6 +8,7 @@ import {
   Geist_Mono,
 } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { Cursor } from "@/components/Cursor";
 import { HUD } from "@/components/HUD";
 import { PlaygroundFab } from "@/components/PlaygroundFab";
 import { VersionToggle } from "@/components/VersionToggle";
@@ -16,6 +17,7 @@ import "./v5.css";
 import "./v5b.css";
 import "./v5c.css";
 import "./v5d.css";
+import "./v5e.css";
 import "./v2.css";
 import "./v2b.css";
 import "./v2c.css";
@@ -144,6 +146,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScroll />
+        <Cursor />
         <HUD />
         <PlaygroundFab />
         <VersionToggle />

@@ -249,12 +249,35 @@ export function WhammyField() {
       frame = requestAnimationFrame(draw);
     }
 
+    // Pause the loop once the hero has left the viewport. Without this the
+    // shader keeps rasterising a canvas nobody can see, all the way down the
+    // page — measured at a full frame budget spent on an off-screen surface,
+    // which is frames stolen from whatever the reader is actually looking at.
+    // `last = 0` on resume so the clock does not jump by the time spent away.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (reduced) return;
+        if (entry.isIntersecting) {
+          if (!frame) {
+            last = 0;
+            frame = requestAnimationFrame(draw);
+          }
+        } else if (frame) {
+          cancelAnimationFrame(frame);
+          frame = 0;
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(canvas);
+
     window.addEventListener("pointermove", onPointer, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
+      io.disconnect();
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);

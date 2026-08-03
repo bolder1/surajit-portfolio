@@ -103,7 +103,7 @@ export function GalleryV5() {
   return (
     <section ref={sceneRef} id="gallery" className="v5-gallery-scene" aria-label="Work gallery">
       <div ref={stickyRef} className="v5-gallery-sticky">
-        <div className="v5-gallery-stage" aria-hidden={false}>
+        <div className="v5-gallery-stage" aria-hidden={false} data-cursor="drag">
           <div className="v5-gallery-ring">
             <div className="v5-gallery-spin">
               {items.map((p, i) => {

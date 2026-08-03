@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SHOWCASE_PRODUCTS } from "@/lib/showcase";
+import { InfiniteSlider } from "./InfiniteSlider";
+import { ScrambleText } from "./ScrambleText";
+import { ClippedCircle } from "./ClippedCircle";
 
 /**
  * §C ReceiptsV5 — the proof, as a list you can click into.
@@ -82,7 +85,10 @@ export function ReceiptsV5() {
               <span className="v5-cs-diamond" aria-hidden /> / receipts
             </p>
             <h2 className="v5-rc-title" id="v5-rc-title">
-              Everything here is <em>deployed.</em>
+              <ScrambleText text="Everything here is" />{" "}
+              <em>
+                <ScrambleText text="deployed." />
+              </em>
             </h2>
           </div>
           <p className="v5-rc-lede">
@@ -91,6 +97,22 @@ export function ReceiptsV5() {
             builds on purpose: the process does not change when the stakes drop.
           </p>
         </header>
+
+        {/* The ticker. Same twelve products as the list below, moving — the
+            list is for reading, this is for registering that there are a lot
+            of them. Duplicated inside the slider, so its second run is
+            aria-hidden and nothing is announced twice. */}
+        <div className="v5-rc-ticker" aria-hidden>
+          <InfiniteSlider duration={46} gap={0}>
+            {SHOWCASE_PRODUCTS.map((p) => (
+              <span className="v5-rc-tick" key={p.slug}>
+                <span className="v5-rc-tick-dot" />
+                {p.name}
+                <i>{TAG_LABEL[p.tag] ?? p.tag}</i>
+              </span>
+            ))}
+          </InfiniteSlider>
+        </div>
 
         <div className="v5-rc-body" ref={rootRef}>
           <ul className="v5-rc-list">
@@ -101,6 +123,7 @@ export function ReceiptsV5() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="v5-rc-row"
+                  data-cursor-label="Open live"
                   onPointerEnter={() => setHovered(p.slug)}
                   onFocus={() => setHovered(p.slug)}
                   onPointerLeave={() => setHovered(null)}
@@ -112,6 +135,7 @@ export function ReceiptsV5() {
                   <span className="v5-rc-go" aria-hidden>
                     ↗
                   </span>
+                  <ClippedCircle circleSize={160} />
                 </a>
               </li>
             ))}

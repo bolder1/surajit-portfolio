@@ -4,6 +4,7 @@ import { AboutPortraitV5 } from "@/components/v5/AboutPortraitV5";
 import { CapabilitiesBentoV5 } from "@/components/v5/CapabilitiesBentoV5";
 import { ProcessV5 } from "@/components/v5/ProcessV5";
 import { RealtimeBannerV5 } from "@/components/v5/RealtimeBannerV5";
+import { PosterV5 } from "@/components/v5/PosterV5";
 import { FeaturedSystemV5 } from "@/components/v5/FeaturedSystemV5";
 import { ReceiptsV5 } from "@/components/v5/ReceiptsV5";
 import { CaseListV5 } from "@/components/v5/CaseListV5";
@@ -17,7 +18,7 @@ import { FooterV5 } from "@/components/v5/FooterV5";
  *
  * Hero → Kinetic → About → Capabilities bento → Process →
  * Real-time builds (→ /process) → Featured case (→ /system) →
- * Case list → Receipts (live URLs) →
+ * Case list → Poster (the full stop) → Receipts (live URLs) →
  * Gallery (3D ring → /gallery) → AI orchestration → More about me →
  * Contact → Footer.
  */
@@ -32,6 +33,7 @@ export default function HomePage() {
       <RealtimeBannerV5 />
       <FeaturedSystemV5 />
       <CaseListV5 />
+      <PosterV5 />
       <ReceiptsV5 />
       <GalleryV5 />
       <AIWorkflowV5 />

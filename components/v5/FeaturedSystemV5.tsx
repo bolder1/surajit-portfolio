@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CHAPTERS, READ_MINUTES } from "@/lib/systemStory";
+import { SdfBlobTransition } from "./SdfBlobTransition";
+import { ScrambleText } from "./ScrambleText";
 
 /**
  * §F FeaturedSystemV5 — the design system case, given the front page.
@@ -168,9 +170,12 @@ export function FeaturedSystemV5() {
           </p>
 
           <h2 className="v5-fs-title" id="v5-fs-title">
-            Five products.
+            <ScrambleText text="Five products." />
             <br />
-            Nobody chose <em>this.</em>
+            <ScrambleText text="Nobody chose" />{" "}
+            <em>
+              <ScrambleText text="this." />
+            </em>
           </h2>
 
           <p className="v5-fs-lede">
@@ -209,16 +214,27 @@ export function FeaturedSystemV5() {
         <div className="v5-fs-stage">
           {/* The preview. Only the active miniature is mounted, so the swap
               reads as a cut rather than a cross-fade of six overlaid SVGs. */}
-          <Link href="/system" className="v5-fs-screen" aria-label={`Play the experience — ${chapter.name}`}>
+          <Link
+            href="/system"
+            className="v5-fs-screen"
+            aria-label={`Play the experience — ${chapter.name}`}
+            data-cursor-label="Play"
+          >
             <span className="v5-fs-screen-top" aria-hidden>
               <i />
               <i />
               <i />
               <span>{chapter.no} · {chapter.name.toUpperCase()}</span>
             </span>
-            <span className="v5-fs-screen-body">
-              <Mini i={active} />
-            </span>
+            {/* A cut between two abstract diagrams reads as a glitch. The blob
+                wipe covers the swap, so the change looks authored — and because
+                the curtain hides the exact frame the SVG is replaced, the new
+                miniature is already laid out when it is uncovered. */}
+            <div className="v5-fs-screen-body">
+              <SdfBlobTransition transitionKey={active} duration={760}>
+                <Mini i={active} />
+              </SdfBlobTransition>
+            </div>
             <span className="v5-fs-screen-cap">{chapter.blurb}</span>
           </Link>
 

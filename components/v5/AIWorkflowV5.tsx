@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { RevealOnScrollV5 } from "./RevealOnScrollV5";
+import { SiriOrbCycle } from "./SiriOrb";
+import { ScrambleText, ScrambleCycle } from "./ScrambleText";
 
 /**
  * §07 AIWorkflowV5 — "I orchestrate. Models execute." as a bento.
@@ -8,6 +10,16 @@ import { RevealOnScrollV5 } from "./RevealOnScrollV5";
  * stack) + a maroon CTA card. Mirrors the About bento's card language,
  * recolored to the v5 brand palette.
  */
+
+/** What the loop actually does, in the order it does it. */
+const ORCHESTRATION = [
+  "Reading the existing system",
+  "Naming the constraint",
+  "Drafting three directions",
+  "Killing two of them",
+  "Wiring the tokens",
+  "Shipping to a real URL",
+];
 
 const TOOLS = [
   { cadence: "DAILY", title: "Claude Code", body: "Engineering pair. Built this portfolio end-to-end — refactors, audits, CI workflows." },
@@ -28,12 +40,26 @@ export function AIWorkflowV5() {
           {/* Lead */}
           <RevealOnScrollV5 as="div" className="v5-aibento-card area-lead" delay={0}>
             <h2 id="v5-aibento-heading" className="v5-aibento-lead-title">
-              I orchestrate. <em>Models execute.</em>
+              <ScrambleText text="I orchestrate." />{" "}
+              <em>
+                <ScrambleText text="Models execute." />
+              </em>
             </h2>
             <p className="v5-aibento-lead-sub">
               Claude + Figma Make AI + Cursor — chained into a repeatable
               workflow. Five-day prototypes that used to take three weeks.
             </p>
+
+            {/* The orb walks listening → thinking → streaming → done, and the
+                line under it names the step. It is a portrait of the loop, not
+                a live readout — there is no model attached to this page, and
+                dressing it up as one would be a lie told in pixels. */}
+            <div className="v5-aibento-orb">
+              <SiriOrbCycle size="86px" />
+              <p className="v5-aibento-orb-line">
+                <ScrambleCycle phrases={ORCHESTRATION} interval={2400} />
+              </p>
+            </div>
           </RevealOnScrollV5>
 
           {/* Stats */}

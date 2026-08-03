@@ -9,20 +9,18 @@ import { useEffect, useRef, useState } from "react";
  * invisible on warm / mid-tone backgrounds.
  *
  * Visual stack:
- *   1. Outer "halo" ring  — 1px translucent dark stroke for contrast
- *      on light backgrounds.
- *   2. Holographic ring   — 1.5px white stroke with a slow-rotating
- *      conic-gradient inset that creates the iridescent shimmer.
- *      Sits between the halo and the dot.
- *   3. Inner dot          — 5px laser-red core with a thin white
- *      outline. Always at full opacity for "you are here" clarity.
- *   4. Click ripple       — spawned on every pointerdown, a 56px
- *      white ring eases out and fades to zero over 480ms.
+ *   1. Ring    — 1.5px stroke that trails the pointer on a lerp, with a
+ *      dark halo behind it so it survives light imagery.
+ *   2. Dot     — a small accent core pinned exactly to the pointer. The
+ *      ring can lag; the dot never does, or clicking feels imprecise.
+ *   3. Label   — a chip that trails further back and names the action
+ *      under the pointer, filled from [data-cursor-label].
+ *   4. Ripple  — one thin accent ring per pointerdown, out and gone.
  *
- * Layering with both a dark halo + white ring + holographic shimmer
- * means the cursor is legible on:
- *   - near-black (brutalist paper)
- *   - any imagery in between
+ * The ring used to carry a rotating conic rainbow. It has been taken out:
+ * an iridescent shimmer belongs to no palette on this site and reads as
+ * decoration applied to a cursor rather than a cursor. The accent comes
+ * from --cursor-accent, which each design system sets for itself.
  *
  * Per-section flavors (data-cursor on the closest ancestor):
  *   default — ring + dot
@@ -52,10 +50,13 @@ export function Cursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const flavorEl = useRef<HTMLDivElement>(null);
   const rippleHostRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
 
   const flavor = useRef<Flavor>("default");
+  const label = useRef<string | null>(null);
   const target = useRef({ x: -100, y: -100 });
   const ring = useRef({ x: -100, y: -100 });
+  const follow = useRef({ x: -100, y: -100 });
   const raf = useRef<number | null>(null);
   const reducedMotion = useRef(false);
 
@@ -116,6 +117,20 @@ export function Cursor() {
         flavor.current = f;
         flavorEl.current?.setAttribute("data-flavor", f);
       }
+
+      // Follow label — the verb for whatever is under the pointer. Read from
+      // the DOM rather than held in React state so a pointermove never causes
+      // a render; the label element is written to directly, like the ring.
+      const tagged = el?.closest<HTMLElement>("[data-cursor-label]");
+      const next = tagged?.getAttribute("data-cursor-label") ?? null;
+      if (next !== label.current) {
+        label.current = next;
+        const node = labelRef.current;
+        if (node) {
+          if (next) node.textContent = next;
+          node.classList.toggle("is-on", Boolean(next));
+        }
+      }
     };
 
     const onDown = (e: PointerEvent) => {
@@ -138,6 +153,20 @@ export function Cursor() {
           ring.current.y += (target.current.y - ring.current.y) * RING_LERP;
         }
         ringRef.current.style.transform = `translate3d(${ring.current.x}px, ${ring.current.y}px, 0)`;
+      }
+      if (labelRef.current) {
+        // Trails further behind than the ring, so the label reads as being
+        // dragged along rather than pinned to the pointer.
+        if (reducedMotion.current) {
+          follow.current.x = target.current.x;
+          follow.current.y = target.current.y;
+        } else {
+          follow.current.x += (target.current.x - follow.current.x) * 0.13;
+          follow.current.y += (target.current.y - follow.current.y) * 0.13;
+        }
+        labelRef.current.style.transform = `translate3d(${
+          follow.current.x + 20
+        }px, ${follow.current.y + 20}px, 0)`;
       }
       raf.current = requestAnimationFrame(tick);
     };
@@ -183,6 +212,8 @@ export function Cursor() {
       <div ref={dotRef} className="cursor-dot" />
       {/* Ripple host — click ripples are appended here */}
       <div ref={rippleHostRef} className="cursor-ripple-host" />
+      {/* Follow label — filled from [data-cursor-label] on hover */}
+      <div ref={labelRef} className="v5-cursor-follow" />
 
       <style jsx global>{`
         /* Hide the OS cursor while we draw our own. */
@@ -218,27 +249,14 @@ export function Cursor() {
             border-radius 220ms cubic-bezier(0.2, 0, 0, 1),
             background-color 220ms ease,
             opacity 220ms ease;
-          /* Holographic stack:
-             - 1.5px white stroke for primary visibility
-             - 1px dark halo behind it (box-shadow) for contrast on light bg
-             - conic-gradient hue rotation for iridescent shimmer */
-          border: 1.5px solid rgba(255, 255, 255, 0.94);
+          /* Stroke plus a dark halo behind it — that pairing is what keeps
+             the ring legible on both the near-black paper and any bright
+             imagery it crosses, with no palette of its own. */
+          border: 1.5px solid rgba(255, 255, 255, 0.9);
           box-shadow:
-            0 0 0 1px rgba(0, 0, 0, 0.35),
-            0 0 12px rgba(120, 200, 255, 0.18);
-          background: conic-gradient(
-            from 0deg,
-            rgba(255, 0, 122, 0.18),
-            rgba(0, 229, 255, 0.18),
-            rgba(120, 255, 180, 0.18),
-            rgba(255, 200, 0, 0.18),
-            rgba(255, 0, 122, 0.18)
-          );
-          animation: cursor-shimmer 4.5s linear infinite;
-        }
-
-        @keyframes cursor-shimmer {
-          to { transform-origin: center; filter: hue-rotate(360deg); }
+            0 0 0 1px rgba(0, 0, 0, 0.4),
+            0 0 14px rgba(0, 0, 0, 0.25);
+          background: transparent;
         }
 
         .cursor-dot {
@@ -249,10 +267,10 @@ export function Cursor() {
           height: 6px;
           margin-left: -3px;
           margin-top: -3px;
-          background: #ff2d20;
+          background: var(--cursor-accent, #d9472f);
           border-radius: 9999px;
           box-shadow:
-            0 0 0 1.5px rgba(255, 255, 255, 0.92),
+            0 0 0 1.5px rgba(255, 255, 255, 0.9),
             0 0 0 2.5px rgba(0, 0, 0, 0.45);
           will-change: transform;
           transition: opacity 200ms ease, transform 200ms ease;
@@ -260,15 +278,15 @@ export function Cursor() {
 
         /* ─── Flavor: accent (links, buttons, anything interactive) ─── */
         .cursor-overlay[data-flavor="accent"] .cursor-ring {
-          width: 56px;
-          height: 56px;
-          margin-left: -28px;
-          margin-top: -28px;
-          background: rgba(255, 45, 32, 0.18);
-          border-color: rgba(255, 255, 255, 0.96);
+          width: 52px;
+          height: 52px;
+          margin-left: -26px;
+          margin-top: -26px;
+          background: color-mix(in srgb, var(--cursor-accent, #d9472f) 16%, transparent);
+          border-color: var(--cursor-accent, #d9472f);
           box-shadow:
-            0 0 0 1px #ff2d20,
-            0 0 24px rgba(255, 45, 32, 0.45);
+            0 0 0 1px rgba(0, 0, 0, 0.4),
+            0 0 26px color-mix(in srgb, var(--cursor-accent, #d9472f) 40%, transparent);
         }
         .cursor-overlay[data-flavor="accent"] .cursor-dot {
           width: 4px;
@@ -323,15 +341,7 @@ export function Cursor() {
           margin-top: -24px;
           background:
             linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)) center / 16px 1.5px no-repeat,
-            linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)) center / 1.5px 16px no-repeat,
-            conic-gradient(
-              from 0deg,
-              rgba(255, 0, 122, 0.18),
-              rgba(0, 229, 255, 0.18),
-              rgba(120, 255, 180, 0.18),
-              rgba(255, 200, 0, 0.18),
-              rgba(255, 0, 122, 0.18)
-            );
+            linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)) center / 1.5px 16px no-repeat;
         }
         .cursor-overlay[data-flavor="drag"] .cursor-dot {
           opacity: 0;
@@ -368,10 +378,8 @@ export function Cursor() {
           margin-left: -6px;
           margin-top: -6px;
           border-radius: 9999px;
-          border: 1.5px solid rgba(255, 255, 255, 0.94);
-          box-shadow:
-            0 0 0 1px rgba(0, 0, 0, 0.4),
-            0 0 16px rgba(255, 45, 32, 0.3);
+          border: 1.5px solid var(--cursor-accent, #d9472f);
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
           pointer-events: none;
           animation: cursor-ripple ${RIPPLE_DURATION}ms cubic-bezier(0.2, 0, 0, 1) forwards;
         }
@@ -395,7 +403,6 @@ export function Cursor() {
           .cursor-overlay { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .cursor-ring { animation: none; }
           .cursor-ripple { animation: none; opacity: 0; }
         }
       `}</style>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getCaseProjects } from "@/lib/projects";
 import { CaseThumb } from "@/components/CaseThumb";
+import { ScrambleText } from "./ScrambleText";
+import { ClippedCircle } from "./ClippedCircle";
 
 /**
  * §04 CaseListV5 — "Selected work" list ported from v3.
@@ -26,7 +28,10 @@ export function CaseListV5() {
           <div>
             <p className="v5-caselist-eyebrow">/ selected work</p>
             <h2 id="v5-caselist-heading" className="v5-caselist-title">
-              The <em>long versions.</em>
+              <ScrambleText text="The" />{" "}
+              <em>
+                <ScrambleText text="long versions." />
+              </em>
             </h2>
           </div>
           <p className="v5-caselist-intro">
@@ -39,7 +44,12 @@ export function CaseListV5() {
         <ul className="v5-caselist-rows" role="list">
           {cases.map((p, i) => (
             <li key={p.slug}>
-              <Link href={`/cases/${p.slug}`} className="group v5-caselist-row" aria-label={p.title}>
+              <Link
+                href={`/cases/${p.slug}`}
+                className="group v5-caselist-row"
+                aria-label={p.title}
+                data-cursor-label="Read the case"
+              >
                 <span className="v5-caselist-no">{String(i + 1).padStart(2, "0")}</span>
                 <span className="v5-caselist-thumb">
                   <CaseThumb variant={VARIANT_BY_SLUG[p.slug] ?? "directory"} />
@@ -52,6 +62,7 @@ export function CaseListV5() {
                   {p.year} · {p.role?.split("·")[0]?.trim()}
                 </span>
                 <span className="v5-caselist-arrow" aria-hidden>→</span>
+                <ClippedCircle circleSize={200} />
               </Link>
             </li>
           ))}
