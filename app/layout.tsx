@@ -9,6 +9,7 @@ import {
 } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Cursor } from "@/components/Cursor";
+import { PageTransition } from "@/components/PageTransition";
 import { HUD } from "@/components/HUD";
 import { PlaygroundFab } from "@/components/PlaygroundFab";
 import { VersionToggle } from "@/components/VersionToggle";
@@ -150,7 +151,9 @@ export default function RootLayout({
         <HUD />
         <PlaygroundFab />
         <VersionToggle />
-        <div className="v5-root">{children}</div>
+        <div className="v5-root">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </body>
     </html>
   );

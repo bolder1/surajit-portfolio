@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { WhammyField } from "@/components/v5/WhammyField";
 
@@ -135,7 +136,16 @@ export function MastheadHeroV5() {
             {NAV_LINKS.map((link, i) => (
               <span key={link.label} style={{ display: "inline-flex", alignItems: "center" }}>
                 {i > 0 && <span className="v5-navsep">/</span>}
-                <a href={link.href} className="v5-navlink">{link.label}</a>
+                {/* Route links go through the router; the in-page hash does
+                    not. These were all plain anchors, which meant the primary
+                    navigation of the site did a full document reload on every
+                    click — slower than it needed to be, and invisible to the
+                    page transition, which only sees client-side routing. */}
+                {link.href.startsWith("/") ? (
+                  <Link href={link.href} className="v5-navlink">{link.label}</Link>
+                ) : (
+                  <a href={link.href} className="v5-navlink">{link.label}</a>
+                )}
               </span>
             ))}
           </div>

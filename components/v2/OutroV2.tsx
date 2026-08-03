@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -162,7 +164,7 @@ export function OutroV2() {
             <p>Surajit Dutta · Kolkata, IST · {YEAR}</p>
             <p className="v2-foot-built">
               Concept 02, &ldquo;Velocity&rdquo;. Concept 01 is at{" "}
-              <a href="/">the editorial home</a>.
+              <Link href="/">the editorial home</Link>.
             </p>
             <a href="#v2-intro" className="v2-foot-top">
               Back to top <span aria-hidden>↑</span>

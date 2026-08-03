@@ -299,6 +299,23 @@ button.v5-scr {
   z-index: 2;
 }
 
+/* ── page wipe ─────────────────────────────────────────────── */
+/* Above the page and the site chrome, below the cursor overlay (9999) — a
+   transition that paints over the pointer looks like a freeze. */
+.v5-wipe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9500;
+  pointer-events: none;
+  /* Idle it is fully transparent anyway (the shader discards), but taking it
+     out of the compositor entirely means an always-mounted full-screen canvas
+     costs nothing between navigations. */
+  visibility: hidden;
+}
+.v5-wipe.is-playing { visibility: visible; }
+
 /* ── cursor ────────────────────────────────────────────────── */
 /* The cursor overlay is a sibling of the design-system roots, not a
    descendant, so it cannot inherit --v5-* or --v2-*. The page hands it one

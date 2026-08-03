@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -138,12 +140,12 @@ export function ReceiptsV2() {
         </div>
 
         <p className="v2-receipts-foot">
-          <a href="/work" className="v2-link">
+          <Link href="/work" className="v2-link">
             Full case studies
-          </a>
-          <a href="/gallery" className="v2-link">
+          </Link>
+          <Link href="/gallery" className="v2-link">
             Visual gallery
-          </a>
+          </Link>
         </p>
       </div>
     </section>

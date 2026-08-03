@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SHOWCASE_PRODUCTS } from "@/lib/showcase";
 import { InfiniteSlider } from "./InfiniteSlider";
@@ -161,8 +162,8 @@ export function ReceiptsV5() {
 
         <p className="v5-rc-foot">
           <span>{SHOWCASE_PRODUCTS.length} LIVE BUILDS</span>
-          <a href="/work">Full case studies&nbsp;↗</a>
-          <a href="/gallery">Visual gallery&nbsp;↗</a>
+          <Link href="/work">Full case studies&nbsp;↗</Link>
+          <Link href="/gallery">Visual gallery&nbsp;↗</Link>
         </p>
       </div>
     </section>
