@@ -1,3 +1,4 @@
+import { BlackHoleIntro } from "@/components/v5/BlackHoleIntro";
 import { MastheadHeroV5 } from "@/components/v5/MastheadHeroV5";
 import { KineticV5 } from "@/components/v5/KineticV5";
 import { AboutPortraitV5 } from "@/components/v5/AboutPortraitV5";
@@ -25,6 +26,9 @@ import { FooterV5 } from "@/components/v5/FooterV5";
 export default function HomePage() {
   return (
     <main id="main">
+      {/* Starter page. Shows once per session, then clears itself and the
+          hero is already underneath. */}
+      <BlackHoleIntro />
       <MastheadHeroV5 />
       <KineticV5 />
       <AboutPortraitV5 />

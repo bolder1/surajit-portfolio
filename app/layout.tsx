@@ -19,6 +19,7 @@ import "./v5b.css";
 import "./v5c.css";
 import "./v5d.css";
 import "./v5e.css";
+import "./v5f.css";
 import "./v2.css";
 import "./v2b.css";
 import "./v2c.css";
@@ -142,6 +143,20 @@ export default function RootLayout({
       className={`${sans.variable} ${serif.variable} ${mono.variable} ${v2Display.variable} ${v2Sans.variable} ${v2Mono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/*
+          Marks the document before first paint if the intro has already been
+          seen this session, so a returning visitor never sees it flash up and
+          disappear. CSS keyed on the attribute does the hiding; React would
+          only get the chance a frame too late.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(sessionStorage.getItem('bh-intro')==='seen')document.documentElement.setAttribute('data-intro','seen')}catch(e){}",
+          }}
+        />
+      </head>
       <body style={{ background: "#0a0a0a" }}>
         <a href="#main" className="skip-link">
           Skip to main content
