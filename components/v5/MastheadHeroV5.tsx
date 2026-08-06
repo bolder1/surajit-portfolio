@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { WhammyField } from "@/components/v5/WhammyField";
 
 /**
  * §01 MastheadHeroV5 — scroll-driven masthead.
@@ -93,12 +95,15 @@ export function MastheadHeroV5() {
   return (
     <section ref={sceneRef} id="hero" className="v5-hero-scene" aria-label="Intro">
       <div ref={stageRef} className="v5-hero-sticky">
-        {/* Gradient background */}
+        {/* Backdrop: a bent, wobbling string field.
+            The static wash behind it is the no-WebGL2 fallback. */}
         <div className="v5-hero-abstract" aria-hidden />
-
-        {/* 3D object = provided render; tilts toward the cursor (--mx/--my) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="v5-hero-object" src="/v5/img-b.avif" alt="" aria-hidden />
+        <WhammyField />
+        {/* Type-safety scrim. The shader is bright enough that the
+            tagline dropped to 1.7:1 in its hottest patches; this pulls
+            the corners the copy sits in back down without flattening
+            the middle of the field. */}
+        <div className="v5-hero-scrim" aria-hidden />
 
         {/* Tagline */}
         <p className="v5-hero-tagline">
@@ -127,7 +132,16 @@ export function MastheadHeroV5() {
             {NAV_LINKS.map((link, i) => (
               <span key={link.label} style={{ display: "inline-flex", alignItems: "center" }}>
                 {i > 0 && <span className="v5-navsep">/</span>}
-                <a href={link.href} className="v5-navlink">{link.label}</a>
+                {/* Route links go through the router; the in-page hash does
+                    not. These were all plain anchors, which meant the primary
+                    navigation of the site did a full document reload on every
+                    click — slower than it needed to be, and invisible to the
+                    page transition, which only sees client-side routing. */}
+                {link.href.startsWith("/") ? (
+                  <Link href={link.href} className="v5-navlink">{link.label}</Link>
+                ) : (
+                  <a href={link.href} className="v5-navlink">{link.label}</a>
+                )}
               </span>
             ))}
           </div>

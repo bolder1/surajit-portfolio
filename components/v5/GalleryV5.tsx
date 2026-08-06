@@ -103,7 +103,7 @@ export function GalleryV5() {
   return (
     <section ref={sceneRef} id="gallery" className="v5-gallery-scene" aria-label="Work gallery">
       <div ref={stickyRef} className="v5-gallery-sticky">
-        <div className="v5-gallery-stage" aria-hidden={false}>
+        <div className="v5-gallery-stage" aria-hidden={false} data-cursor="drag">
           <div className="v5-gallery-ring">
             <div className="v5-gallery-spin">
               {items.map((p, i) => {
@@ -138,8 +138,7 @@ export function GalleryV5() {
         <div className="v5-gallery-center">
           <p className="v5-gallery-eyebrow">/ the full body of work</p>
           <h2 className="v5-gallery-title">
-            Each project is a chance to <em>learn, experiment</em> and push
-            my limits.
+            Everything that <em>never got</em> a case study.
           </h2>
           <Link href="/gallery" className="v5-gallery-cta">
             Enter the gallery →

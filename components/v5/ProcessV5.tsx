@@ -78,7 +78,7 @@ export function ProcessV5() {
         <div className="v5-pxstep-intro">
           <p className="v5-pxstep-eyebrow">/ how I work</p>
           <h2 id="v5-pxstep-title" className="v5-pxstep-title">
-            From brief to <em>shipped</em> — start to finish.
+            Six steps. <em>None of them optional.</em>
           </h2>
           <p className="v5-pxstep-lead">Research-led, decision-first, AI-native.</p>
         </div>

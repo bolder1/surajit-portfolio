@@ -218,36 +218,6 @@
   .v5-hero-abstract { animation: none; }
 }
 
-/* Hero 3D object = the provided 3D render (img-b). Bigger, anchored to
-   the TOP-RIGHT and half-cut off the corner. Floats subtly, tilts toward
-   the cursor (--mx / --my), lifts away + fades as the name splits. */
-.v5-hero-object {
-  position: absolute;
-  z-index: 1;
-  top: -8%;
-  right: -7%;
-  left: auto;
-  width: min(58vw, 720px);
-  aspect-ratio: 2048 / 1755;
-  object-fit: contain;
-  pointer-events: none;
-  transform:
-    perspective(1000px)
-    translateY(calc(var(--split, 0) * -14vh))
-    scale(calc(0.98 + var(--rise, 0) * 0.06 - var(--split, 0) * 0.08));
-  transform-origin: top right;
-  opacity: calc((0.62 + var(--rise, 0) * 0.38) * (1 - var(--split, 0) * 0.85));
-  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.55));
-  will-change: transform, opacity;
-  animation: v5-object-float 9s ease-in-out infinite alternate;
-}
-@keyframes v5-object-float {
-  0%   { translate: 0 0; }
-  100% { translate: 0 -16px; }
-}
-@media (max-width: 767px) { .v5-hero-object { width: 92vw; top: -4%; right: -16%; } }
-@media (prefers-reduced-motion: reduce) { .v5-hero-object { animation: none; } }
-
 .v5-hero-abstract--unused-before {
   content: "";
 }
@@ -1203,149 +1173,47 @@
 .v5-btn-outline:hover { background: var(--v5-ink); color: var(--v5-paper); transform: translateY(-2px); }
 
 /* ────────────────────────────────────────────────────────────
-   PLAYFAB — the 3D game-button door into /playground.
-   Pinned to the bottom edge of every page; extruded depth,
-   cursor tilt, spinning gem, shine sweep.
+   PLAYFAB — small, quiet door into /playground.
+   Fixed bottom-right pill, same register as the hero's .v5-playbtn.
    ─────────────────────────────────────────────────────── */
-.v5-playfab-dock {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  z-index: 60;
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
-  perspective: 700px;
-  pointer-events: none;
-}
 .v5-playfab {
-  --rx: 0deg;
-  --ry: 0deg;
-  pointer-events: auto;
-  display: block;
-  text-decoration: none;
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transform-style: preserve-3d;
-  transition: transform 180ms ease;
-  animation: v5-playfab-float 4.5s ease-in-out infinite;
-}
-@keyframes v5-playfab-float {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -5px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .v5-playfab { animation: none; }
-}
-.v5-playfab-face {
-  position: relative;
-  display: flex;
+  position: fixed;
+  right: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 60;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 13px 22px 15px 16px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #e25b39 0%, var(--v5-accent-bright) 45%, #a72a15 100%);
-  border: 1px solid #f0876a;
-  /* extruded 3D edge */
-  box-shadow:
-    0 5px 0 #6d1408,
-    0 6px 0 #5a1007,
-    0 14px 34px rgba(217, 71, 47, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  overflow: hidden;
-  transition: box-shadow 150ms ease, translate 150ms ease;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--v5-rule-soft);
+  border-radius: 999px;
+  background: var(--v5-paper);
+  font-family: var(--v5-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--v5-ink);
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease, transform 200ms ease;
 }
-.v5-playfab:hover .v5-playfab-face {
-  box-shadow:
-    0 7px 0 #6d1408,
-    0 8px 0 #5a1007,
-    0 20px 44px rgba(217, 71, 47, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  translate: 0 -2px;
+.v5-playfab:hover {
+  background: var(--v5-accent-bright);
+  border-color: var(--v5-accent-bright);
+  color: var(--v5-paper);
+  transform: translateY(-2px);
 }
-.v5-playfab:active .v5-playfab-face {
-  translate: 0 4px;
-  box-shadow:
-    0 1px 0 #6d1408,
-    0 2px 0 #5a1007,
-    0 8px 18px rgba(217, 71, 47, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-/* spinning 3D gem */
-.v5-playfab-gem {
-  position: relative;
-  width: 26px;
-  height: 26px;
-  flex: none;
-  transform-style: preserve-3d;
-  animation: v5-playfab-gem 3.2s linear infinite;
-}
-@keyframes v5-playfab-gem {
-  from { transform: rotateY(0deg) rotateX(12deg); }
-  to { transform: rotateY(360deg) rotateX(12deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .v5-playfab-gem { animation: none; transform: rotateY(35deg) rotateX(12deg); }
-}
-.v5-playfab-gem i {
-  position: absolute;
-  inset: 3px;
-  background: linear-gradient(135deg, #ffe9c4, #f7b733);
+.v5-playfab-glyph {
+  width: 6px;
+  height: 6px;
+  background: var(--v5-accent-bright);
   transform: rotate(45deg);
-  border: 1px solid #fff3d6;
-}
-.v5-playfab-gem i:last-child {
-  transform: rotate(45deg) rotateY(90deg);
-  background: linear-gradient(135deg, #f7b733, #c47a10);
-}
-.v5-playfab-copy { display: flex; flex-direction: column; gap: 2px; }
-.v5-playfab-copy b {
-  font-family: var(--v5-mono), monospace;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  color: #fff6ec;
-  text-shadow: 0 1px 0 rgba(90, 16, 7, 0.65);
-  white-space: nowrap;
-}
-.v5-playfab-copy small {
-  font-family: var(--v5-mono), monospace;
-  font-size: 8.5px;
-  letter-spacing: 0.22em;
-  color: #ffd9c4;
-  white-space: nowrap;
-}
-.v5-playfab-key {
-  font-size: 13px;
-  color: #fff6ec;
-  background: rgba(90, 16, 7, 0.45);
-  border: 1px solid rgba(255, 246, 236, 0.4);
-  border-radius: 8px;
-  padding: 6px 9px 5px;
-  line-height: 1;
+  transition: background 200ms ease;
   flex: none;
-  text-shadow: none;
 }
-/* shine sweep */
-.v5-playfab-shine {
-  position: absolute;
-  top: -30%;
-  left: -80%;
-  width: 45%;
-  height: 160%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.38), transparent);
-  transform: skewX(-22deg);
-  animation: v5-playfab-shine 4.8s ease-in-out infinite;
-}
-@keyframes v5-playfab-shine {
-  0%, 68% { left: -80%; }
-  86%, 100% { left: 160%; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .v5-playfab-shine { animation: none; display: none; }
-}
+.v5-playfab:hover .v5-playfab-glyph { background: var(--v5-paper); }
 @media (max-width: 640px) {
-  .v5-playfab-copy small { display: none; }
-  .v5-playfab-face { padding: 11px 16px 13px 12px; }
-  .v5-playfab-copy b { font-size: 11px; }
+  .v5-playfab { right: 14px; bottom: max(14px, env(safe-area-inset-bottom)); font-size: 10px; padding: 7px 12px; }
 }
 
 /* ────────────────────────────────────────────────────────────

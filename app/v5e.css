@@ -1,0 +1,456 @@
+/* ════════════════════════════════════════════════════════════
+   §FX — motion primitives for V1.
+
+   Seven behaviours, all hand-rolled against the accessibility contracts
+   they ship with: reduced motion, hover-device detection, and semantic
+   content that never leaves the DOM. No new dependencies — the only
+   library involved is `motion`, which the project already had.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── scramble ──────────────────────────────────────────────── */
+/* The painted text sits in normal flow — no inline-block, no overlay box.
+   An earlier version stacked an absolutely-positioned ink layer over a
+   transparent copy to freeze the width; it froze the layout too. An
+   inline-block that wraps internally aligns its LAST baseline to the parent's,
+   so on narrow screens the first line escaped upward and landed on the
+   paragraph above it. Flowing the glyphs like ordinary text means a heading
+   wraps exactly as it would without the effect, at every width. The cost is a
+   little reflow while glyphs swap, which is what a scramble looks like. */
+.v5-scr { display: inline; }
+button.v5-scr {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+/* The accessible copy: off-canvas but still in the accessibility tree, so the
+   heading keeps its real name while the ink layer shows noise. Clipped rather
+   than `visibility: hidden` or `display: none`, both of which would remove it
+   from that tree — the one thing this layer exists to prevent. It is mounted
+   only while the glyphs are scrambled; see ScrambleText for why. */
+.v5-scr-a11y {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.v5-scr-ink {
+  font-variant-ligatures: none;
+  font-kerning: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Effect off: the real copy comes back into flow and the ink layer goes. */
+  .v5-scr-a11y {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: inherit;
+  }
+  .v5-scr-ink { display: none; }
+}
+
+/* ── scramble, self-driving ────────────────────────────────── */
+.v5-scrc {
+  display: inline-block;
+  font-variant-ligatures: none;
+  font-kerning: none;
+  /* Tabular figures keep the line from twitching horizontally as digits
+     and letters trade places mid-resolve. */
+  font-variant-numeric: tabular-nums;
+}
+/* Unresolved glyphs read as noise, and lock to body colour as the
+   wavefront passes — the phrase resolves out of static. */
+.v5-scrc-noise { color: var(--v5-accent-bright, #d9472f); opacity: 0.9; }
+.v5-scr-live {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── infinite slider ───────────────────────────────────────── */
+.v5-slider { overflow: hidden; width: 100%; }
+.v5-slider-track {
+  display: flex;
+  width: max-content;
+  animation: v5-slide var(--slide-dur, 34s) linear infinite;
+}
+.v5-slider-run {
+  display: flex;
+  align-items: center;
+  gap: var(--slide-gap, 40px);
+  padding-right: var(--slide-gap, 40px);
+  flex: none;
+}
+/* Exactly -50%: the track is two identical runs, so this lands run B
+   where run A began and the loop closes invisibly. */
+@keyframes v5-slide {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.v5-slider.is-reverse .v5-slider-track { animation-direction: reverse; }
+.v5-slider.is-pausable:hover .v5-slider-track { animation-play-state: paused; }
+.v5-slider.is-vertical { height: 100%; }
+.v5-slider.is-vertical .v5-slider-track { flex-direction: column; width: auto; height: max-content; animation-name: v5-slide-y; }
+.v5-slider.is-vertical .v5-slider-run { flex-direction: column; padding: 0 0 var(--slide-gap, 40px); }
+@keyframes v5-slide-y {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v5-slider-track { animation: none !important; transform: none !important; }
+}
+
+/* Receipts ticker — the slider in its editorial dress. */
+.v5-rc-ticker {
+  margin: clamp(26px, 4vw, 44px) 0 clamp(18px, 3vw, 30px);
+  padding: 14px 0;
+  border-top: 1px solid var(--v5-rule-soft);
+  border-bottom: 1px solid var(--v5-rule-soft);
+  /* Fade both ends so the loop has no visible entry or exit point. */
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.v5-rc-tick {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 26px;
+  font-family: var(--v5-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--v5-ink-soft);
+}
+.v5-rc-tick i {
+  font-style: normal;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--v5-ink-muted);
+}
+.v5-rc-tick-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--v5-accent-bright);
+}
+
+/* Rows host a difference disc, so they need to clip it and own a
+   stacking context of their own. */
+.v5-rc-row,
+.v5-caselist-row {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── kinetic centre build ──────────────────────────────────── */
+.v5-kcb { position: relative; display: block; }
+/* Ghost and row share every type and layout property, so the ghost's measured
+   height is exactly what the animated row will need. */
+.v5-kcb-ghost,
+.v5-kcb-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: 0.28em;
+  font-family: var(--v5-serif), Georgia, serif;
+  font-size: clamp(26px, 4.6vw, 62px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--v5-ink);
+}
+.v5-kcb-ghost { visibility: hidden; }
+.v5-kcb-row { position: absolute; inset: 0; }
+.v5-kcb-word { display: inline-block; will-change: transform, opacity, filter; }
+.v5-kcb-live {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── siri orb ──────────────────────────────────────────────── */
+/* Registering the angle is what makes it animatable: an unregistered
+   custom property is an untyped string and cannot be interpolated. */
+@property --v5-orb-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.v5-orb {
+  position: relative;
+  display: inline-block;
+  width: var(--orb-size, 96px);
+  height: var(--orb-size, 96px);
+  border-radius: 50%;
+  isolation: isolate;
+  /* The blur is what turns six conic wedges into one fluid body — at 3% of
+     the size the seams between stops stayed visible and it read as a pie
+     chart. 13% melts them while the mask keeps the silhouette a disc.
+     Amplitude then tightens the gradient and lifts contrast. */
+  filter: blur(calc(var(--orb-size, 96px) * 0.13))
+          contrast(calc(1.15 + var(--orb-amp, 0) * 0.45))
+          saturate(calc(1 + var(--orb-amp, 0) * 0.5));
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.3, 1), filter 200ms linear;
+  /* Mask keeps the layers inside a soft disc at any size. */
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 58%, transparent 72%);
+  mask: radial-gradient(circle at 50% 50%, #000 58%, transparent 72%);
+}
+.v5-orb-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: v5-orb-spin var(--orb-spin, 9s) linear infinite;
+}
+@keyframes v5-orb-spin {
+  to { --v5-orb-angle: 360deg; }
+}
+.v5-orb-layer.l1 { background: conic-gradient(from var(--v5-orb-angle), #d9472f, transparent 38%); }
+.v5-orb-layer.l2 { background: conic-gradient(from calc(var(--v5-orb-angle) * -1.3 + 60deg), #f0a35c, transparent 34%); opacity: .85; }
+.v5-orb-layer.l3 { background: conic-gradient(from calc(var(--v5-orb-angle) * 0.7 + 140deg), #7d1616, transparent 42%); opacity: .8; }
+.v5-orb-layer.l4 { background: conic-gradient(from calc(var(--v5-orb-angle) * -0.5 + 220deg), #f0eee8, transparent 26%); opacity: .55; }
+.v5-orb-layer.l5 { background: conic-gradient(from calc(var(--v5-orb-angle) * 1.6 + 300deg), #c4402c, transparent 30%); opacity: .7; }
+.v5-orb-layer.l6 { background: conic-gradient(from calc(var(--v5-orb-angle) * -2.1), #ffd9c2, transparent 22%); opacity: .4; }
+
+/* State contract. `thinking` speeds rotation with NO size change, so a
+   busy assistant never nudges the layout around it. */
+.v5-orb.is-idle      { --orb-spin: 11s; filter: blur(calc(var(--orb-size,96px)*.15)) saturate(.75) contrast(1.05); }
+.v5-orb.is-listening { --orb-spin: 7s;  transform: scale(calc(1 + var(--orb-amp, 0) * 0.14)); }
+.v5-orb.is-thinking  { --orb-spin: 3.2s; }
+.v5-orb.is-streaming { --orb-spin: 6s;  animation: v5-orb-pulse 1.5s ease-in-out infinite; }
+.v5-orb.is-done      { animation: v5-orb-settle 460ms cubic-bezier(0.2, 1.5, 0.4, 1) 1; }
+.v5-orb.is-error     { filter: saturate(.15) contrast(1.1) blur(calc(var(--orb-size,96px)*.13)); animation: v5-orb-shake 180ms linear 1; }
+@keyframes v5-orb-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes v5-orb-settle { 0% { transform: scale(1); } 55% { transform: scale(1.09); } 100% { transform: scale(1); } }
+@keyframes v5-orb-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) {
+  .v5-orb, .v5-orb-layer { animation: none !important; transform: none !important; }
+}
+
+/* Orb in the AI bento lead card. */
+.v5-aibento-orb {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--v5-rule-soft);
+}
+.v5-aibento-orb-line {
+  font-family: var(--v5-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--v5-ink-soft);
+  /* Two lines' worth of room: the phrases differ in length and a reflow on
+     every cycle would nudge the card's height four times a minute. */
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 560px) {
+  .v5-aibento-orb { gap: 14px; }
+}
+
+/* ── clipped circle ────────────────────────────────────────── */
+.v5-clip-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  /* Accent rather than white. Difference against near-white ink gives the
+     brand vermilion; against the near-black paper it gives a vermilion
+     wash — so the disc reads as the site's own colour either way. A white
+     disc on this paper inverts to a flat white blob, which is a spotlight,
+     not an interaction. */
+  background: var(--v5-accent-bright);
+  /* Difference is the point: content above inverts as the disc passes,
+     so one element serves light-on-dark and dark-on-light alike. */
+  mix-blend-mode: difference;
+  pointer-events: none;
+  transform: scale(0);
+  transition: transform 380ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  z-index: 0;
+}
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .v5-clip-circle { display: none; }
+}
+
+/* ── sdf blob transition ───────────────────────────────────── */
+.v5-sdf { position: relative; }
+.v5-sdf-content { position: relative; z-index: 0; }
+.v5-sdf-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── page wipe ─────────────────────────────────────────────── */
+/* Above the page and the site chrome, below the cursor overlay (9999) — a
+   transition that paints over the pointer looks like a freeze. */
+.v5-wipe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9500;
+  pointer-events: none;
+  /* Idle it is fully transparent anyway (the shader discards), but taking it
+     out of the compositor entirely means an always-mounted full-screen canvas
+     costs nothing between navigations. */
+  visibility: hidden;
+}
+.v5-wipe.is-playing { visibility: visible; }
+
+/* ── cursor ────────────────────────────────────────────────── */
+/* The cursor overlay is a sibling of the design-system roots, not a
+   descendant, so it cannot inherit --v5-* or --v2-*. The page hands it one
+   token instead, and V2 claims it back with :has() when its root is on the
+   page — a vermilion pointer on the volt-green page would be the only warm
+   thing on screen. */
+body { --cursor-accent: #d9472f; }
+body:has(.v2-root) { --cursor-accent: #a0ff99; }
+
+/* Lives outside .v5-root on purpose — the cursor is global chrome — so
+   every custom property carries a literal fallback. */
+.v5-cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  pointer-events: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  background: var(--cursor-accent, #d9472f);
+  color: #0a0a0a;
+  font-family: var(--v5-mono, ui-monospace), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  /* `scale` is animated separately from `transform` because the transform is
+     rewritten every frame by the rAF loop — folding the scale into it would
+     mean the JS had to own the easing too. */
+  scale: 0.86;
+  transition: opacity 180ms ease, scale 240ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+.v5-cursor-follow.is-on { opacity: 1; scale: 1; }
+@media (pointer: coarse) {
+  .v5-cursor-follow { display: none; }
+}
+
+/* ── poster interstitial ───────────────────────────────────── */
+.v5-poster {
+  position: relative;
+  overflow: hidden;
+  /* Isolate so the difference-blended disc inverts this section only, rather
+     than reaching through to whatever the page painted underneath it. */
+  isolation: isolate;
+  /* Nearly a full viewport. The other sections are read; this one is a pause,
+     and a pause that shares the screen with the section above it is not a
+     pause. Holding the statement alone is what makes it land. */
+  min-height: 92svh;
+  display: grid;
+  align-content: center;
+  padding: clamp(88px, 12vh, 150px) 0;
+  border-top: 1px solid var(--v5-rule-soft);
+  border-bottom: 1px solid var(--v5-rule-soft);
+  background: var(--v5-paper);
+}
+
+/* The caustic field. Sits under everything, including the difference disc,
+   which therefore inverts the shader as well as the type. */
+.v5-poster-shader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+/* No WebGL2: a static warm wash rather than a black hole. */
+.v5-poster-shader[data-fallback="true"] {
+  background:
+    radial-gradient(120% 80% at 12% 22%, rgba(217, 71, 47, 0.16), transparent 60%),
+    radial-gradient(100% 70% at 88% 78%, rgba(240, 163, 92, 0.10), transparent 62%);
+}
+/* Legibility floor. The field is already dim, but a 62px serif statement over
+   a live shader is exactly where contrast quietly fails, so the centre gets a
+   measured hold-down while the edges keep their light. */
+.v5-poster-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Deliberately light. The shader already darkens its own centre, and a
+     heavy scrim on top of that read as a grey smudge sitting over the field
+     rather than as depth. This only tops up what the vignette leaves. */
+  background: radial-gradient(
+    58% 44% at 50% 48%,
+    rgba(10, 10, 10, 0.62) 0%,
+    rgba(10, 10, 10, 0.42) 48%,
+    rgba(10, 10, 10, 0.08) 80%,
+    transparent 100%
+  );
+}
+/* Positioned but z-index auto, so the disc — later in the DOM — paints above
+   it and the type inverts as it passes. */
+.v5-poster-wrap {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 64px);
+  display: grid;
+  justify-items: center;
+  gap: clamp(26px, 4vh, 46px);
+  text-align: center;
+}
+.v5-poster-eyebrow {
+  font-family: var(--v5-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--v5-ink-muted);
+}
+/* The statement holds its own height so the page does not jump as words
+   land and the phrase rewraps. */
+.v5-poster-stage {
+  display: grid;
+  align-items: center;
+  min-height: clamp(120px, 22vh, 210px);
+  width: 100%;
+  margin: 0;
+}
+.v5-poster-note {
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--v5-ink-soft);
+}
+.v5-poster-rule {
+  width: min(420px, 60%);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--v5-accent-bright) 50%,
+    transparent
+  );
+  opacity: 0.6;
+}

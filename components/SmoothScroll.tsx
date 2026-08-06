@@ -22,6 +22,11 @@ export function SmoothScroll() {
       touchMultiplier: 1.5,
     });
 
+    // Published so the page transition can hand its scroll reset to Lenis.
+    // Calling window.scrollTo underneath a running instance leaves the two
+    // disagreeing about where the page is, and Lenis wins the next frame.
+    (window as unknown as { lenis?: Lenis }).lenis = lenis;
+
     let frame: number;
     const raf = (time: number) => {
       lenis.raf(time);
@@ -31,6 +36,7 @@ export function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(frame);
+      delete (window as unknown as { lenis?: Lenis }).lenis;
       lenis.destroy();
     };
   }, []);

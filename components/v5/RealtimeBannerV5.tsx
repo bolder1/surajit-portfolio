@@ -18,7 +18,14 @@ const PIPELINE = [
   "Revenue",
 ];
 
-const CASES = ["ITDR", "CARE", "DPDP COMPLIANCE", "FUNCTION OS", "HEALTHCARE"];
+const CASES: { label: string; slug: string | null }[] = [
+  { label: "ITDR", slug: "itdr" },
+  { label: "CARE", slug: null },
+  { label: "DPDP COMPLIANCE", slug: "dpdp-compliance" },
+  { label: "FUNCTION OS", slug: "function-os" },
+  { label: "HEALTHCARE", slug: null },
+  { label: "DESIGN SYSTEM", slug: "design-system" },
+];
 
 export function RealtimeBannerV5() {
   return (
@@ -50,16 +57,23 @@ export function RealtimeBannerV5() {
             ))}
           </div>
         </div>
-
-        <p className="v5-rtb-cases">
-          {CASES.map((c, i) => (
-            <span key={c} className="v5-rtb-caseWrap">
-              {i > 0 && <span className="v5-rtb-sep">·</span>}
-              <span className="v5-rtb-case">{c}</span>
-            </span>
-          ))}
-        </p>
       </Link>
+
+      {/* Case names — the 3 with a full process case study are direct links */}
+      <p className="v5-rtb-cases">
+        {CASES.map((c, i) => (
+          <span key={c.label} className="v5-rtb-caseWrap">
+            {i > 0 && <span className="v5-rtb-sep">·</span>}
+            {c.slug ? (
+              <Link href={`/process/${c.slug}`} className="v5-rtb-case is-linked">
+                {c.label}
+              </Link>
+            ) : (
+              <span className="v5-rtb-case">{c.label}</span>
+            )}
+          </span>
+        ))}
+      </p>
     </section>
   );
 }

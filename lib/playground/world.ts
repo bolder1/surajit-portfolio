@@ -72,6 +72,9 @@ function destinationsFor(variant: WorldVariantKey): Destination[] {
     return [
       { key: "work", label: "MY WORK PORTFOLIO", x: 0, z: -44, page: "/work" },
       { key: "career", label: "MY CAREER — MILESTONE ARC", x: 0, z: -58, page: "/process" },
+      { key: "case-itdr", label: "CASE STUDY — ITDR", x: -18, z: -46, page: "/process/itdr" },
+      { key: "case-dpdp", label: "CASE STUDY — DPDP COMPLIANCE", x: 2, z: -44, page: "/process/dpdp-compliance" },
+      { key: "case-fnos", label: "CASE STUDY — FUNCTION OS", x: 9, z: -45, page: "/process/function-os" },
       { key: "about", label: "MY ABOUT", x: -44, z: 0, page: "/info" },
       { key: "play", label: "PLAY", x: 44, z: 0 },
       { key: "contact", label: "CONTACT", x: 0, z: 44, page: "/contact" },

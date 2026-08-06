@@ -23,7 +23,7 @@ export function FooterV5() {
         <div className="v5-footer-cta-left">
           <p className="eyebrow">/ open to work — 2026</p>
           <h2 className="v5-footer-cta-title">
-            Let&rsquo;s build <em>something that lasts.</em>
+            Tell me <em>what has to exist.</em>
           </h2>
         </div>
         <div className="v5-footer-cta-actions">

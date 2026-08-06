@@ -1,0 +1,1164 @@
+/*
+  ════════════════════════════════════════════════════════════════════
+  V2 — "VELOCITY"  ·  token layer + page chrome + hero + ledger
+  ════════════════════════════════════════════════════════════════════
+
+  Concept: the portfolio of a designer whose differentiator is speed with
+  a system behind it. Everything here is scoped to `.v2-root`, which is
+  nested inside `.v5-root` and therefore has to re-declare every token it
+  inherits.
+
+  Palette — black, white, and one green that mostly stays out of the way.
+
+  The page is carried by neutral near-black and white. That is the whole
+  contrast system: hierarchy is built from value and weight, never from
+  hue. Headlines set their quiet half in grey and their loud half in pure
+  white, so emphasis survives greyscale, colour-blindness and a bad
+  projector.
+
+  Green is an INTERACTION colour, not a decoration. It is allowed on:
+  hover, focus, the active item in a set, a live meter fill, and small
+  marks. It is not allowed to paint headlines, large fills, or more than
+  one element in a viewport at rest.
+
+    void      #0a0a0a   page base, neutral
+    slab      #131313   raised surface
+    bone      #ffffff   primary text
+    grey      #8a8a8a   the quiet half of a headline
+    volt      #a0ff99   interaction only. Never a gradient.
+
+  Faces: Archivo (variable wght 100–900 + wdth 62–125) for display,
+  Geist for prose/UI, Geist Mono for labels and every number.
+*/
+
+.v2-root {
+  /* ── surfaces ─────────────────────────────────────────── */
+  --v2-void: #0a0a0a;
+  --v2-void-2: #0d0d0d;
+  --v2-slab: #131313;
+  --v2-slab-2: #1a1a1a;
+  --v2-slab-3: #222222;
+
+  /* ── rules ────────────────────────────────────────────── */
+  --v2-line: #1f1f1f;
+  --v2-line-2: #2b2b2b;
+  --v2-line-3: #3d3d3d;
+
+  /* ── ink. 4.5:1 on --v2-void is the floor for anything a
+        reader has to parse; --v2-faint is decoration only. ── */
+  --v2-bone: #ffffff;
+  --v2-bone-2: #c9c9c9;  /* 12.1:1 */
+  --v2-grey: #8a8a8a;    /*  5.4:1 — the quiet half of a headline */
+  --v2-mute: #7d7d7d;    /*  4.6:1 — smallest passing body colour */
+  --v2-faint: #4a4a4a;   /*  hairlines and inactive marks only */
+
+  /* ── the interaction colour ──────────────────────────── */
+  --v2-volt: #a0ff99;
+  --v2-volt-2: #7ee075;
+  --v2-volt-deep: #2f5c2b;
+  --v2-volt-ink: #05130a;
+  --v2-volt-wash: rgba(160, 255, 153, 0.08);
+  --v2-volt-edge: rgba(160, 255, 153, 0.28);
+
+  /* ── shadows: neutral black, one light source, top-left ── */
+  --v2-sh-1: 0 1px 1px rgba(0, 0, 0, 0.6);
+  --v2-sh-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 10px 28px -14px rgba(0, 0, 0, 0.9);
+  --v2-sh-3: 0 4px 8px rgba(0, 0, 0, 0.5), 0 26px 60px -24px rgba(0, 0, 0, 0.95);
+  --v2-glow: 0 0 0 1px var(--v2-volt-edge), 0 12px 40px -18px rgba(160, 255, 153, 0.26);
+
+  /* ── radii: tighter inside, softer outside ───────────── */
+  --v2-r-xs: 2px;
+  --v2-r-sm: 4px;
+  --v2-r-md: 10px;
+  --v2-r-lg: 18px;
+
+  /* ── z-scale ─────────────────────────────────────────── */
+  --v2-z-bg: 0;
+  --v2-z-body: 1;
+  --v2-z-sticky: 10;
+  --v2-z-chrome: 30;
+  --v2-z-grain: 40;
+
+  /* ── motion ──────────────────────────────────────────── */
+  --v2-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v2-ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  --v2-spring: cubic-bezier(0.34, 1.42, 0.64, 1);
+
+  font-family: var(--v2-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01" 1;
+  background: var(--v2-void);
+  color: var(--v2-bone);
+  -webkit-font-smoothing: antialiased;
+}
+
+.v2-root *,
+.v2-root *::before,
+.v2-root *::after {
+  border-color: var(--v2-line);
+}
+
+/* Anchor jumps land below the fixed top bar rather than under it. */
+.v2-root [id] { scroll-margin-top: 88px; }
+
+.v2-root :focus-visible {
+  outline: 2px solid var(--v2-volt);
+  outline-offset: 3px;
+  border-radius: var(--v2-r-xs);
+}
+
+.v2-root ::selection {
+  background: var(--v2-volt);
+  color: var(--v2-volt-ink);
+}
+
+/* ────────────────────────────────────────────────────────────
+   Primitives
+   ─────────────────────────────────────────────────────── */
+.v2-wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media (min-width: 768px) {
+  .v2-wrap { padding: 0 40px; }
+}
+@media (min-width: 1200px) {
+  .v2-wrap { padding: 0 64px; }
+}
+
+/* Display type. Width axis is animatable, which is the whole point. */
+.v2-dsp {
+  font-family: var(--v2-display), "Archivo", system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 100, "wght" 800;
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+/* Tight condensed cut for the biggest moments */
+.v2-dsp-tight {
+  font-variation-settings: "wdth" 84, "wght" 850;
+  letter-spacing: -0.028em;
+}
+
+.v2-mono {
+  font-family: var(--v2-mono), ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.v2-num {
+  font-family: var(--v2-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.v2-prose {
+  font-size: 16.5px;
+  line-height: 1.62;
+  color: var(--v2-bone-2);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+/* Section eyebrow: a volt tick, a number, a label. No pills anywhere. */
+.v2-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+}
+.v2-eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--v2-volt);
+  flex: none;
+}
+.v2-eyebrow b {
+  color: var(--v2-volt);
+  font-weight: 500;
+}
+
+/* ── Buttons ───────────────────────────────────────────── */
+.v2-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px 14px 24px;
+  /* At rest the primary action is white on black — the strongest thing on
+     the page without spending the accent on it. Green is what happens when
+     you touch it. */
+  border: 1px solid var(--v2-bone);
+  border-radius: var(--v2-r-sm);
+  background: var(--v2-bone);
+  color: #0a0a0a;
+  font-family: var(--v2-mono), monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 220ms var(--v2-ease),
+    box-shadow 220ms var(--v2-ease),
+    border-color 220ms var(--v2-ease),
+    background 220ms var(--v2-ease);
+}
+.v2-btn .v2-btn-arrow {
+  display: inline-block;
+  transition: transform 260ms var(--v2-ease);
+}
+.v2-btn:hover {
+  background: var(--v2-volt);
+  border-color: var(--v2-volt);
+  color: var(--v2-volt-ink);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -12px rgba(160, 255, 153, 0.45);
+}
+.v2-btn:hover .v2-btn-arrow { transform: translateX(4px); }
+.v2-btn:active { transform: translateY(1px) scale(0.985); box-shadow: var(--v2-sh-1); }
+
+/* Ghost: a rule that fills from the left on hover */
+.v2-btn-ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border: 1px solid var(--v2-line-2);
+  border-radius: var(--v2-r-sm);
+  background: transparent;
+  color: var(--v2-bone);
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 220ms var(--v2-ease), border-color 220ms var(--v2-ease), transform 220ms var(--v2-ease);
+}
+.v2-btn-ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--v2-volt);
+  transform: translateX(-101%);
+  transition: transform 340ms var(--v2-ease);
+}
+.v2-btn-ghost:hover { color: var(--v2-volt-ink); border-color: var(--v2-volt); }
+.v2-btn-ghost:hover::before { transform: none; }
+.v2-btn-ghost:active { transform: translateY(1px) scale(0.985); }
+
+/* Tertiary: a text link with a wiping underline */
+.v2-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--v2-bone-2);
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color 200ms var(--v2-ease);
+}
+.v2-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--v2-volt);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms var(--v2-ease);
+}
+.v2-link:hover { color: var(--v2-volt); }
+.v2-link:hover::after { transform: none; }
+
+/* ── Reveal ────────────────────────────────────────────── */
+.v2-rv {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 720ms var(--v2-ease),
+    transform 900ms var(--v2-ease);
+  transition-delay: var(--rv-delay, 0ms);
+}
+.v2-rv.is-in { opacity: 1; transform: none; }
+
+/* Grain: fixed, so it never scrolls with content. Breaks digital flatness. */
+.v2-grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--v2-z-grain);
+  pointer-events: none;
+  opacity: 0.38;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-rv { opacity: 1; transform: none; transition: none; }
+  .v2-root * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* ════════════════════════════════════════════════════════
+   Version toggle (rendered on / and /v2, outside both roots)
+   ═══════════════════════════════════════════════════════ */
+/* Docked top-centre, where both concepts leave the page furniture empty. On
+   handhelds the top bar fills that width, so it drops to bottom-centre and the
+   hero and footer carry matching bottom padding to stay clear of it. */
+.vt-shell {
+  position: fixed;
+  left: 50%;
+  top: 13px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px 7px 14px;
+  transform: translateX(-50%);
+  border: 1px solid #262b28;
+  border-radius: 999px;
+  /* Same reasoning as the top bar: the fill has to carry legibility on its
+     own, because this control floats over full-bleed display type. */
+  background: rgba(9, 12, 11, 0.97);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 18px 40px -20px rgba(0, 0, 0, 0.9);
+}
+.vt-shell[data-v="1"] { --vt-on: #d9472f; --vt-on-ink: #100604; }
+.vt-shell[data-v="2"] { --vt-on: #a0ff99; --vt-on-ink: #05130a; }
+
+.vt-legend {
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #5f6a64;
+  user-select: none;
+}
+@media (max-width: 520px) { .vt-legend { display: none; } }
+
+.vt-track {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  isolation: isolate;
+}
+.vt-thumb {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  border-radius: 999px;
+  background: var(--vt-on);
+  transition: transform 420ms cubic-bezier(0.34, 1.42, 0.64, 1);
+}
+.vt-seg {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #8b948d;
+  white-space: nowrap;
+  transition: color 220ms ease;
+}
+.vt-seg:hover { color: #dfe4dc; }
+.vt-seg[aria-current="page"] { color: var(--vt-on-ink); }
+.vt-seg[aria-current="page"]:hover { color: var(--vt-on-ink); }
+.vt-seg-key { opacity: 0.55; font-size: 11px; }
+@media (max-width: 759px) {
+  .vt-shell { top: auto; bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 344px) { .vt-seg-label { display: none; } .vt-seg { padding: 7px 12px; } }
+
+/* ════════════════════════════════════════════════════════
+   §00 — Page chrome: top bar + scroll rail
+   ═══════════════════════════════════════════════════════ */
+.v2-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--v2-z-chrome);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 20px;
+  transition: background 300ms ease, border-color 300ms ease, padding 300ms ease;
+  border-bottom: 1px solid transparent;
+}
+@media (min-width: 768px) { .v2-topbar { padding: 20px 40px; } }
+@media (min-width: 1200px) { .v2-topbar { padding: 20px 64px; } }
+/* Near-opaque rather than translucent: display type here runs to 120px in
+   near-white, and at 0.78 alpha it read straight through the bar wherever
+   backdrop-filter was unsupported or disabled. The blur is a refinement on
+   top of a fill that already works without it. */
+.v2-topbar.is-stuck {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background: rgba(7, 9, 10, 0.96);
+  backdrop-filter: blur(18px) saturate(1.3);
+  border-bottom-color: var(--v2-line);
+}
+
+.v2-mark {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: var(--v2-bone);
+}
+.v2-mark-glyph {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: var(--v2-r-xs);
+  background: var(--v2-volt);
+  overflow: hidden;
+}
+/* The mark is a literal T: depth + breadth, the site's whole argument. */
+.v2-mark-glyph::before,
+.v2-mark-glyph::after {
+  content: "";
+  position: absolute;
+  background: var(--v2-volt-ink);
+}
+.v2-mark-glyph::before { top: 5px; left: 4px; right: 4px; height: 3px; }
+.v2-mark-glyph::after { top: 5px; left: 9.5px; width: 3px; bottom: 4px; }
+.v2-mark:hover .v2-mark-glyph { animation: v2-mark-pulse 620ms var(--v2-ease); }
+@keyframes v2-mark-pulse {
+  0% { transform: none; }
+  40% { transform: scale(1.16) rotate(-4deg); }
+  100% { transform: none; }
+}
+.v2-mark-name {
+  font-family: var(--v2-display), sans-serif;
+  font-variation-settings: "wdth" 92, "wght" 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.v2-mark-role {
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+}
+@media (max-width: 900px) { .v2-mark-role { display: none; } }
+
+.v2-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  min-width: 0;
+}
+
+.v2-topbar-now {
+  margin: 0;
+  padding-left: 26px;
+  border-left: 1px solid var(--v2-line-2);
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 300ms ease, transform 340ms var(--v2-ease);
+  white-space: nowrap;
+}
+.v2-topbar-now.is-on { opacity: 1; transform: none; }
+.v2-topbar-now b { color: var(--v2-volt); font-weight: 500; margin-right: 8px; }
+@media (max-width: 1060px) { .v2-topbar-now { display: none; } }
+
+.v2-topnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+@media (max-width: 860px) { .v2-topnav .v2-topnav-opt { display: none; } }
+.v2-topnav a {
+  position: relative;
+  padding: 9px 12px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--v2-bone-2);
+  transition: color 200ms ease;
+}
+.v2-topnav a::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--v2-volt);
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 220ms ease, transform 260ms var(--v2-ease);
+}
+.v2-topnav a:hover { color: var(--v2-bone); }
+.v2-topnav a:hover::before { opacity: 1; transform: none; }
+.v2-topnav a.is-cta {
+  margin-left: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--v2-line-2);
+  border-radius: var(--v2-r-sm);
+  color: var(--v2-bone);
+}
+.v2-topnav a.is-cta::before { display: none; }
+.v2-topnav a.is-cta:hover { background: var(--v2-volt); border-color: var(--v2-volt); color: var(--v2-volt-ink); }
+
+/* Scroll rail — left edge, ticks per section, volt fill tracks progress */
+.v2-rail {
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  z-index: var(--v2-z-chrome);
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+@media (min-width: 1200px) { .v2-rail { display: flex; } }
+.v2-rail li { position: relative; }
+.v2-rail a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  text-decoration: none;
+}
+.v2-rail .tick {
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: var(--v2-line-3);
+  transition: width 300ms var(--v2-ease), background 300ms ease;
+}
+.v2-rail .lbl {
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 260ms ease, transform 300ms var(--v2-ease), color 260ms ease;
+  white-space: nowrap;
+}
+.v2-rail a:hover .tick,
+.v2-rail a:focus-visible .tick,
+.v2-rail li[data-on="1"] .tick { width: 30px; background: var(--v2-volt); }
+/* Labels appear on demand only. A permanently visible label collides with
+   the full-bleed sections; the topbar carries the "where am I" readout. */
+.v2-rail a:hover .lbl,
+.v2-rail a:focus-visible .lbl { opacity: 1; transform: none; color: var(--v2-bone-2); }
+.v2-rail li[data-on="1"] a:hover .lbl { color: var(--v2-volt); }
+
+/* ════════════════════════════════════════════════════════
+   §01 — Hero
+   ═══════════════════════════════════════════════════════ */
+.v2-hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+  padding-top: 104px;
+  padding-bottom: 40px;
+}
+/* Below 760px the concept toggle docks bottom-centre, so the hero gives it
+   room rather than letting the action row sit underneath it. */
+@media (max-width: 759px) { .v2-hero { padding-top: 92px; padding-bottom: 82px; } }
+.v2-hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: var(--v2-z-bg);
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Fallback + merge: fades the shader into the page below */
+.v2-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 6%, rgba(7, 9, 10, 0.4) 0%, transparent 52%),
+    linear-gradient(180deg, rgba(7, 9, 10, 0.42) 0%, transparent 24%, rgba(7, 9, 10, 0.62) 84%, var(--v2-void) 100%);
+}
+.v2-hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.v2-hero-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 40px;
+  padding-bottom: 20px;
+}
+/* Standfirst: sits UNDER the headline, and is set at reading size rather
+   than the 14.5px it used to be. If a line is worth keeping it is worth
+   setting large enough to actually read. */
+.v2-hero-claim {
+  margin: 22px 0 0;
+  max-width: 46ch;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--v2-bone-2);
+  text-wrap: pretty;
+}
+.v2-hero-claim b { color: var(--v2-bone); font-weight: 500; }
+
+/* Live status: a breathing volt dot + availability, in mono */
+.v2-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v2-bone-2);
+}
+.v2-status i {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--v2-volt);
+  flex: none;
+}
+.v2-status i::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--v2-volt);
+  animation: v2-ping 2.6s var(--v2-ease) infinite;
+}
+@keyframes v2-ping {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  70%, 100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* The headline. Two lines, huge, width-animated on entry. */
+.v2-hero-h1 {
+  margin: 0;
+  font-family: var(--v2-display), sans-serif;
+  font-weight: 850;
+  text-transform: uppercase;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  /* Sized so the four-line stack clears 900px of viewport alongside the
+     claim, the spec strip and the action row. */
+  font-size: clamp(2.35rem, 8.1vw, 7.3rem);
+  color: var(--v2-bone);
+}
+.v2-hero-h1 span {
+  display: block;
+  font-variation-settings: "wdth" 62, "wght" 850;
+  opacity: 0;
+  transform: translateY(0.16em);
+  animation: v2-widen 1150ms var(--v2-ease) forwards;
+}
+.v2-hero-h1 span:nth-child(2) { animation-delay: 140ms; }
+/* The hero is the one headline set entirely in white. Section headings
+   split grey/white to mark their emphasis; the hero does not need to,
+   because nothing is competing with it — and being the only fully-white
+   headline on the page is itself the hierarchy.
+
+   This used to put "FRIDAY." in the accent. With the toggle and the status
+   dot also on screen, that made three green elements above the fold on a
+   page whose whole rule is black and white. */
+.v2-hero-h1 em {
+  font-style: normal;
+  color: var(--v2-bone);
+}
+@keyframes v2-widen {
+  0% { font-variation-settings: "wdth" 62, "wght" 850; opacity: 0; transform: translateY(0.16em); }
+  100% { font-variation-settings: "wdth" 106, "wght" 850; opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-hero-h1 span { animation: none; opacity: 1; transform: none; font-variation-settings: "wdth" 106, "wght" 850; }
+}
+
+/* Spec strip — the pipeline as one line, with a volt sweep travelling it */
+.v2-strip {
+  position: relative;
+  margin-top: 30px;
+  padding: 13px 0;
+  border-top: 1px solid var(--v2-line);
+  border-bottom: 1px solid var(--v2-line);
+  overflow: hidden;
+}
+.v2-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--v2-bone-2);
+}
+.v2-strip-row li {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  transition: color 200ms ease;
+}
+.v2-strip-row li + li::before {
+  content: "/";
+  color: var(--v2-volt-deep);
+}
+.v2-strip-row li:hover { color: var(--v2-volt); }
+.v2-strip::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 34%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--v2-volt), transparent);
+  animation: v2-sweep 5.2s linear infinite;
+}
+@keyframes v2-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+.v2-hero-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding-top: 26px;
+}
+.v2-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.v2-hero-figures {
+  display: flex;
+  gap: 34px;
+}
+.v2-fig { display: flex; flex-direction: column; gap: 5px; }
+.v2-fig .n {
+  font-family: var(--v2-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--v2-bone);
+  line-height: 1;
+}
+.v2-fig .l {
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+  max-width: 15ch;
+  line-height: 1.5;
+}
+@media (max-width: 860px) {
+  .v2-hero-top { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .v2-hero-figures { gap: 22px; }
+  .v2-fig .n { font-size: 20px; }
+}
+
+/* ════════════════════════════════════════════════════════
+   §02 — Velocity ledger (pinned, scrolls sideways)
+   ═══════════════════════════════════════════════════════ */
+.v2-ledger {
+  position: relative;
+  /* runway: taller than viewport, the surplus becomes horizontal travel */
+  height: 340vh;
+  background: var(--v2-void);
+}
+.v2-ledger-pin {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.v2-ledger-head {
+  padding-top: 78px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.v2-ledger-title {
+  margin: 6px 0 0;
+  font-family: var(--v2-display), sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 88, "wght" 800;
+  text-transform: uppercase;
+  font-size: clamp(1.85rem, 5vw, 4rem);
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+}
+.v2-ledger-title em { font-style: normal; color: var(--v2-bone); }
+.v2-ledger-note {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--v2-bone-2);
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+/* progress hairline under the header */
+.v2-ledger-bar {
+  margin-top: 20px;
+  height: 1px;
+  background: var(--v2-line);
+  position: relative;
+}
+.v2-ledger-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--lp, 0) * 100%);
+  background: var(--v2-volt);
+}
+
+.v2-ledger-track {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 0 20px;
+  will-change: transform;
+  transform: translate3d(calc(var(--lx, 0px)), 0, 0);
+}
+@media (min-width: 768px) { .v2-ledger-track { padding: 0 40px; gap: 32px; } }
+@media (min-width: 1200px) { .v2-ledger-track { padding: 0 64px; } }
+
+.v2-run {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: min(80vw, 420px);
+  /* Height is deliberate: the cards should own the pinned stage rather than
+     float in the middle of it. Trimmed once the body paragraph came out —
+     at the old 486px the cut copy left a third of every card empty above
+     the clock, which reads as a rendering fault rather than as space. */
+  min-height: min(46vh, 384px);
+  align-self: center;
+  padding: 28px 28px 24px;
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-r-lg);
+  background:
+    radial-gradient(120% 90% at 12% 0%, var(--v2-slab-2) 0%, var(--v2-slab) 46%, var(--v2-void-2) 100%);
+  box-shadow: var(--v2-sh-2);
+  /* each card rides at its own depth — parallax without a library */
+  transform: translate3d(calc(var(--px, 0) * 1px), calc(var(--py, 0) * 1px), 0);
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* Spotlight border under the cursor */
+.v2-run::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(160, 255, 153, 0.4),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+.v2-run:hover { box-shadow: var(--v2-sh-3); }
+.v2-run:hover::before { opacity: 1; }
+
+.v2-run-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--v2-line);
+}
+.v2-run-idx {
+  font-family: var(--v2-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  color: var(--v2-volt);
+}
+.v2-run-kind {
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+  text-align: right;
+}
+.v2-run-name {
+  margin: 18px 0 0;
+  font-family: var(--v2-display), sans-serif;
+  font-weight: 750;
+  font-variation-settings: "wdth" 92, "wght" 750;
+  font-size: 27px;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+/* One line, set larger than the old paragraph was. It is scannable at a
+   glance, which is the only way it gets read inside a sideways scroll. */
+.v2-run-hard {
+  margin: 14px 0 0;
+  font-size: 17px;
+  line-height: 1.42;
+  color: var(--v2-grey);
+  text-wrap: pretty;
+}
+
+/* The clock: conventional estimate struck through, actual in white.
+   `margin-top: auto` drops it to the card's floor so the clocks line up
+   across all four runs regardless of how long the blurb above runs. */
+.v2-run-clock {
+  /* auto only — padding here would paint as a bar, since the grid's own
+     background is what draws the 1px rules between the two cells. */
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--v2-line);
+  border-radius: var(--v2-r-sm);
+  overflow: hidden;
+}
+.v2-run-clock div {
+  padding: 13px 14px;
+  background: var(--v2-void-2);
+}
+.v2-run-clock .k {
+  display: block;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+  margin-bottom: 7px;
+}
+.v2-run-clock .v {
+  font-family: var(--v2-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  /* Struck through already signals "not the real number" — it does not also
+     need to be too faint to read. */
+  color: var(--v2-bone-2);
+  opacity: 0.62;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+/* The actual figure is the loud one, so it gets the loudest VALUE — white
+   at a larger size — rather than the accent. The struck-through estimate
+   beside it already carries the contrast. */
+.v2-run-clock .is-actual .v {
+  color: var(--v2-bone);
+  font-size: 23px;
+  text-decoration: none;
+}
+
+.v2-run-meter {
+  margin-top: 14px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--v2-line);
+  overflow: hidden;
+}
+.v2-run-meter i {
+  display: block;
+  height: 100%;
+  width: var(--w, 20%);
+  border-radius: inherit;
+  background: var(--v2-bone);
+  transition: background 240ms var(--v2-ease);
+}
+.v2-run:hover .v2-run-meter i { background: var(--v2-volt); }
+.v2-run-meter-lbl {
+  margin-top: 9px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+}
+.v2-run-meter-lbl b { color: var(--v2-bone-2); font-weight: 500; }
+.v2-run:hover .v2-run-meter-lbl b { color: var(--v2-volt); }
+
+/* Closing card: the summary of the run.
+
+   This was a solid green slab — a full card of accent sitting in the middle
+   of an otherwise black-and-white row, which is precisely the overuse the
+   palette rule forbids. It is inverted instead: white card, black type. That
+   still makes it the loudest thing in the track, because everything around
+   it is a dark card, and it costs no accent to do it. */
+.v2-run.is-sum {
+  background: var(--v2-bone);
+  border-color: var(--v2-bone);
+  color: #0a0a0a;
+}
+.v2-run.is-sum::before { display: none; }
+.v2-run.is-sum .v2-run-idx,
+.v2-run.is-sum .v2-run-kind { color: rgba(10, 10, 10, 0.58); }
+.v2-run.is-sum .v2-run-top { border-bottom-color: rgba(10, 10, 10, 0.16); }
+.v2-run.is-sum .v2-run-hard { color: rgba(10, 10, 10, 0.72); }
+.v2-run-sum-cta {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border-radius: var(--v2-r-sm);
+  background: #0a0a0a;
+  color: var(--v2-bone);
+  transition: background 220ms var(--v2-ease), color 220ms var(--v2-ease),
+              transform 220ms var(--v2-ease), gap 220ms var(--v2-ease);
+  font-family: var(--v2-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 220ms var(--v2-ease), gap 220ms var(--v2-ease);
+}
+.v2-run-sum-cta:hover {
+  transform: translateY(-2px);
+  gap: 14px;
+  background: var(--v2-volt);
+  color: var(--v2-volt-ink);
+}
+.v2-run-sum-cta:active { transform: translateY(1px) scale(0.985); }
+
+/* Horizontal-scroll affordance */
+.v2-ledger-hint {
+  position: absolute;
+  right: 20px;
+  bottom: 74px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--v2-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--v2-mute);
+}
+@media (min-width: 768px) { .v2-ledger-hint { right: 40px; } }
+@media (min-width: 1200px) { .v2-ledger-hint { right: 64px; } }
+.v2-ledger-hint i {
+  width: 26px;
+  height: 1px;
+  background: var(--v2-line-3);
+  position: relative;
+  overflow: visible;
+}
+.v2-ledger-hint i::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 8px;
+  height: 3px;
+  background: var(--v2-volt);
+  animation: v2-hint 2.4s var(--v2-ease) infinite;
+}
+@keyframes v2-hint {
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(18px); opacity: 1; }
+}
+
+/* On short/handheld viewports the pin is dropped for a native swipe row */
+@media (max-width: 700px), (max-height: 620px) {
+  .v2-ledger { height: auto; }
+  .v2-ledger-pin { position: static; height: auto; padding-bottom: 40px; }
+  .v2-ledger-head { padding-top: 78px; }
+  .v2-ledger-track {
+    transform: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-top: 26px;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .v2-run { scroll-snap-align: center; transform: none; }
+  .v2-ledger-hint { position: static; margin-top: 6px; padding: 0 20px; }
+}

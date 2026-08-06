@@ -60,6 +60,7 @@ const CASES = [
     no: "C-01",
     tag: "SECURITY",
     name: "ITDR",
+    slug: "itdr",
     line: "Identity threat detection & response — surfacing risky identities before they become incidents.",
     delivered: ["PRD", "FIGMA", "2-DAY BUILD", "DEMO"],
     outcome: "Event showcase → client conversations opened.",
@@ -68,6 +69,7 @@ const CASES = [
     no: "C-02",
     tag: "PLATFORM",
     name: "CARE",
+    slug: null,
     line: "Service & support platform concept, shaped from stakeholder requirements into a working flow.",
     delivered: ["PRD", "FIGMA", "BUILD"],
     outcome: "Prototype-to-product path proven internally.",
@@ -76,6 +78,7 @@ const CASES = [
     no: "C-03",
     tag: "COMPLIANCE",
     name: "DPDP Compliance",
+    slug: "dpdp-compliance",
     line: "India's DPDP Act, productized — consent, data mapping and audit trails made operable.",
     delivered: ["RESEARCH", "PRD", "FIGMA", "BUILD"],
     outcome: "Compliance story clients could actually click.",
@@ -84,6 +87,7 @@ const CASES = [
     no: "C-04",
     tag: "AI · FINANCE",
     name: "Function OS",
+    slug: "function-os",
     line: "AI-based finance product for internal operations — dashboards, workflows and automations in one OS.",
     delivered: ["PRD", "FIGMA", "CLAUDE CODE"],
     outcome: "Internal tool the team runs day-to-day.",
@@ -92,9 +96,19 @@ const CASES = [
     no: "C-05",
     tag: "HEALTHCARE",
     name: "Doctor App",
+    slug: null,
     line: "Healthcare application for practitioners — appointments, records and patient flows, end to end.",
     delivered: ["FIGMA", "BUILD", "DEMO"],
     outcome: "Full demonstration used in client pitches.",
+  },
+  {
+    no: "C-06",
+    tag: "DESIGN SYSTEMS",
+    name: "Central Design System",
+    slug: "design-system",
+    line: "One definition behind five products — new work without redrawing what already shipped.",
+    delivered: ["AUDIT", "TOKENS", "COMPONENTS", "GOVERNANCE"],
+    outcome: "Screens shipped with no designer on the ticket.",
   },
 ];
 
@@ -175,25 +189,41 @@ export function ProcessShowcaseV5() {
         </h2>
 
         <div className="v5-rt-cases">
-          {CASES.map((c) => (
-            <article className="v5-rt-case" key={c.no}>
-              <div className="v5-rt-case-meta">
-                <span className="v5-rt-case-no">{c.no}</span>
-                <span className="v5-rt-case-tag">{c.tag}</span>
-              </div>
-              <h3 className="v5-rt-case-name">{c.name}</h3>
-              <p className="v5-rt-case-line">{c.line}</p>
-              <p className="v5-rt-case-chips">
-                {c.delivered.map((d, i) => (
-                  <span key={d}>
-                    {i > 0 && <span className="v5-rt-chip-sep">→</span>}
-                    <span className="v5-rt-chip">{d}</span>
+          {CASES.map((c) => {
+            const body = (
+              <>
+                <div className="v5-rt-case-meta">
+                  <span className="v5-rt-case-no">{c.no}</span>
+                  <span className="v5-rt-case-tag">{c.tag}</span>
+                </div>
+                <h3 className="v5-rt-case-name">{c.name}</h3>
+                <p className="v5-rt-case-line">{c.line}</p>
+                <p className="v5-rt-case-chips">
+                  {c.delivered.map((d, i) => (
+                    <span key={d}>
+                      {i > 0 && <span className="v5-rt-chip-sep">→</span>}
+                      <span className="v5-rt-chip">{d}</span>
+                    </span>
+                  ))}
+                </p>
+                <p className="v5-rt-case-outcome">{c.outcome}</p>
+                {c.slug && (
+                  <span className="v5-rt-case-full">
+                    FULL CASE STUDY <span aria-hidden>↗</span>
                   </span>
-                ))}
-              </p>
-              <p className="v5-rt-case-outcome">{c.outcome}</p>
-            </article>
-          ))}
+                )}
+              </>
+            );
+            return c.slug ? (
+              <Link href={`/process/${c.slug}`} className="v5-rt-case is-linked" key={c.no}>
+                {body}
+              </Link>
+            ) : (
+              <article className="v5-rt-case" key={c.no}>
+                {body}
+              </article>
+            );
+          })}
         </div>
       </section>
 
