@@ -1314,6 +1314,10 @@
 .v5-fs-bar { fill: var(--v5-rule-soft); }
 .v5-fs-bar.is-hot { fill: var(--v5-accent-bright); }
 .v5-fs-axis { stroke: var(--v5-rule-soft); stroke-width: 1; }
+/* icon pairing: a hollow ring is the -line glyph, a solid disc the -fill one */
+.v5-fs-ico-line { fill: none; stroke: var(--v5-ink-muted); stroke-width: 1.5; }
+.v5-fs-ico-fill { fill: var(--v5-ink-muted); }
+.v5-fs-ico-fill.is-hot { fill: var(--v5-accent-bright); }
 
 /* ── chapter scrubber ── */
 .v5-fs-chapters {

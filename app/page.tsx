@@ -18,7 +18,7 @@ import { FooterV5 } from "@/components/v5/FooterV5";
  * Home — Surajit Dutta.
  *
  * Hero → Kinetic → About → Capabilities bento → Process →
- * Real-time builds (→ /process) → Featured case (→ /system) →
+ * Real-time builds (→ /process) → Featured case (→ /process/design-system) →
  * Case list → Poster (the full stop) → Receipts (live URLs) →
  * Gallery (3D ring → /gallery) → AI orchestration → More about me →
  * Contact → Footer.

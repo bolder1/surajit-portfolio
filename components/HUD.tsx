@@ -21,7 +21,9 @@ export function HUD() {
   const [time, setTime] = useState("");
   const [enabled, setEnabled] = useState(true);
   const suppressed =
-    (pathname?.startsWith("/v2") || pathname?.startsWith("/system")) ?? false;
+    (pathname?.startsWith("/v2") ||
+      pathname?.startsWith("/process/design-system")) ??
+    false;
 
   useEffect(() => {
     if (typeof window === "undefined") return;

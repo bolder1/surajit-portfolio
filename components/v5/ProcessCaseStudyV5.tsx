@@ -9,7 +9,6 @@ import { WorkingSystemPlate } from "@/components/v5/diagrams/WorkingSystemPlate"
 import { ConvergenceDiagram } from "@/components/v5/diagrams/ConvergenceDiagram";
 import { AuditChainDiagram } from "@/components/v5/diagrams/AuditChainDiagram";
 import { RoutingGateDiagram } from "@/components/v5/diagrams/RoutingGateDiagram";
-import { LegacyVaultDiagram } from "@/components/v5/diagrams/LegacyVaultDiagram";
 import { PersonaLedgerDiagram } from "@/components/v5/diagrams/PersonaLedgerDiagram";
 import { ScaleModelFigure } from "@/components/v5/diagrams/ScaleModelFigure";
 
@@ -33,7 +32,6 @@ const HERO_FIGURE: Record<string, () => React.JSX.Element> = {
   itdr: ConvergenceDiagram,
   "dpdp-compliance": AuditChainDiagram,
   "function-os": RoutingGateDiagram,
-  "design-system": LegacyVaultDiagram,
 };
 
 export function ProcessCaseStudyV5({

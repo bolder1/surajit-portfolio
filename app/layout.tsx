@@ -23,7 +23,7 @@ import "./v5f.css";
 import "./v2.css";
 import "./v2b.css";
 import "./v2c.css";
-import "./system.css";
+import "./ds.css";
 
 /*
   Root layout — Surajit Dutta portfolio.

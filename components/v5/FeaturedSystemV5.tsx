@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { CHAPTERS, READ_MINUTES } from "@/lib/systemStory";
+import {
+  CHAPTERS,
+  INTERACTIVE_COUNT,
+  READ_MINUTES,
+} from "@/lib/designSystem/chapters";
+import { M } from "@/lib/designSystem/metrics";
 import { SdfBlobTransition } from "./SdfBlobTransition";
 import { ScrambleText } from "./ScrambleText";
 
@@ -10,47 +15,49 @@ import { ScrambleText } from "./ScrambleText";
  * §F FeaturedSystemV5 — the design system case, given the front page.
  *
  * The other cases on this page are links. This one is a trailer: the chapter
- * list drives a preview stage, so the visitor sees what the experience does
- * before deciding to spend six minutes on it. Hovering or focusing a chapter
- * scrubs to it; left alone it advances by itself, because a still frame of an
- * interactive page undersells it.
+ * list drives a preview stage, so the visitor sees the shape of the argument
+ * before deciding to spend nine minutes on it. Hovering or focusing a chapter
+ * scrubs to it; left alone it advances by itself, because a still frame of a
+ * page with two interactive chapters undersells it.
  *
  * Autoplay stops the moment anyone touches the list — a preview that keeps
  * moving while you are reading it is an annoyance, not a feature — and never
  * starts at all under prefers-reduced-motion.
+ *
+ * The miniatures are deliberately abstract. They should read as *something
+ * happens here*, not compete with the real figure, so each is one idea with
+ * exactly one accented element.
  */
 
 const MINI_W = 260;
 const MINI_H = 150;
 
-/** Miniature of each chapter's visual. Deliberately abstract: it should read
- *  as "something happens here", not compete with the real thing. */
 function Mini({ i }: { i: number }) {
   const common = { viewBox: `0 0 ${MINI_W} ${MINI_H}`, className: "v5-fs-mini" };
 
+  // 01 the audit — many values doing one job, one of them surviving
   if (i === 0) {
-    // the drift — five surfaces pulling apart
-    const drift = [0, 5, -4, 8, -6];
-    const radii = [3, 9, 2, 14, 20];
     return (
       <svg {...common} aria-hidden>
-        {drift.map((dy, n) => (
-          <rect
-            key={n}
-            x={16 + n * 46}
-            y={44 + dy}
-            width={36}
-            height={62}
-            rx={radii[n]}
-            className={n === 0 ? "v5-fs-sh" : "v5-fs-sh is-off"}
-          />
-        ))}
+        {Array.from({ length: 7 }).map((_, c) =>
+          Array.from({ length: 3 }).map((_, r) => (
+            <rect
+              key={`${r}-${c}`}
+              x={20 + c * 32}
+              y={30 + r * 32}
+              width={24}
+              height={24}
+              rx={2}
+              className={r === 1 && c === 3 ? "v5-fs-pill is-hot" : "v5-fs-pill"}
+            />
+          ))
+        )}
       </svg>
     );
   }
 
+  // 02 the roster — five rows, two pulling one way
   if (i === 1) {
-    // the roster — five rows, two pulling against three
     return (
       <svg {...common} aria-hidden>
         {[0, 1, 2, 3, 4].map((n) => (
@@ -69,8 +76,8 @@ function Mini({ i }: { i: number }) {
     );
   }
 
+  // 03 the architecture — four layers, the bindable one lit
   if (i === 2) {
-    // the stack — four layers, the semantic one lit
     return (
       <svg {...common} aria-hidden>
         {[0, 1, 2, 3].map((n) => (
@@ -80,39 +87,81 @@ function Mini({ i }: { i: number }) {
             y={22 + n * 30}
             width={180}
             height={22}
-            className={n === 1 ? "v5-fs-band is-hot" : "v5-fs-band"}
+            className={n === 3 ? "v5-fs-band is-hot" : "v5-fs-band"}
           />
         ))}
       </svg>
     );
   }
 
+  // 04 the mapping — one binding fanning out to four values
   if (i === 3) {
-    // the re-point — the chain, with the tail aimed somewhere new
     return (
       <svg {...common} aria-hidden>
-        {[0, 1, 2].map((n) => (
-          <rect key={n} x={26} y={22 + n * 42} width={104} height={28} className="v5-fs-band" />
+        <rect x={14} y={64} width={68} height={22} className="v5-fs-band is-hot" />
+        {[20, 54, 88, 122].map((y, n) => (
+          <g key={n}>
+            <path
+              d={`M 82 75 C 118 75, 118 ${y + 11}, 154 ${y + 11}`}
+              className="v5-fs-arc"
+              fill="none"
+            />
+            <rect x={154} y={y} width={92} height={22} className="v5-fs-band" />
+          </g>
         ))}
-        <path d="M 130 50 C 168 62, 168 98, 130 110" className="v5-fs-arc" fill="none" />
-        <rect x={168} y={40} width={66} height={70} rx={5} className="v5-fs-sh" />
       </svg>
     );
   }
 
+  // 05 the component — the matrix, its removed row and its one hole
   if (i === 4) {
-    // no designer — a vocabulary with one value chosen
     return (
       <svg {...common} aria-hidden>
-        {[0, 1, 2].map((r) =>
-          [0, 1, 2, 3].map((c) => (
-            <rect
+        {Array.from({ length: 4 }).map((_, r) =>
+          Array.from({ length: 7 }).map((_, c) => {
+            const removed = r === 3 && c > 1;
+            const holed = r === 3 && c === 1;
+            return (
+              <rect
+                key={`${r}-${c}`}
+                x={22 + c * 32}
+                y={28 + r * 26}
+                width={26}
+                height={20}
+                rx={2}
+                className={
+                  holed
+                    ? "v5-fs-pill is-hot"
+                    : removed
+                      ? "v5-fs-pill is-off"
+                      : "v5-fs-pill"
+                }
+              />
+            );
+          })
+        )}
+      </svg>
+    );
+  }
+
+  // 06 the library — line/fill pairs, one unmatched
+  if (i === 5) {
+    return (
+      <svg {...common} aria-hidden>
+        {Array.from({ length: 5 }).map((_, c) =>
+          [0, 1].map((r) => (
+            <circle
               key={`${r}-${c}`}
-              x={22 + c * 56}
-              y={30 + r * 32}
-              width={46}
-              height={18}
-              className={r === 1 && c === 2 ? "v5-fs-pill is-hot" : "v5-fs-pill"}
+              cx={40 + c * 45}
+              cy={54 + r * 42}
+              r={13}
+              className={
+                c === 3 && r === 1
+                  ? "v5-fs-ico-fill is-hot"
+                  : r === 0
+                    ? "v5-fs-ico-line"
+                    : "v5-fs-ico-fill"
+              }
             />
           ))
         )}
@@ -120,13 +169,40 @@ function Mini({ i }: { i: number }) {
     );
   }
 
-  // how it scales — the falling curve over the flat one
+  // 07 the workflow — six gates, the last one closing publication
+  if (i === 6) {
+    return (
+      <svg {...common} aria-hidden>
+        <line x1={26} y1={75} x2={234} y2={75} className="v5-fs-axis" />
+        {[0, 1, 2, 3, 4, 5].map((n) => (
+          <rect
+            key={n}
+            x={26 + n * 38}
+            y={62}
+            width={26}
+            height={26}
+            rx={13}
+            className={n === 5 ? "v5-fs-pill is-hot" : "v5-fs-pill"}
+          />
+        ))}
+      </svg>
+    );
+  }
+
+  // 08 the reckoning — the falling curve against the flat one
   const flat = [78, 76, 79, 77, 76];
   const fall = [78, 54, 39, 29, 22];
   return (
     <svg {...common} aria-hidden>
       {flat.map((v, n) => (
-        <rect key={`f${n}`} x={22 + n * 46} y={118 - v} width={14} height={v} className="v5-fs-bar" />
+        <rect
+          key={`f${n}`}
+          x={22 + n * 46}
+          y={118 - v}
+          width={14}
+          height={v}
+          className="v5-fs-bar"
+        />
       ))}
       {fall.map((v, n) => (
         <rect
@@ -166,23 +242,25 @@ export function FeaturedSystemV5() {
       <div className="v5-fs-wrap">
         <div className="v5-fs-side">
           <p className="v5-fs-eyebrow">
-            <span className="v5-cs-diamond" aria-hidden /> FEATURED CASE · C-06 · DESIGN SYSTEMS
+            <span className="v5-cs-diamond" aria-hidden /> FEATURED CASE · DESIGN SYSTEMS
           </p>
 
           <h2 className="v5-fs-title" id="v5-fs-title">
-            <ScrambleText text="Five products." />
+            <ScrambleText text="One binding." />
             <br />
-            <ScrambleText text="Nobody chose" />{" "}
+            <ScrambleText text="Four" />{" "}
             <em>
-              <ScrambleText text="this." />
+              <ScrambleText text="values." />
             </em>
           </h2>
 
           <p className="v5-fs-lede">
-            A design system for five enterprise products, and the five people who
-            wanted contradictory things from it. Built as a scroll experience —
-            every claim is demonstrated by the thing on screen, and two chapters
-            let you try to break it yourself.
+            The token architecture behind five enterprise products:{" "}
+            {M.totalVariables.toLocaleString("en-US")} variables across five
+            collections, {M.buttonPublished.toLocaleString("en-US")} button
+            variants, and a rebrand that costs {M.rebrandCost} tokens. Every
+            number on the page was read out of the live Figma files rather than
+            written from memory.
           </p>
 
           <dl className="v5-fs-meta">
@@ -191,40 +269,39 @@ export function FeaturedSystemV5() {
               <dd>{CHAPTERS.length}</dd>
             </div>
             <div>
-              <dt>RUNS</dt>
+              <dt>READS</dt>
               <dd>{READ_MINUTES} MIN</dd>
             </div>
             <div>
               <dt>INTERACTIVE</dt>
-              <dd>2</dd>
+              <dd>{INTERACTIVE_COUNT}</dd>
             </div>
           </dl>
 
           <div className="v5-fs-actions">
-            <Link href="/system" className="v5-fs-play">
+            <Link href="/process/design-system" className="v5-fs-play">
               <span className="v5-fs-play-glyph" aria-hidden />
-              PLAY THE EXPERIENCE
-            </Link>
-            <Link href="/process/design-system" className="v5-fs-read">
-              READ THE WRITTEN CASE&nbsp;↗
+              READ THE CASE STUDY
             </Link>
           </div>
         </div>
 
         <div className="v5-fs-stage">
           {/* The preview. Only the active miniature is mounted, so the swap
-              reads as a cut rather than a cross-fade of six overlaid SVGs. */}
+              reads as a cut rather than a cross-fade of eight overlaid SVGs. */}
           <Link
-            href="/system"
+            href={`/process/design-system#${chapter.id}`}
             className="v5-fs-screen"
-            aria-label={`Play the experience — ${chapter.name}`}
-            data-cursor-label="Play"
+            aria-label={`Read chapter ${chapter.no} — ${chapter.name}`}
+            data-cursor-label="Read"
           >
             <span className="v5-fs-screen-top" aria-hidden>
               <i />
               <i />
               <i />
-              <span>{chapter.no} · {chapter.name.toUpperCase()}</span>
+              <span>
+                {chapter.no} · {chapter.name.toUpperCase()}
+              </span>
             </span>
             {/* A cut between two abstract diagrams reads as a glitch. The blob
                 wipe covers the swap, so the change looks authored — and because
@@ -238,10 +315,7 @@ export function FeaturedSystemV5() {
             <span className="v5-fs-screen-cap">{chapter.blurb}</span>
           </Link>
 
-          <ol
-            className="v5-fs-chapters"
-            onMouseLeave={() => setHeld(false)}
-          >
+          <ol className="v5-fs-chapters" onMouseLeave={() => setHeld(false)}>
             {CHAPTERS.map((c, i) => (
               <li key={c.id}>
                 <button
