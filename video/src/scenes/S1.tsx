@@ -163,7 +163,7 @@ export const Scene: React.FC = () => {
       );
       if (f < lockAt(i)) return;
     }
-    // 3) locked glyph: sits centred in its slot inside the field, then reflows to its line
+    // 2) letter: opens out of its bar centred in the slot in its slot inside the field, then reflows to its line
     const fp = prog(f, GROW_AT, GROW_AT + FLY, EIO);
     const s = lerp(FS_A, FS_B, fp);
     const gx = lerp(x + (w - advA(i)) / 2, XB[i], fp);
