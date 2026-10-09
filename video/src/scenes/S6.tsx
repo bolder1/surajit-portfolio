@@ -514,23 +514,20 @@ export const cues: Cue[] = [
   { f: 37, sfx: "click", vol: 0.18 },
   { f: 39, sfx: "blip-hi", vol: 0.2 },
   { f: 41, sfx: "key-3", vol: 0.16 },
-  { f: 42, sfx: "blip-hi", vol: 0.21 },
+  { f: 42, sfx: "blip", vol: 0.2 },
+  // stutters: glitch-1 (9 f) on the first, the shorter glitch-2 (6.6 f) on the second so nothing
+  // rings into the freeze; ghost repeats from here on stay silent (alarm fatigue reads in the picture)
   { f: 45, sfx: "blip-down", vol: 0.32 },
-  { f: 45, sfx: "glitch-2", vol: 0.42 },
-  { f: 47, sfx: "click", vol: 0.17 },
-  { f: 48, sfx: "blip-hi", vol: 0.22 },
+  { f: 45, sfx: "glitch-1", vol: 0.4 },
   { f: 49, sfx: "click", vol: 0.18 },
-  { f: 50, sfx: "glitch-1", vol: 0.38 },
+  { f: 50, sfx: "glitch-2", vol: 0.38 },
   { f: 51, sfx: "blip-hi", vol: 0.24 },
   { f: 52, sfx: "riser", vol: 0.55 }, // 2 s, inaudible until ~f76, hard stop at f112
-  { f: 53, sfx: "click", vol: 0.18 },
-  { f: 54, sfx: "blip-hi", vol: 0.26 },
-  { f: 56, sfx: "blip-hi", vol: 0.26 },
-  // f57–59 freeze: nothing new
+  { f: 54, sfx: "blip", vol: 0.26 },
+  // f57–59 freeze: the sound cuts out with the motion
   { f: SNAP, sfx: "lock", vol: 0.3 },
   { f: SNAP, sfx: "snap", vol: 0.3 },
   ...snapCues,
-  { f: 68, sfx: "swish", vol: 0.16 },
-  { f: 75, sfx: "blip-up", vol: 0.18 },
+  // f68/75: the human line rises in silence (same grammar as the end card)
   // f112–120: silence before the final drop
 ];
