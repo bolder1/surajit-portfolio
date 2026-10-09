@@ -70,7 +70,7 @@ const code = (at: number, cx: number, cy: number, rot: number, sc: number, col: 
 const T = (t: string, hi?: 1 | 2): Tok => ({ t, hi });
 
 const FRAGS: Frag[] = [
-  toast(4, 560, 318, -3.5, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3"),
+  toast(2, 560, 318, -3.5, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3"),
   code(8, 430, 792, 1.5, 1.06, 0, [
     [T("<saml:Assertion ", 1), T('ID="_8f3a…c21">')],
     [T("  <ds:SignatureValue>"), T("MIIC9z…", 2)],
@@ -116,7 +116,7 @@ const FRAGS: Frag[] = [
 /** Snap order: a left→right sweep, top row first. */
 const fragDelay = (fr: Frag) => {
   const row = fr.kind === "toast" ? 0 : fr.kind === "chip" ? 1 : 2;
-  return Math.round(((colX(fr.col) - GX) / GW) * 7 + row * 1.5) + (fr.ghost ? 1 : 0);
+  return Math.round(((colX(fr.col) - GX) / GW) * 4 + row) + (fr.ghost ? 1 : 0);
 };
 
 /* ---------- tangled dependencies → column guides ---------- */
@@ -144,7 +144,7 @@ const WIRES: Wire[] = Array.from({ length: 42 }, (_, i) => {
     at: Math.max(FRAGS[a].at, FRAGS[b].at) + 1 + Math.floor(r(10) * 3),
     g: { x: gx, y0: band.y0, y1: band.y1 },
     o: r(9) < 0.2 ? 0.62 : r(9) < 0.6 ? 0.4 : 0.22,
-    delay: Math.round(((gx - GX) / GW) * 6) + bi,
+    delay: Math.round(((gx - GX) / GW) * 4) + bi,
     bow: 120 + r(3) * 260,
   };
 });
@@ -180,7 +180,7 @@ const port = (i: number, fc: number, a: number, side: 1 | -1) => {
 };
 
 const snapP = (f: number, delay: number, fps: number) =>
-  f < SNAP + delay ? 0 : spring({ frame: f - SNAP - delay, fps, config: { stiffness: 620, damping: 34, mass: 0.55 } });
+  f < SNAP + delay ? 0 : spring({ frame: f - SNAP - delay + 1, fps, config: { stiffness: 620, damping: 34, mass: 0.55 } }); // +1: the downbeat frame already moves
 
 /* ---------- fragment visuals ---------- */
 const Dot: React.FC<{ hot: boolean; size?: number }> = ({ hot, size = 10 }) => (
@@ -333,7 +333,7 @@ export const Scene: React.FC = () => {
   // after the snap the system recedes, then leaves the words alone for the silence
   const recede = interpolate(f, [70, 100], [1, 0.55], clamp) * interpolate(f, [102, 112], [1, 0], { ...clamp, easing: EI });
 
-  const pT = f < SNAP + 2 ? 0 : spring({ frame: f - SNAP - 2, fps, config: { stiffness: 190, damping: 26 } });
+  const pT = f < SNAP ? 0 : spring({ frame: f - SNAP + 1, fps, config: { stiffness: 210, damping: 26 } });
   const lineA = interpolate(f, [68, 82], [0, 1], { ...clamp, easing: EO });
   const lineB = interpolate(f, [75, 89], [0, 1], { ...clamp, easing: EO });
   const inhale = interpolate(f, [112, 118], [0, 1], { ...clamp, easing: EI });
@@ -450,7 +450,7 @@ const snapCues: Cue[] = (() => {
   const out: Cue[] = [];
   frames.forEach((fr, k) => {
     if (fr === SNAP) return; // the downbeat has its own layered hit
-    out.push({ f: fr, sfx: (k % 2 ? "snap" : "click") as Sfx, vol: Math.max(0.14, 0.3 - k * 0.02) });
+    out.push({ f: fr, sfx: (k % 2 ? "snap" : "click") as Sfx, vol: Math.round(Math.max(0.14, 0.28 - k * 0.02) * 100) / 100 });
   });
   return out;
 })();
@@ -459,7 +459,7 @@ export const cues: Cue[] = [
   // chaos: every arrival has its own sound; errors get the low deny tone
   { f: 0, sfx: "glitch-1", vol: 0.35 },
   { f: 0, sfx: "chatter", vol: 0.26 },
-  { f: 4, sfx: "blip-down", vol: 0.26 },
+  { f: 2, sfx: "blip-down", vol: 0.26 },
   { f: 8, sfx: "key-1", vol: 0.16 },
   { f: 11, sfx: "key-4", vol: 0.13 },
   { f: 15, sfx: "blip-down", vol: 0.28 },
@@ -471,20 +471,25 @@ export const cues: Cue[] = [
   { f: 30, sfx: "blip-down", vol: 0.3 },
   { f: 31, sfx: "key-5", vol: 0.15 },
   { f: 34, sfx: "click-lo", vol: 0.18 },
+  { f: 36, sfx: "click-lo", vol: 0.16 }, // repeats start: the same alerts fire again
   { f: 37, sfx: "click", vol: 0.18 },
+  { f: 39, sfx: "blip-hi", vol: 0.2 },
   { f: 41, sfx: "key-3", vol: 0.16 },
+  { f: 42, sfx: "blip-hi", vol: 0.21 },
   { f: 45, sfx: "blip-down", vol: 0.32 },
   { f: 45, sfx: "glitch-2", vol: 0.42 },
+  { f: 47, sfx: "click", vol: 0.17 },
   { f: 48, sfx: "blip-hi", vol: 0.22 },
   { f: 49, sfx: "click", vol: 0.18 },
   { f: 50, sfx: "glitch-1", vol: 0.38 },
   { f: 51, sfx: "blip-hi", vol: 0.24 },
   { f: 52, sfx: "riser", vol: 0.55 }, // 2 s, inaudible until ~f76, hard stop at f112
+  { f: 53, sfx: "click", vol: 0.18 },
   { f: 54, sfx: "blip-hi", vol: 0.26 },
   { f: 56, sfx: "blip-hi", vol: 0.26 },
   // f57–59 freeze: nothing new
   { f: SNAP, sfx: "lock", vol: 0.3 },
-  { f: SNAP, sfx: "snap", vol: 0.32 },
+  { f: SNAP, sfx: "snap", vol: 0.3 },
   ...snapCues,
   { f: 68, sfx: "swish", vol: 0.16 },
   { f: 75, sfx: "blip-up", vol: 0.18 },

@@ -139,6 +139,7 @@ const startOf = (k: number) => {
   return t.ring ? 47 + (t.ang / (2 * Math.PI)) * 21 + rand(k * 2.3) * 1.5 : 44 + ((t.x - LX0) / (LX1 - LX0)) * 20 + rand(k * 2.3) * 3;
 };
 const FLIGHT = 20;
+const LOCKED = 90; // beat 7: last dot lands at ~f89, the avatar locks on the beat
 const flyEase = Easing.bezier(0.7, 0, 0.3, 1);
 
 // network edges: each node to its 2 nearest neighbours in the scattered layout
@@ -296,12 +297,12 @@ export const Scene: React.FC = () => {
   const outro = (k: number) => {
     const tg = TARGETS[k];
     const rim = Math.hypot(tg.x - AV.x, tg.y - AV.y) / RING_R; // 1 on the ring, ~0.5–0.8 inside
-    const d = (1 - rim) * 8;
-    return 1 - interpolate(f, [105 + d, 112 + d], [0, 1], { ...clamp, easing: EI });
+    const d = Math.max(0, 1 - rim) * 6; // rim first, centre last; everything gone by f116
+    return 1 - interpolate(f, [104 + d, 110 + d], [0, 1], { ...clamp, easing: EI });
   };
 
-  const badge = f < 90 ? 0 : spring({ frame: f - 90, fps, config: { stiffness: 300, damping: 14 } }) * (1 - interpolate(f, [111, 116], [0, 1], { ...clamp, easing: EI }));
-  const lockPulse = interpolate(f, [90, 92, 104], [0, 1, 0], clamp);
+  const badge = f < LOCKED ? 0 : spring({ frame: f - LOCKED, fps, config: { stiffness: 300, damping: 14 } }) * (1 - interpolate(f, [111, 116], [0, 1], { ...clamp, easing: EI }));
+  const lockPulse = interpolate(f, [LOCKED, LOCKED + 2, 104], [0, 1, 0], clamp);
 
   const typed = Math.floor(interpolate(f, [TYPE_AT, TYPE_AT + MONO_LEN / 2.2], [0, MONO_LEN], clamp));
   const monoExit = interpolate(f, [104, 111], [0, 1], { ...clamp, easing: EI });
@@ -469,26 +470,24 @@ export const Scene: React.FC = () => {
 };
 
 /* ---------- sound ---------- */
-const LOCK_END = Math.max(...TARGETS.map((_, k) => startOf(k) + FLIGHT));
-
 export const cues: Cue[] = [
   // the final drop: letterbox opens on ACCESS DENIED
   { f: 0, sfx: "impact", vol: 0.95 },
   { f: 0, sfx: "boom", vol: 0.7 },
   { f: 1, sfx: "whoosh-rev", vol: 0.42 }, // pulls into the burst, ends on f15
-  { f: 2, sfx: "blip-down", vol: 0.32 }, // deny double-beep on the flicker
-  { f: 5, sfx: "blip-down", vol: 0.3 },
+  { f: 1, sfx: "blip-down", vol: 0.32 }, // deny double-beep, 5 f apart, on lit flicker frames
+  { f: 6, sfx: "blip-down", vol: 0.3 },
   { f: 13, sfx: "swish", vol: 0.38 },
   // f15: the seam splits
   { f: HIT, sfx: "granted", vol: 0.72 },
-  { f: HIT, sfx: "snap", vol: 0.34 },
+  { f: HIT, sfx: "snap", vol: 0.3 },
   { f: HIT + 1, sfx: "glitch-2", vol: 0.3 },
   // the lockup steps aside, the graph converges
   { f: 45, sfx: "whoosh", vol: 0.3 },
-  { f: 48, sfx: "chatter", vol: 0.22 },
+  { f: 48, sfx: "chatter", vol: 0.25 },
   ...Array.from({ length: Math.ceil(MONO_LEN / 2.2) }, (_, k) => ({ f: TYPE_AT + k, sfx: `key-${k % 6}` as Sfx, vol: 0.14 })).filter((_, k) => k % 2 === 0),
-  { f: 67, sfx: "dial", vol: 0.38 }, // ring fills clockwise
-  { f: Math.round(LOCK_END) + 1, sfx: "lock", vol: 0.5 },
-  { f: Math.round(LOCK_END) + 1, sfx: "blip-hi", vol: 0.24 },
-  { f: 104, sfx: "whoosh", vol: 0.28 },
+  { f: 67, sfx: "dial", vol: 0.4 }, // ring fills clockwise
+  { f: LOCKED, sfx: "lock", vol: 0.5 },
+  { f: LOCKED, sfx: "blip-hi", vol: 0.24 },
+  { f: 104, sfx: "whoosh", vol: 0.3 },
 ];
