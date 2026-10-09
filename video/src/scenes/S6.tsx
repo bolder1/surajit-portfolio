@@ -2,24 +2,30 @@ import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, mona, mono, sans, serif } from "../lib/theme";
 import { clamp, EI, EO, lerp, rand } from "../lib/anim";
-import { Glitch, Glow } from "../lib/FX";
+import { Glitch } from "../lib/FX";
 import type { Cue, Sfx } from "../lib/cues";
 
 /**
  * 06 · THESIS (120 f) — breakdown.
- * f0–56   "Security is complex." The frame floods on 8ths/16ths: error toasts, warning chips, raw
- *         SAML / JWT / policy / HTTP fragments and tangled connectors. "complex." fights itself: every
- *         letter jumps to a different width/weight. Jitter escalates; two short stutters (f45, f50).
- * f57–59  freeze (near-silence).
+ * f0–56   "Security is complex." The frame floods on 8ths/16ths with real error output from his
+ *         domain (MFA, HTTP 401/403, JWT, Kerberos skew, X.509, IAM explicit deny, AD password
+ *         policy defaults) and tangled connectors. "complex." fights itself: every letter jumps to a
+ *         different width/weight. Jitter escalates; two short stutters (f45, f50).
+ * f57–59  freeze: the sound cuts out with the motion.
  * f60     downbeat SNAP: every fragment FLIPs into a 12-column layout grid (staggered left→right),
- *         duplicates merge into their original, alerts go quiet, connectors straighten into the
- *         grid's column guides. The headline calms to one weight and steps up.
- * f68/75  "Using it shouldn't be." rises (serif italic), "shouldn't be." in vermilion on the beat.
- * f80–112 riser; camera push accelerates, the system recedes. f112–120 only the words, in silence.
+ *         duplicates merge into their original, alert dots go hollow (vermilion leaves the frame),
+ *         connectors straighten into column guides. The headline lands flush-left on the grid's
+ *         first column, its letters settling to one width/weight in the same left→right sweep.
+ * f68/75  "Using it shouldn't be." rises from a mask on the same left edge (serif italic, cream), in
+ *         silence: system events make sound, the human line does not.
+ * f94–101 the resolved messages switch off column by column; f112–120 only the words, in silence.
  */
 
 const SNAP = 60;
 const FREEZE = 57;
+const OFF = 94; // resolved messages switch off from here, swept left→right
+const CALM_O = 0.75; // fragment opacity once resolved (keeps every glyph ≥ 45 % effective)
+const TXT_DIM = "rgba(243,236,222,0.66)"; // secondary text inside fragments
 
 /* ---------- 12-column layout grid inside the safe area ---------- */
 const GX = 140;
