@@ -3,19 +3,20 @@ import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } f
 import { ModuleShell, Em } from "../../lib/ModuleShell";
 import { C, mono } from "../../lib/theme";
 import { clamp, EO, prog } from "../../lib/anim";
-import { Glow } from "../../lib/FX";
 import type { Cue, Sfx } from "../../lib/cues";
 import { DotGrid, flashAt, Mono, partialAttr, pointAt, poly, roundPoly, Stage, Wipe, type Poly, type Pt } from "../_M1/kit";
 
 /**
  * SCOPE 01 · IdP · SSO (60 f): "One identity. Every app."
- * f0     identity node live (portrait, vermilion ring draws on).
+ * f0     identity node live (portrait, cream ring draws on).
  * f0–10  dotted elbow connectors race out of the identity; app surfaces snap in as the front reaches them.
  *        The mosaic is deliberately uneven: wide app windows, square tools, small monogram chips.
- * f6–28  packets travel; arrivals accelerate (15 → 28). Each arrival authorises its app: status dot →
- *        vermilion, border brightens, and wide windows swap their sign-in form for the app itself
- *        (no second password prompt: the point of SSO).
- * f30    (beat 3) every app signed in: one pulse off the identity. f30–50 hold. f50–58 exit.
+ * f6–23  vermilion packets travel; arrivals accelerate (15 → 23). Each arrival authorises its app: one
+ *        vermilion border flash, the hollow status ring fills cream, the dashed border goes solid, and wide
+ *        windows swap their sign-in form for the app itself (no second password prompt: the point of SSO).
+ * f24–29 everything signed in, SFX quiet.
+ * f30    (beat 3) the state change: the identity ring turns vermilion, one pulse runs out across the apps.
+ *        f30–50 hold. f50–58 exit.
  */
 
 const I: Pt = { x: 872, y: 520 };
@@ -80,7 +81,7 @@ const TILES: Tile[] = (() => {
   const n = raw.length;
   return raw.map((t) => {
     const k = order.indexOf(t);
-    const arrive = Math.round(15 + 13 * Math.pow(k / (n - 1), 0.65)); // accelerating cascade, first on beat 2
+    const arrive = Math.round(15 + 8 * Math.pow(k / (n - 1), 0.65)); // accelerating cascade, first on beat 2, done by f23
     const travel = 7 + t.path.len / 125;
     return { ...t, appear: whenFront(t.path.len - 30), arrive, depart: arrive - travel };
   });
@@ -107,13 +108,13 @@ const MONO = ["HR", "VPN"];
 /** sign-in form skeleton shown inside a window until its packet lands */
 const SignIn: React.FC<{ x: number; y: number; w: number }> = ({ x, y, w }) => (
   <g>
-    <rect x={x + 22} y={y + 46} width={w - 44} height={20} rx={5} {...st} strokeOpacity={0.35} />
-    <rect x={x + 22} y={y + 74} width={w - 44} height={20} rx={5} {...st} strokeOpacity={0.35} />
+    <rect x={x + 22} y={y + 46} width={w - 44} height={20} rx={5} {...st} strokeOpacity={0.45} />
+    <rect x={x + 22} y={y + 74} width={w - 44} height={20} rx={5} {...st} strokeOpacity={0.45} />
     {[0, 1, 2, 3, 4, 5].map((k) => (
-      <circle key={k} cx={x + 36 + k * 11} cy={y + 84} r={2.2} fill={C.paper} opacity={0.35} />
+      <circle key={k} cx={x + 36 + k * 11} cy={y + 84} r={2.4} fill={C.paper} opacity={0.6} />
     ))}
-    <rect x={x + 22} y={y + 106} width={86} height={22} rx={11} {...st} strokeOpacity={0.5} />
-    <path d={`M ${x + 46} ${y + 117} H ${x + 84}`} {...st} strokeOpacity={0.5} />
+    <rect x={x + 22} y={y + 106} width={86} height={22} rx={11} fill={C.paper} fillOpacity={0.14} {...{ ...st, fill: undefined }} strokeOpacity={0.6} />
+    <path d={`M ${x + 46} ${y + 117} H ${x + 84}`} {...st} strokeOpacity={0.6} />
   </g>
 );
 
@@ -188,7 +189,7 @@ const TileView: React.FC<{ t: Tile; f: number }> = ({ t, f }) => {
         strokeWidth={1.2}
         strokeDasharray={authed ? undefined : "3 5"}
       />
-      {fl > 0.01 ? <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={t.r} fill="none" stroke={C.acc} strokeWidth={2} opacity={fl} /> : null}
+      {fl > 0.01 ? <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={t.r} fill="none" stroke={C.acc} strokeWidth={1.6} opacity={fl} /> : null}
       {/* top port */}
       <circle cx={t.px} cy={t.y} r={3} fill={C.ink} stroke={C.paper} strokeOpacity={0.6} strokeWidth={1.2} />
 
@@ -218,23 +219,20 @@ const TileView: React.FC<{ t: Tile; f: number }> = ({ t, f }) => {
           dominantBaseline="central"
           fill={C.paper}
           fillOpacity={0.4 + 0.6 * q}
-          style={{ fontFamily: mono, fontSize: 15, fontWeight: 600, letterSpacing: "0.06em" }}
+          style={{ fontFamily: mono, fontSize: 17, fontWeight: 600, letterSpacing: "0.06em" }}
         >
           {MONO[t.v]}
         </text>
       )}
-      {/* status: hollow ring (pending) → vermilion dot (authorised) */}
+      {/* status: hollow ring (pending) → filled cream dot (authorised). Vermilion is kept for the arrival flash. */}
       {t.kind !== "sm" ? (
         authed ? (
-          <>
-            <circle cx={dot.x} cy={dot.y} r={10} fill={C.acc} opacity={0.22 * q} />
-            <circle cx={dot.x} cy={dot.y} r={4.2} fill={C.acc} />
-          </>
+          <circle cx={dot.x} cy={dot.y} r={4.4} fill={fl > 0.3 ? C.acc : C.paper} />
         ) : (
-          <circle cx={dot.x} cy={dot.y} r={4} fill="none" stroke={C.paper} strokeOpacity={0.35} strokeWidth={1.2} />
+          <circle cx={dot.x} cy={dot.y} r={4} fill="none" stroke={C.paper} strokeOpacity={0.4} strokeWidth={1.2} />
         )
       ) : authed ? (
-        <circle cx={t.x + t.w - 10} cy={t.y + 10} r={3.2} fill={C.acc} />
+        <circle cx={t.x + t.w - 10} cy={t.y + 10} r={3.2} fill={fl > 0.3 ? C.acc : C.paper} />
       ) : null}
     </g>
   );
@@ -274,7 +272,6 @@ const Network: React.FC<{ f: number }> = ({ f }) => {
               const g2 = pointAt(t.path, at(f - j * 0.4));
               return <circle key={j} cx={g2.x} cy={g2.y} r={4.4 - j * 0.6} fill={C.acc} opacity={0.6 * Math.pow(0.66, j)} />;
             })}
-            <circle cx={head.x} cy={head.y} r={11} fill={C.acc} opacity={0.2} />
             <circle cx={head.x} cy={head.y} r={4.6} fill={C.acc} />
             <circle cx={head.x} cy={head.y} r={1.8} fill="#fff4e6" />
           </g>
@@ -288,6 +285,7 @@ const Identity: React.FC<{ f: number }> = ({ f }) => {
   const ring = prog(f, 0, 10, EO);
   const circ = 2 * Math.PI * 96;
   const pulse = flashAt(f, GRANT, 12);
+  const live = f >= GRANT; // every app signed in: the session is live
   const rot = f * 0.5;
   const s = 0.31;
   const lab = prog(f, 4, 13, EO);
@@ -318,11 +316,12 @@ const Identity: React.FC<{ f: number }> = ({ f }) => {
           cy={I.y}
           r={96}
           fill="none"
-          stroke={C.acc}
-          strokeWidth={2.5}
+          stroke={live ? C.acc : C.paper}
+          strokeOpacity={live ? 1 : 0.8}
+          strokeWidth={live ? 3 : 2}
           strokeDasharray={`${circ * ring} ${circ}`}
           transform={`rotate(-90 ${I.x} ${I.y})`}
-          style={{ filter: `drop-shadow(0 0 ${5 + 12 * pulse}px ${C.accGlow})` }}
+          style={{ filter: pulse > 0.02 ? `drop-shadow(0 0 ${14 * pulse}px ${C.accGlow})` : undefined }}
         />
         <circle cx={I.x} cy={I.y} r={PORT_R} fill="none" stroke={C.paper} strokeOpacity={0.4} strokeWidth={1} strokeDasharray="2 6" transform={`rotate(${-rot} ${I.x} ${I.y})`} />
         <g transform={`rotate(${rot} ${I.x} ${I.y})`} opacity={0.5}>
@@ -346,8 +345,8 @@ const Identity: React.FC<{ f: number }> = ({ f }) => {
         <circle cx={I.x + PORT_R} cy={I.y} r={4} fill={C.ink} stroke={C.paper} strokeWidth={1.5} />
       </svg>
       <Wipe p={lab} style={{ position: "absolute", left: I.x - 96, top: I.y + 150 }}>
-        <Mono size={15} color={C.paper}>Subject · S. Dutta</Mono>
-        <Mono size={14} style={{ marginTop: 10 }}>IdP · SAML / OIDC</Mono>
+        <Mono size={17} color={C.paper}>Subject · S. Dutta</Mono>
+        <Mono size={16} color="rgba(243,236,222,0.55)" style={{ marginTop: 10 }}>SAML · OIDC</Mono>
       </Wipe>
     </>
   );
@@ -359,11 +358,8 @@ const Motif: React.FC = () => {
   return (
     <Stage focus={FOCUS} exitA={50}>
       <DotGrid focus={FOCUS} id="m1" />
-      <Glow x={I.x} y={I.y} r={240} opacity={0.18 + 0.32 * flashAt(f, GRANT, 16)} />
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-        <circle cx={I.x} cy={I.y} r={190} fill="none" stroke={C.paper} strokeOpacity={0.07} />
-        <circle cx={I.x} cy={I.y} r={270} fill="none" stroke={C.paper} strokeOpacity={0.05} strokeDasharray="1 7" />
-        {pulse > 0 && pulse < 1 ? <circle cx={I.x} cy={I.y} r={PORT_R + 280 * pulse} fill="none" stroke={C.acc} strokeWidth={1.5} opacity={0.75 * (1 - pulse)} /> : null}
+        {pulse > 0 && pulse < 1 ? <circle cx={I.x} cy={I.y} r={PORT_R + 300 * pulse} fill="none" stroke={C.acc} strokeWidth={1.5} opacity={0.7 * (1 - pulse)} /> : null}
       </svg>
       <Network f={f} />
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
@@ -384,17 +380,18 @@ export const Scene: React.FC = () => (
   </ModuleShell>
 );
 
+// Arrivals, thinned: the first, then roughly every third frame of the cascade (not one per tile).
 const arrivals = [...new Set(TILES.map((t) => t.arrive))].sort((a, b) => a - b);
 const arrivalCues: Cue[] = arrivals
-  .filter((_, k) => k % 2 === 0)
+  .filter((fr, k) => k === 0 || fr - arrivals[0] >= 3 * k - 2)
+  .filter((fr, k, a) => k === 0 || fr - a[k - 1] >= 3)
   .map((fr, k) => ({ f: fr, sfx: (k % 2 === 0 ? "blip" : "blip-hi") as Sfx, vol: 0.2 + 0.02 * k }));
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "swish", vol: 0.32 }, // connectors race out of the identity
-  { f: 4, sfx: "click-lo", vol: 0.16 }, // app surfaces snap in
-  { f: 8, sfx: "click", vol: 0.13 },
-  { f: 9, sfx: "chatter", vol: 0.16 }, // packets in flight
+  { f: 3, sfx: "click-lo", vol: 0.16 }, // app surfaces snap in as the connector front reaches them
+  { f: 7, sfx: "click", vol: 0.12 },
   ...arrivalCues,
-  { f: GRANT, sfx: "blip-up", vol: 0.36 }, // every app signed in
+  // f24–29: SFX quiet before the state change
+  { f: GRANT, sfx: "blip-up", vol: 0.36 }, // identity ring turns vermilion: every app signed in
   { f: GRANT, sfx: "snap", vol: 0.2 },
 ];
