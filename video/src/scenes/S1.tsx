@@ -35,9 +35,10 @@ const EYE = 45;
 const flipAt = (i: number) => 46 + i * 0.22;
 const lockAt = (i: number) => 49 + (i * 11) / (N - 1); // last lock lands on f60
 const DONE = 60;
-// reflow: each line moves as one rigid group (no per-glyph stagger, so spacing never collides);
-// line 2 trails line 1 by 2 frames and lands on the beat (f75).
-const flyAt = (i: number) => DONE + lineOf(i) * 2;
+// reflow: each line moves as one rigid group (no per-glyph stagger, so spacing never collides).
+// Line 1 lifts off first (f60–69), then both lines grow together (f62–75) and land on the beat.
+const LIFT_AT = DONE;
+const GROW_AT = DONE + 2;
 const FLY = 13;
 const LINE2 = 75;
 const ACC = 90;
@@ -184,11 +185,11 @@ export const Scene: React.FC = () => {
     }
     if (ch === " ") return;
     // 3) locked glyph: sits centred in its slot inside the field, then reflows to its line
-    const fp = prog(f, flyAt(i), flyAt(i) + FLY, EIO);
+    const fp = prog(f, GROW_AT, GROW_AT + FLY, EIO);
     const s = lerp(FS_A, FS_B, fp);
     const gx = lerp(x + (w - advA(i)) / 2, XB[i], fp);
-    // line 1 lifts out of the field before it finishes growing, so it never rides over line 2
-    const base = lerp(BASE_A, BASE_B[ln], ln === 0 ? prog(f, flyAt(i), flyAt(i) + 9, EIO) : fp);
+    // line 1 lifts out of the field before it grows, so it never rides over line 2
+    const base = lerp(BASE_A, BASE_B[ln], ln === 0 ? prog(f, LIFT_AT, LIFT_AT + 9, EIO) : fp);
     const fresh = f - lockAt(i) < 2;
     const out = prog(f, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35 + 8, EI);
     lines[ln].push(

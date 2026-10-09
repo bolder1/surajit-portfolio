@@ -296,7 +296,6 @@ export const Scene: React.FC = () => {
 
   // build: one component per frame
   const built = (i: number) => (i <= 1 ? true : f >= i - 2);
-  const buildFlash = (i: number) => i > 1 && f >= i - 2 && f < i;
 
   const push = interpolate(f, [0, 60], [1, 1.05], clamp);
   const exit = interpolate(f, [52, 57], [0, 1], { ...clamp, easing: EI });
@@ -343,7 +342,6 @@ export const Scene: React.FC = () => {
                 }}
               >
                 <Layer id={id} wire={wire} f={f} focus={focus} err={err} snapIn={snapFlash} />
-                {buildFlash(i) ? <div style={{ position: "absolute", inset: 0, borderRadius: RAD, background: "rgba(255,59,31,0.0)", outline: `1px solid ${C.acc}`, opacity: 0.0 }} /> : null}
               </div>
             ) : null,
           )}
