@@ -11,6 +11,7 @@ import face from "../assets/face.json";
  * 03 · IDENTITY (120 f) — the drop.
  * f0 impact + flash; letters decrypt out of hex; f30 width/weight slam (beat 3);
  * f40 metallic sweep; f44 serif line; f62 mono line types; f104+ exit.
+ * Sound: lock clicks thinned to ≥2 f apart and stop by f22, so f23–29 is near-silence before the f30 boom.
  */
 const NAME = "SURAJIT DUTTA";
 const POOL = "0123456789ABCDEF#%&*+=/<>[]{}";
@@ -96,7 +97,8 @@ export const Scene: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.ink, overflow: "hidden" }}>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
-        <Glow x={960} y={520} r={760} opacity={0.35 * interpolate(f, [0, 30], [1.6, 1], clamp)} />
+        {/* warm haze rides the drop, then settles low so the held name is not sitting in a red wash */}
+        <Glow x={960} y={520} r={760} opacity={interpolate(f, [0, 30, 60], [0.42, 0.26, 0.14], clamp)} />
         <Cloud />
         <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity: 1 - exit, filter: `blur(${exit * 14}px)` }}>
           <div style={{ position: "relative", marginTop: -70, transform: `scale(${punch}) translateX(${-exit * 60}px)` }}>
@@ -148,22 +150,29 @@ export const Scene: React.FC = () => {
       </AbsoluteFill>
       <Flash at={0} len={8} color="#fff4e6" max={0.9} />
       <Flash at={SLAM} len={5} color={C.acc} max={0.25} />
-      <Leak dur={32} seed={4} opacity={0.6} />
+      <Leak dur={32} seed={4} opacity={0.3} />
     </AbsoluteFill>
   );
 };
 
+// One click per letter lock, thinned: at least 2 f apart, none after f22 (pre-slam silence).
+const lockClicks: Cue[] = (() => {
+  const frames = NAME.split("")
+    .map((ch, i) => (ch === " " ? -1 : Math.ceil(lockFrame(i))))
+    .filter((fr) => fr >= 0 && fr <= SLAM - 8)
+    .sort((a, b) => a - b);
+  const out: Cue[] = [];
+  for (const fr of frames) if (!out.length || fr - out[out.length - 1].f >= 2) out.push({ f: fr, sfx: "click", vol: 0.28 });
+  return out;
+})();
+
 export const cues: Cue[] = [
   { f: 0, sfx: "impact", vol: 1 },
-  { f: 0, sfx: "glitch-2", vol: 0.5 },
-  { f: 2, sfx: "chatter", vol: 0.35 },
-  ...NAME.split("")
-    .map((ch, i) => (ch === " " ? null : ({ f: Math.ceil(lockFrame(i)), sfx: "click", vol: 0.28 } as Cue)))
-    .filter((c): c is Cue => c !== null),
-  { f: SLAM - 6, sfx: "whoosh-rev", vol: 0.45 },
+  { f: 0, sfx: "glitch-2", vol: 0.5 }, // the RGB split on the impact frames
+  ...lockClicks,
   { f: SLAM, sfx: "boom", vol: 0.75 },
   { f: 42, sfx: "shimmer", vol: 0.35 },
   { f: 44, sfx: "swish", vol: 0.3 },
   ...Array.from({ length: 18 }, (_, k) => ({ f: 62 + k * 1, sfx: (`key-${k % 6}` as Cue["sfx"]), vol: 0.16 })).filter((_, k) => k % 2 === 0),
-  { f: 104, sfx: "whoosh", vol: 0.4 },
+  // no exit whoosh: the name dissolves, it does not fly
 ];
