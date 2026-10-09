@@ -51,7 +51,7 @@ const hms = (s: number) => {
 
 // Power-down flicker after zero (deterministic)
 const FLICK = [1, 0.25, 0.85, 0.15, 0.6, 0.2, 0.45];
-const SETTLE = 0.42; // dial rests dim after power-down
+const SETTLE = 0.62; // dial rests dim (cream only) after power-down
 
 const Colon: React.FC<{ color: string }> = ({ color }) => (
   <span style={{ display: "inline-flex", flexDirection: "column", justifyContent: "center", gap: 14, height: 60, margin: "0 10px", verticalAlign: "middle" }}>

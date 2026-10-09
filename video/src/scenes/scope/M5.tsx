@@ -7,7 +7,7 @@ import { Glow } from "../../lib/FX";
 import type { Cue } from "../../lib/cues";
 
 /**
- * SCOPE 05 · IDENTITY GOVERNANCE (60 f) — access certification sweep.
+ * SCOPE 05 · IDENTITY GOVERNANCE (60 f) · access certification sweep.
  * A review table hangs in perspective (far edge toward the title, decision column toward camera).
  * A vermilion review line sweeps down; each row it crosses is decided:
  * GRANTED (pill fills vermilion) or REVOKED (strike, row dims and slides back). Standing high-risk access goes.

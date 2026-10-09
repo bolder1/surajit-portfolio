@@ -8,7 +8,7 @@ import { keySfx } from "../lib/cues";
 
 /**
  * 01 · HOOK (120 f) — the password field decodes the thesis.
- * Composition hangs off one left edge (x 150): field, then a huge two-line headline, right of frame left open.
+ * Composition hangs off one left edge (x 170): field, then a huge two-line headline, right of frame left open.
  * f0      field takes focus (ring contracts), caret blinks.
  * f4–43   22 masked dots on 32nd notes (a key on every 16th).
  * f45     eye toggles (beat): slash retracts, pupil turns vermilion = revealed.
@@ -44,7 +44,7 @@ const ACC = 90;
 const OUT = 104;
 
 // ---- layout (pre-camera)
-const XL = 150; // the one left edge everything hangs from
+const XL = 170; // the one left edge everything hangs from (≥150 after the camera push)
 const FX = XL;
 const FW = 1210;
 const FH = 148;
@@ -119,7 +119,7 @@ export const Scene: React.FC = () => {
   const caretOn = f < EYE && (typing || f % 15 < 8);
 
   // ---- in-field slots (left-aligned like a real input; locking pulls each slot to its glyph width)
-  const lockP = (i: number) => prog(f, lockAt(i), lockAt(i) + 8, EO);
+  const lockP = (i: number) => prog(f, lockAt(i), lockAt(i) + 5, EO);
   const slotW = Array.from({ length: N }, (_, i) => lerp(CW, advA(i), lockP(i)));
   const slotX: number[] = [];
   slotW.reduce((x, w, i) => {
@@ -187,7 +187,8 @@ export const Scene: React.FC = () => {
     const fp = prog(f, flyAt(i), flyAt(i) + FLY, EIO);
     const s = lerp(FS_A, FS_B, fp);
     const gx = lerp(x + (w - advA(i)) / 2, XB[i], fp);
-    const base = lerp(BASE_A, BASE_B[ln], fp);
+    // line 1 lifts out of the field before it finishes growing, so it never rides over line 2
+    const base = lerp(BASE_A, BASE_B[ln], ln === 0 ? prog(f, flyAt(i), flyAt(i) + 9, EIO) : fp);
     const fresh = f - lockAt(i) < 2;
     const out = prog(f, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35 + 8, EI);
     lines[ln].push(

@@ -7,7 +7,7 @@ import { Glow } from "../../lib/FX";
 import type { Cue } from "../../lib/cues";
 
 /**
- * SCOPE 06 · ENDPOINT MANAGEMENT (60 f) — a policy wave across the fleet.
+ * SCOPE 06 · ENDPOINT MANAGEMENT (60 f) · a policy wave across the fleet.
  * A wall of line-art devices (laptop / phone / tablet / desktop) sits dim and unmanaged. A reticle closes
  * on one device, the policy launches on beat 1 and radiates outward: each device flips (vermilion as it
  * takes the policy, then settles cream = enrolled). A few flash a vermilion ✕ (non-compliant), then
@@ -29,10 +29,7 @@ const P = 56; // pitch
 const S = 38; // icon box
 const COLS = 19; // last column bleeds off the right edge
 const ROWS = 6;
-const fits = (x: number, y: number) => {
-  void x;
-  return y + S <= 662; // the wall stops above the title band
-};
+const fits = (y: number) => y + S <= 662; // the wall stops above the title band
 
 type Kind = "laptop" | "phone" | "tablet" | "desktop";
 const KINDS: Kind[] = ["laptop", "laptop", "phone", "desktop", "tablet", "laptop", "phone", "desktop"];
@@ -56,7 +53,7 @@ const DEVS: Dev[] = (() => {
     for (let c = 0; c < COLS; c++) {
       const x = X0 + c * P;
       const y = Y0 + r * P;
-      if (!fits(x, y)) continue;
+      if (!fits(y)) continue;
       const k = out.length;
       const d = Math.hypot(x + S / 2 - OX, y + S / 2 - OY);
       const kind = KINDS[Math.floor(rand(c * 3.7 + r * 11.3) * KINDS.length)];
