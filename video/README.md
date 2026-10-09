@@ -1,14 +1,54 @@
-# Portfolio reel
+# Remotion video
 
-27s, 1920×1080, 30fps kinetic-type intro in the Folio style. Output: `public/video/folio-reel.mp4`.
+<p align="center">
+  <a href="https://github.com/remotion-dev/logo">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-dark.apng">
+      <img alt="Animated Remotion Logo" src="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-light.gif">
+    </picture>
+  </a>
+</p>
 
-- `index.html` holds every scene; `render(t)` sets the whole frame for time `t` (seconds), so rendering is deterministic.
-- `render.mjs` steps through each frame with Playwright and pipes PNGs into ffmpeg.
-- `assets/silhouette-path.txt` is the outline traced from `public/v5/portrait.png` (background removed, then the contour vectorised).
+Welcome to your Remotion project!
 
-```bash
-node video/render.mjs                    # full render -> public/video/folio-reel.mp4
-STILLS=4,11.8,24 node video/render.mjs /tmp/st   # quick PNG stills at given seconds
+## Commands
+
+**Install Dependencies**
+
+```console
+npm i --loglevel=error
 ```
 
-Needs `playwright` and `ffmpeg` on PATH. Edit copy in the `WORDS`, `PILLS` and `CHIPS` arrays.
+**Start Preview**
+
+```console
+npm run dev
+```
+
+**Render video**
+
+```console
+npx remotion render
+```
+
+**Upgrade Remotion**
+
+```console
+npx remotion upgrade
+```
+
+## Docs
+
+Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
+
+## Help
+
+We provide help on our [Discord server](https://discord.gg/6VzzNDwUwV).
+
+## Issues
+
+Found an issue with Remotion? [File an issue here](https://github.com/remotion-dev/remotion/issues/new).
+
+## License
+
+Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).

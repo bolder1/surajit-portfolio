@@ -1,1 +1,12 @@
 node_modules
+dist
+.DS_Store
+.env
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+public/sfx
+public/music
+.build-scenes.workflow.js
+out
+__pycache__
