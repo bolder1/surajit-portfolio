@@ -174,7 +174,7 @@ const LogLine: React.FC<{ l: Line; f: number; idx: number }> = ({ l, f, idx }) =
         opacity: op,
         filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
         transform: `scale(${depth})`,
-        transformOrigin: `${X0}px 50%`,
+        transformOrigin: `${X1}px 50%`, // the reading edge stays aligned; stamps drift inward with depth
       }}
     >
       <span style={{ position: "absolute", left: X0, color: active ? "rgba(243,236,222,0.5)" : "rgba(243,236,222,0.34)" }}>{l.ts}</span>
@@ -202,7 +202,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
   const idN = Math.min(9, Math.floor((t + 1) * 4.5));
   return (
     <>
-      <Glow x={X1 + 560} y={BIG_BASE - 80} r={600} opacity={(0.18 + 0.3 * (low ? 0.25 : 1)) * kick} />
+      <Glow x={X1 + 560} y={BIG_BASE - 80} r={600} opacity={(0.14 + 0.24 * (low ? 0.25 : 1)) * kick} />
       {/* the system prints the field name in the next log slot */}
       <div
         style={{
@@ -232,7 +232,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
           letterSpacing: `${track}em`,
           color: C.acc,
           opacity: pulse,
-          textShadow: low ? undefined : "0 0 44px rgba(255,59,31,0.45)",
+          textShadow: low ? undefined : "0 0 36px rgba(255,59,31,0.38)",
         }}
       >
         {WORD.split("").map((ch, i) => {

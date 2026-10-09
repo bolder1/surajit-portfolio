@@ -20,6 +20,7 @@ import type { Cue } from "../../lib/cues";
  */
 const LAUNCH = 15;
 const DONE = 45;
+const FLIP = 6; // frames for a device flip
 
 // wall geometry
 const X0 = 862;
@@ -27,13 +28,10 @@ const Y0 = 320;
 const P = 56; // pitch
 const S = 38; // icon box
 const COLS = 19; // last column bleeds off the right edge
-const ROWS = 10;
-const TITLE_RIGHT = 1652; // the title occupies y > ~670 left of this x
+const ROWS = 6;
 const fits = (x: number, y: number) => {
-  if (y + S > 916 - 40) return false; // HUD baseline
-  if (y + S > 662 && x < TITLE_RIGHT + 14) return false; // wrap around the title
-  if (x > 1780 && y + S > 640) return false; // keep the lower-right corner clear of the HUD timecode
-  return true;
+  void x;
+  return y + S <= 662; // the wall stops above the title band
 };
 
 type Kind = "laptop" | "phone" | "tablet" | "desktop";
@@ -45,7 +43,7 @@ const OY = Y0 + ORIGIN.r * P + S / 2;
 
 type Dev = { x: number; y: number; kind: Kind; d: number; a: number; nc: boolean; res: number; k: number };
 const RMAX = 640;
-const WAVE = Easing.bezier(0.22, 0.5, 0.36, 1);
+const WAVE = Easing.bezier(0.3, 0.25, 0.55, 1);
 const radius = (f: number) => interpolate(f, [LAUNCH, 41], [0, RMAX], { ...clamp, easing: WAVE });
 const actFrame = (d: number) => {
   for (let f = LAUNCH; f <= 41; f += 0.1) if (radius(f) >= d) return f;
@@ -69,13 +67,13 @@ const DEVS: Dev[] = (() => {
   // remediation frames: each ✕ holds ~10–14 f; the last one lands exactly on DONE
   const ncs = out.filter((v) => v.nc).sort((p, q) => p.a - q.a);
   ncs.forEach((v, i) => {
-    v.res = i === ncs.length - 1 ? DONE : Math.min(DONE - 1, Math.round(v.a + 10 + rand(v.k * 1.9) * 5));
+    // res = frame the remediation flip starts; the device reads fixed at res + FLIP/2
+    v.res = i === ncs.length - 1 ? DONE - FLIP / 2 : Math.min(DONE - FLIP / 2 - 1, Math.round(v.a + 10 + rand(v.k * 1.9) * 5));
   });
   return out;
 })();
 const NC = DEVS.filter((v) => v.nc);
 const TOTAL = DEVS.length;
-const FLIP = 6;
 
 /** Device glyphs, 38×38, 1.5 px line. `on` variants carry the enrolled screen fill + status dot. */
 const Symbols: React.FC = () => (
@@ -102,7 +100,6 @@ const Symbols: React.FC = () => (
     ))}
     <clipPath id="m6-wall">
       <rect x={X0 - 30} y={Y0 - 26} width={1920 - X0 + 30} height={662 - Y0 + 26} />
-      <rect x={TITLE_RIGHT} y={640} width={1920 - TITLE_RIGHT} height={240} />
     </clipPath>
   </defs>
 );
@@ -128,8 +125,8 @@ const DeviceView: React.FC<{ v: Dev; f: number }> = ({ v, f }) => {
         on = true;
         const since = v.nc ? f - (v.res + FLIP / 2) : t - FLIP / 2;
         if (v.nc && f < v.res + FLIP) sx = Math.abs(Math.cos((Math.PI * (f - v.res)) / FLIP));
-        color = since < 6 ? C.acc : C.paper;
-        op = since < 6 ? 1 : 0.88;
+        color = since < 4 ? C.acc : C.paper;
+        op = since < 4 ? 1 : 0.88;
       }
     }
   }
@@ -153,7 +150,7 @@ export const Scene: React.FC = () => {
   const waveO = interpolate(R, [0, 40, RMAX * 0.85, RMAX], [0, 1, 0.5, 0], clamp) * (f >= LAUNCH ? 1 : 0);
 
   const enrolled = DEVS.filter((v) => f >= v.a + FLIP / 2).length;
-  const fixedN = NC.filter((v) => f >= v.res + FLIP / 2 || (v.res === DONE && f >= DONE)).length;
+  const fixedN = NC.filter((v) => f >= v.res + FLIP / 2).length;
   const pct = f >= DONE ? 100 : 94 + Math.floor((6 * fixedN) / NC.length);
   const done = f >= DONE;
   const doneS = spring({ frame: f - DONE, fps, config: { stiffness: 300, damping: 15 } });
