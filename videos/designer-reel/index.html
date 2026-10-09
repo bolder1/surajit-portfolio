@@ -32,21 +32,139 @@
   </head>
   <body>
     <!--
-      Review host. Right now it mounts only the 4 s style frame (compositions/00-styleframe.html)
-      so `npx hyperframes snapshot / check / preview` can reach it. During assembly, replace this
-      slot with the twelve frame slots from STORYBOARD.md (root data-duration becomes 52).
+      "The Line, in phosphor and glass": 52 s, 30 fps, 1920x1080. Twelve frames in film order
+      (STORYBOARD.md: data-start = start frame / 30). Every frame's timeline is local to its slot.
+      Sound is one pre-mixed track (music bed + all SFX), assets/audio/mix.wav, built by sound/mix.py.
     -->
-    <div id="root" data-composition-id="root" data-width="1920" data-height="1080" data-duration="4">
+    <div id="root" data-composition-id="root" data-width="1920" data-height="1080" data-duration="52">
       <div
-        id="el-styleframe"
-        data-composition-id="styleframe"
-        data-composition-src="compositions/00-styleframe.html"
+        id="f01"
+        data-composition-id="f01"
+        data-composition-src="compositions/01-origin.html"
         data-start="0"
         data-duration="4"
         data-track-index="1"
         data-width="1920"
         data-height="1080"
       ></div>
+      <div
+        id="f02"
+        data-composition-id="f02"
+        data-composition-src="compositions/02-thesis.html"
+        data-start="4"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f03"
+        data-composition-id="f03"
+        data-composition-src="compositions/03-name.html"
+        data-start="8"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f04"
+        data-composition-id="f04"
+        data-composition-src="compositions/04-fortmindz.html"
+        data-start="12"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f05"
+        data-composition-id="f05"
+        data-composition-src="compositions/05-impero.html"
+        data-start="16"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f06"
+        data-composition-id="f06"
+        data-composition-src="compositions/06-enterprise.html"
+        data-start="20"
+        data-duration="6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f07"
+        data-composition-id="f07"
+        data-composition-src="compositions/07-five-days.html"
+        data-start="26"
+        data-duration="6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f08"
+        data-composition-id="f08"
+        data-composition-src="compositions/08-craft.html"
+        data-start="32"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f09"
+        data-composition-id="f09"
+        data-composition-src="compositions/09-process.html"
+        data-start="36"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f10"
+        data-composition-id="f10"
+        data-composition-src="compositions/10-numbers.html"
+        data-start="40"
+        data-duration="4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f11"
+        data-composition-id="f11"
+        data-composition-src="compositions/11-calm.html"
+        data-start="44"
+        data-duration="2"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f12"
+        data-composition-id="f12"
+        data-composition-src="compositions/12-end.html"
+        data-start="46"
+        data-duration="6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <audio
+        id="reel-mix"
+        src="assets/audio/mix.wav"
+        data-start="0"
+        data-duration="52"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
     </div>
     <script>
       window.__timelines["root"] = gsap.timeline({ paused: true });

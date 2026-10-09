@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F3 "Name" (film 240-360, 4 s). The style frame at full energy: the drop, SURAJIT / DUTTA slam,
+         a Tier H portrait slab, and the beam routing his head-and-shoulders behind the glass.
+         Local time = film frame - 240. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="f03-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f03-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f03-cam { position: absolute; inset: 0; }
+        .f03-world, .f03-world svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        .f03-world { background: #0b0716; }
+        #f03-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* type */
+        #f03-label { position: absolute; left: 120px; top: 176px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        #f03-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
+        .f03-mask { position: absolute; left: 112px; height: 170px; overflow: hidden; padding: 0 8px; }
+        #f03-m1 { top: 214px; }
+        #f03-m2 { top: 386px; }
+        .f03-name { display: block; font-family: "Mona Sans", sans-serif; font-size: 176px; line-height: 0.92; letter-spacing: -0.01em; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; white-space: nowrap; }
+        .f03-sheen { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255, 217, 236, 0) 40%, rgba(255, 217, 236, 0.85) 50%, rgba(255, 217, 236, 0) 60%); background-size: 300% 100%; background-position: 120% 0; mix-blend-mode: soft-light; }
+        #f03-quote { position: absolute; left: 120px; top: 896px; font-family: "Mona Sans", sans-serif; font-size: 44px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+
+        /* Tier H liquid glass: the portrait slab (lens over a duplicated world) */
+        #f03-slab, #f03-slab-shadow { position: absolute; left: 1250px; top: 100px; width: 480px; height: 880px; border-radius: 76px; }
+        #f03-slab { overflow: hidden; isolation: isolate; }
+        #f03-slab-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
+        #f03-lens { position: absolute; inset: 0; filter: url(#f03-lens-f); }
+        #f03-lens > .f03-world { left: -1250px; top: -100px; }
+        #f03-screen { position: absolute; left: 40px; top: 40px; width: 400px; height: 800px; border-radius: 40px; overflow: hidden; background: #0e0d10; }
+        #f03-screen img { position: absolute; left: -121px; top: 0; width: 667px; height: 800px; display: block; }
+        #f03-dither { image-rendering: pixelated; }
+        /* beam-only copy of the world inside the screen: his silhouette trace shows through the dark print */
+        #f03-trace { position: absolute; left: -1290px; top: -140px; width: 1920px; height: 1080px; mix-blend-mode: screen; }
+        #f03-trace svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f03-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px); opacity: 0; }
+        #f03-pflash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
+        .lg-tint { position: absolute; inset: 0; border-radius: inherit; background: rgba(180, 150, 255, 0.07); }
+        .lg-shade { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+        .f03-skin { opacity: 0; }
+
+        /* finishing: the drop flash and grain sit over everything */
+        #f03-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
+        #f03-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f03-root" data-composition-id="f03" data-width="1920" data-height="1080" data-duration="4">
+        <div id="f03-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div id="f03-cam">
+            <div class="f03-world" id="f03-world-main" data-layout-allow-overflow></div>
+            <div id="f03-vignette" data-layout-ignore></div>
+
+            <div id="f03-label"><span id="f03-label-text"></span><span id="f03-caret"></span></div>
+            <div class="f03-mask" id="f03-m1"><span class="f03-name" id="f03-n1" data-layout-allow-overflow data-layout-allow-occlusion>SURAJIT</span><div class="f03-sheen" data-layout-ignore></div></div>
+            <div class="f03-mask" id="f03-m2"><span class="f03-name" id="f03-n2" data-layout-allow-overflow data-layout-allow-occlusion>DUTTA</span><div class="f03-sheen" data-layout-ignore></div></div>
+            <div id="f03-quote">I make complex software feel simple.</div>
+
+            <div id="f03-slab-shadow" class="f03-skin"></div>
+            <div id="f03-slab">
+              <div id="f03-lens">
+                <div class="f03-world" id="f03-world-lens" data-layout-allow-overflow></div>
+                <div id="f03-screen">
+                  <!-- his portrait, baked offline by assets/lib/bake.py (phosphor print: duotone + 4-ink dither) -->
+                  <img id="f03-duo" src="assets/img/portrait-duo.png" alt="Surajit Dutta" data-layout-allow-overflow />
+                  <img id="f03-dither" src="assets/img/portrait-dither.png" alt="" data-layout-allow-overflow />
+                  <div id="f03-trace" data-layout-ignore></div>
+                  <div id="f03-scan"></div>
+                  <div id="f03-pflash"></div>
+                </div>
+              </div>
+              <div class="lg-tint f03-skin"></div>
+              <div class="lg-shade f03-skin"></div>
+              <div class="lg-rim f03-skin" id="f03-rim"></div>
+            </div>
+          </div>
+
+          <div id="f03-flash" data-layout-ignore></div>
+          <div id="f03-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f03-defs">
+              <!-- bloom regions hug the beam: frame copy, lens copy (slab + pad) and the in-screen trace -->
+              <filter id="f03-bloom" x="-100" y="158" width="2300" height="782" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="f03-bloom-lens" x="1160" y="158" width="660" height="634" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="f03-bloom-scr" x="1290" y="158" width="400" height="634" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f03-root");
+          var defs = document.getElementById("f03-defs");
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f03-lens-f", { w: 480, h: 880, r: 76, bezel: 84, dir: 1, power: 2, pad: 90 }));
+          var lensF = document.getElementById("f03-lens-f");
+
+          // The beam: in under the name to a pad, then his head-and-shoulders (45/90 routing, traced from his
+          // real cut-out with ~22 px clearance), down off the right shoulder (crosses the right edge at y 805, levels at 880 where F4 enters).
+          var HZ = 690, FH = 1560, NH = 44, PAD_S = 1000;
+          var BEAM = "M -40 612 H 960 L 1079 731 H 1165 L 1316 580 V 314 L 1412 218 H 1616 L 1666 268 V 586 L 1811 731 H 1846 L 1995 880 H 2140";
+          function beamSVG(bloom) {
+            var s = '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+            s += '<path class="f03-b-old" d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+            s += '<path class="f03-b-fresh" d="' + BEAM + '" stroke="#ff2e97" stroke-width="6"/>';
+            s += '<path class="f03-b-core" d="' + BEAM + '" stroke="#ffd9ec" stroke-width="2.2"/>';
+            s += '<path class="f03-b-head" d="' + BEAM + '" stroke="#ffffff" stroke-width="7"/>';
+            return s;
+          }
+          var copies = 0;
+          function world(bloom) {
+            var t = "f03-w" + copies++; // unique gradient/mask ids per copy
+            var s = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>';
+            s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ') scale(1150 330) translate(-960 -' + HZ + ')">';
+            s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+            s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="-600" y="0" width="3120" height="1080"><rect x="-600" y="' + HZ + '" width="3120" height="' + (1080 - HZ) + '" fill="url(#' + t + '-fade)"/></mask>';
+            s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#ff2e97" stop-opacity="0.3"/><stop offset="1" stop-color="#ff2e97" stop-opacity="0"/></radialGradient></defs>';
+            s += '<rect class="f03-haze" x="-600" y="200" width="3120" height="980" fill="url(#' + t + '-haze)"/>';
+            s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
+            for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
+            for (var k = 0; k < NH; k++) s += '<line class="f03-hl" x1="-600" y1="1200" x2="2520" y2="1200"/>';
+            s += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="-600" y1="' + HZ + '" x2="2520" y2="' + HZ + '"/>';
+            for (var x = -480; x <= 2400; x += 48) {
+              var tall = (x + 4800) % 240 === 0 ? 9 : 4;
+              s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>';
+            }
+            s += '</g><ellipse cx="1490" cy="1000" rx="300" ry="40" class="f03-skin" fill="url(#' + t + '-caustic)"/>';
+            s += beamSVG(bloom);
+            s += '<circle class="f03-pad" cx="960" cy="612" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
+            return s + "</g></svg>";
+          }
+          document.getElementById("f03-world-main").innerHTML = world("f03-bloom");
+          document.getElementById("f03-world-lens").innerHTML = world("f03-bloom-lens");
+          document.getElementById("f03-trace").innerHTML = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">' + beamSVG("f03-bloom-scr") + "</g></svg>";
+
+          var rows = root.querySelectorAll(".f03-hl");
+          function setGrid(phase) {
+            for (var i = 0; i < rows.length; i++) {
+              var y = K.gridRowY(i % NH, phase, HZ, FH);
+              y = y > 1090 ? 1200 : y;
+              rows[i].setAttribute("y1", y);
+              rows[i].setAttribute("y2", y);
+            }
+          }
+          // floor phase: x4 rush (8 cells/s) for the first 15 f, eases back to x1 by 21 f, then one cell per beat
+          function floorPhase(t) {
+            if (t <= 0.5) return 8 * t;
+            if (t <= 0.7) { var u = t - 0.5; return 4 + 8 * u - 15 * u * u; }
+            return 5 + 2 * (t - 0.7);
+          }
+          var LEN = Math.ceil(root.querySelector(".f03-b-old").getTotalLength()) + 2;
+          var drawn = root.querySelectorAll(".f03-b-old, .f03-b-core"),
+            fresh = root.querySelectorAll(".f03-b-fresh"),
+            head = root.querySelectorAll(".f03-b-head");
+          function setBeam(s) {
+            K.dash(drawn, LEN, s, null);
+            K.dash(fresh, LEN, s, 560);
+            K.dash(head, LEN, s, 70);
+          }
+          var cam = document.getElementById("f03-cam");
+          var grain = document.getElementById("f03-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var LABEL = "PRODUCT DESIGNER · UX / UI";
+          var labelEl = document.getElementById("f03-label-text");
+          setGrid(0);
+          setBeam(0);
+
+          var tl = gsap.timeline({ paused: true });
+
+          // ambient: floor, grain, and the camera whip out along the beam (last 6 f: x 0 -> -400, blur 0 -> 24, power3.in)
+          var amb = { t: 0 };
+          tl.to(amb, {
+            t: 4, duration: 4, ease: "none",
+            onUpdate: function () {
+              var t = amb.t;
+              setGrid(floorPhase(t));
+              grain.style.backgroundPosition = K.grainPos(t);
+              var p = t <= 3.8 ? 0 : Math.min(1, (t - 3.8) / 0.2);
+              var e = p * p * p;
+              cam.style.transform = e > 0 ? "translate3d(" + (-400 * e).toFixed(2) + "px,0,0)" : "none";
+              cam.style.filter = e > 0 ? "blur(" + (24 * e).toFixed(2) + "px)" : "none";
+            },
+          }, 0);
+          tl.fromTo(root.querySelectorAll(".f03-haze"), { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+
+          // 240 drop: 2 f beam-core flash @ 35%
+          tl.set("#f03-flash", { opacity: 0.35 }, 0);
+          tl.set("#f03-flash", { opacity: 0 }, 2 / 30);
+
+          // 240 SURAJIT, 247 DUTTA: rise out of the mask while the width axis opens 75 -> 125 (slam)
+          tl.fromTo("#f03-n1", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 0);
+          tl.fromTo("#f03-n2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 7 / 30);
+
+          // 255 Tier H slab condenses: liquid spring on refraction, skin up, rim light sweeps. No move, no scale.
+          var GLASS = K.spring(0.55, 0.62, 1.2);
+          var lens = { k: 0 };
+          tl.to(lens, { k: 1, duration: 1.2, ease: GLASS, onUpdate: function () { K.setRefraction(lensF, 112 * lens.k); } }, 0.5);
+          tl.to(root.querySelectorAll(".f03-skin"), { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.5);
+          tl.fromTo("#f03-rim", { "--spec": "110deg" }, { "--spec": "210deg", duration: 1.6, ease: "power3.out" }, 0.5);
+          tl.to("#f03-rim", { "--spec": "222deg", duration: 1.9, ease: "sine.inOut" }, 2.1);
+
+          // 258 the portrait powers on like a tube: dot -> line -> frame, white-hot flash, scanlines fade off
+          tl.fromTo("#f03-screen", { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, 0.6);
+          tl.to("#f03-screen", { scaleY: 1, duration: 0.24, ease: "expo.out" }, 0.72);
+          tl.set("#f03-pflash", { opacity: 0.95 }, 0.6);
+          tl.to("#f03-pflash", { opacity: 0, duration: 0.36, ease: "power2.out" }, 0.72);
+          tl.set("#f03-scan", { opacity: 0.9 }, 0.6);
+          tl.to("#f03-scan", { opacity: 0, duration: 0.7, ease: "power2.in" }, 0.72);
+          // 270-285 the raster print resolves to the duotone, 35% dither left as texture
+          tl.fromTo("#f03-dither", { opacity: 1 }, { opacity: 0.35, duration: 0.5, ease: "power2.out" }, 1.0);
+
+          // 270 label types (steps), caret blinks in eighths, then goes dark
+          var lab = { n: 0 };
+          tl.to(lab, { n: LABEL.length, duration: 0.6, ease: "steps(" + LABEL.length + ")", onUpdate: function () { labelEl.textContent = LABEL.slice(0, Math.round(lab.n)); } }, 1.0);
+          tl.set("#f03-caret", { opacity: 1 }, 1.0);
+          tl.to("#f03-caret", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 1.6);
+          tl.set("#f03-caret", { opacity: 0 }, 3.1);
+
+          // 285 the beam runs in under the name (pen) and stops hard on its pad
+          var b = { s: 0 };
+          tl.to(b, { s: PAD_S, duration: 0.4, ease: "power2.out", onUpdate: function () { setBeam(b.s); } }, 1.5);
+          tl.fromTo(root.querySelectorAll(".f03-pad"), { scale: 0, svgOrigin: "960 612" }, { scale: 1, duration: 0.18, ease: "power4.out" }, 1.86);
+          tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, 1.9);
+          tl.to(fresh, { strokeOpacity: 0.7, duration: 0.1, ease: "power2.out" }, 1.9);
+          // 300 it fires (launch) and routes his silhouette behind the slab; one sheen crosses the name
+          tl.set(head, { strokeOpacity: 1 }, 2.0);
+          tl.set(fresh, { strokeOpacity: 1 }, 2.0);
+          tl.to(b, { s: LEN, duration: 0.5, ease: "power2.in", onUpdate: function () { setBeam(b.s); } }, 2.0);
+          tl.fromTo(root.querySelectorAll(".f03-sheen"), { backgroundPosition: "120% 0" }, { backgroundPosition: "-20% 0", duration: 0.6, ease: "power2.inOut", stagger: 0.06 }, 2.0);
+          tl.to(fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, 2.5);
+
+          // 330 his line wipes on bottom left (bed backbeat), then hold
+          tl.to("#f03-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 3.0);
+
+          window.__timelines["f03"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

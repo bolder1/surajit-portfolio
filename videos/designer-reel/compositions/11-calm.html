@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F11 "The principle" (film 1320-1380, 2 s). The breakdown: one continuous beam-core knot pulls itself
+         straight across the tube, "Make complex feel calm." lands with its width axis relaxing 125 -> 100,
+         then the tube powers off (1365-1377) onto that same line and leaves a beam-core dot (1377-1380).
+         Local time = film frame - 1320. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="f11-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        #f11-root { position: absolute; inset: 0; overflow: hidden; background: #070410; }
+        /* the tube: everything that powers off. Collapses about the frame centre (960, 540), where the line lies */
+        #f11-tube { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f11-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f11-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+        #f11-mask { position: absolute; left: 232px; top: 393px; height: 136px; overflow: hidden; padding: 0 8px; }
+        #f11-line {
+          display: block;
+          padding-top: 10px;
+          font-family: "Mona Sans", sans-serif;
+          font-size: 96px;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          color: #f3eeff;
+          --wdth: 125;
+          font-variation-settings: "wdth" var(--wdth), "wght" 380;
+          white-space: nowrap;
+        }
+        #f11-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
+        /* the collapsed raster line and the last dot are light sources: they may bloom */
+        #f11-cline { position: absolute; left: 0; top: 538px; width: 1920px; height: 4px; background: #ffd9ec; opacity: 0; box-shadow: 0 0 10px 2px rgba(255, 217, 236, 0.7), 0 0 34px 6px rgba(255, 46, 151, 0.22); }
+        #f11-dot { position: absolute; left: 955px; top: 535px; width: 10px; height: 10px; border-radius: 5px; background: #ffd9ec; opacity: 0; box-shadow: 0 0 8px 2px rgba(255, 217, 236, 0.75), 0 0 26px 6px rgba(255, 46, 151, 0.22); }
+        #f11-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f11-root" data-composition-id="f11" data-width="1920" data-height="1080" data-duration="2">
+        <div id="f11-scene" class="clip" data-start="0" data-duration="2" data-track-index="0">
+          <div id="f11-tube">
+            <svg id="f11-world" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" data-layout-allow-overflow></svg>
+            <div id="f11-vignette" data-layout-ignore></div>
+            <div id="f11-mask"><span id="f11-line" data-layout-allow-overflow data-layout-allow-occlusion>Make complex feel calm.</span></div>
+            <div id="f11-flash" data-layout-ignore></div>
+          </div>
+          <div id="f11-cline" data-layout-ignore></div>
+          <div id="f11-dot" data-layout-ignore></div>
+          <div id="f11-grain" data-layout-ignore></div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f11-root");
+          function F(f) { return (f - 1320) / 30; } // film frame -> local seconds
+
+          // world: a breathing haze and the knot (one continuous curve, beam-core over a 50% magenta halo)
+          var s = "<defs>";
+          s += '<radialGradient id="f11-haze-g" cx="960" cy="540" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 540) scale(1150 330) translate(-960 -540)">';
+          s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+          s += '<filter id="f11-bloom" x="-80" y="470" width="2080" height="440" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+          s += '<rect id="f11-haze" x="-200" y="160" width="2320" height="760" fill="url(#f11-haze-g)" opacity="0.6"/>';
+          s += '<g filter="url(#f11-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+          s += '<path id="f11-halo" d="" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          s += '<path id="f11-core" d="" stroke="#ffd9ec" stroke-width="2.2"/></g>';
+          document.getElementById("f11-world").innerHTML = s;
+          var halo = document.getElementById("f11-halo"),
+            core = document.getElementById("f11-core");
+
+          // The knot. Parameter q in [-1, 1] runs along the line from the left edge to the right edge.
+          // Straight: x = 960 + 1020 q, y = 540 (the tube's centre line, which the power-off collapses onto).
+          // Knotted: the middle 62% of the line is bunched into ~420 px and coiled with three incommensurate loop
+          // frequencies (so it reads as a tangle, not a spring), hanging below the line his principle will stand on.
+          var N = 600, Q = 0.62;
+          var KX = new Float32Array(N + 1), KY = new Float32Array(N + 1), SX = new Float32Array(N + 1), DL = new Float32Array(N + 1);
+          for (var i = 0; i <= N; i++) {
+            var q = (i / N) * 2 - 1, a = Math.abs(q);
+            var g = q * Math.pow(a, 2.8); // bunching: slow in the middle, fast in the tails
+            var w = a < Q ? Math.pow(1 - (q / Q) * (q / Q), 2) : 0; // coil envelope
+            var v = (q + Q) / (2 * Q); // 0..1 across the coil
+            var p1 = 2 * Math.PI * 9.5 * v, p2 = 2 * Math.PI * 2.35 * v + 1.1, p3 = 2 * Math.PI * 17.3 * v + 0.7;
+            KX[i] = 960 + 1020 * g + w * (120 * Math.sin(p1) + 120 * Math.sin(p2) + 34 * Math.sin(p3));
+            KY[i] = 540 + w * (176 - 104 * Math.cos(p1) + 70 * Math.sin(p2 * 1.3 + 0.4) - 30 * Math.cos(p3));
+            SX[i] = 960 + 1020 * q;
+            DL[i] = 0.13 * (1 - a); // the tails pull first, the heart of the knot lets go last
+          }
+          var T0 = F(1325), DUR = F(1350) - F(1325) - 0.13;
+          function sineInOut(p) { return 0.5 - 0.5 * Math.cos(Math.PI * p); }
+          var lastMean = 0;
+          function setKnot(t) {
+            var d = "", sum = 0;
+            for (var i = 0; i <= N; i++) {
+              var p = Math.max(0, Math.min(1, (t - T0 - DL[i]) / DUR));
+              p = sineInOut(p);
+              sum += p;
+              var x = KX[i] + (SX[i] - KX[i]) * p, y = KY[i] + (540 - KY[i]) * p;
+              d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+            }
+            halo.setAttribute("d", d);
+            core.setAttribute("d", d);
+            lastMean = sum / (N + 1);
+            // it loses its colour to beam-core as it straightens
+            halo.setAttribute("stroke-opacity", (0.5 * (1 - lastMean)).toFixed(3));
+            core.setAttribute("stroke-width", (2.2 + 0.8 * lastMean).toFixed(2));
+          }
+
+          var grain = document.getElementById("f11-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          setKnot(0);
+
+          var tl = gsap.timeline({ paused: true, defaults: { lazy: false } });
+
+          // master clock: the knot and the grain are pure functions of local time
+          var clock = { t: 0 };
+          tl.to(clock, { t: 2, duration: 2, ease: "none", onUpdate: function () { setKnot(clock.t); grain.style.backgroundPosition = K.grainPos(clock.t); } }, 0);
+          tl.fromTo("#f11-haze", { opacity: 0.6 }, { opacity: 0.45, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+
+          // 1335: his principle rises out of the line it stands on (a calm 0.5 s, not a slam) while the width axis
+          // relaxes 125 -> 100: the signature move played backwards
+          tl.fromTo("#f11-line", { yPercent: 105 }, { yPercent: 0, duration: 0.5, ease: "power2.out" }, F(1335));
+          tl.fromTo("#f11-line", { "--wdth": 125 }, { "--wdth": 100, duration: 0.6, ease: "power2.out" }, F(1335));
+
+          // 1365-1377: CRT power-off. scaleY to a line (power3.in), then scaleX to a dot (power4.in); the image
+          // goes white-hot as it collapses. 1377-1380: a beam-core dot alone in the void.
+          tl.fromTo("#f11-tube", { scaleY: 1 }, { scaleY: 0.004, duration: 6 / 30, ease: "power3.in" }, F(1365));
+          tl.fromTo("#f11-flash", { opacity: 0 }, { opacity: 0.92, duration: 6 / 30, ease: "power3.in" }, F(1365));
+          tl.fromTo("#f11-cline", { opacity: 0 }, { opacity: 1, duration: 2 / 30, ease: "none" }, F(1369));
+          tl.fromTo("#f11-tube", { scaleX: 1 }, { scaleX: 0.004, duration: 6 / 30, ease: "power4.in" }, F(1371));
+          tl.fromTo("#f11-cline", { scaleX: 1 }, { scaleX: 0.004, duration: 6 / 30, ease: "power4.in" }, F(1371));
+          tl.set("#f11-cline", { opacity: 0 }, F(1377));
+          tl.set("#f11-tube", { opacity: 0 }, F(1377));
+          tl.set("#f11-dot", { opacity: 1 }, F(1377));
+
+          window.__timelines["f11"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

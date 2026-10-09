@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F9 "How I work" (film 1080-1200, 4 s). The bench scope again: the beam lies across the frame as the
+         scope's ticked x axis under a graticule that fades upward. Continue upward in (y 300 -> 0, 9 f expo.out).
+         Five Tier B beads condense on the trace in a ripple; a white-hot scope pulse (45-degree trapezoid with
+         phosphor ghosts) enters from the left and hard-stops in one bead per beat (1095, 1110, 1125, 1140, 1155).
+         Each bead grabs the pulse (refraction kick, rim catches the light), a cyan cursor drops from it like a scope
+         measurement and the step's readout types beside the cursor in cyan, then settles to ink-dim. The pulse fires
+         out right (1159-1168), his line wipes on at 1170, hold to the hard cut at 1200 (F10 owns the chroma).
+         Local time = film frame - 1080. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="f09-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f09-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        .f09-stage { position: absolute; inset: 0; }
+        #f09-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f09-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* Tier B beads (72 px): inward rim lens over the trace and the pulse; skin scaled down to bead size */
+        .f09-bead { position: absolute; width: 72px; height: 72px; border-radius: 36px; box-shadow: 0 18px 28px -16px rgba(7, 4, 16, 0.9); opacity: 0; }
+        .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
+        .lg-tint { background: rgba(180, 150, 255, 0.07); }
+        .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 9px 12px -9px rgba(255, 255, 255, 0.3), inset 0 -10px 14px -10px rgba(34, 230, 255, 0.3), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+
+        /* step readouts: true system text, typed beside each cursor; cyan while lit, then ink-dim */
+        .f09-lab { position: absolute; font: 500 26px/1.3 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #22e6ff; white-space: pre; }
+        .f09-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; vertical-align: -0.14em; background: #ff2e97; opacity: 0; }
+        #f09-quote { position: absolute; font-family: "Mona Sans", sans-serif; font-size: 64px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        #f09-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f09-root" data-composition-id="f09" data-width="1920" data-height="1080" data-duration="4">
+        <div id="f09-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div class="f09-stage" id="f09-wstage"><svg id="f09-world" viewBox="0 0 1920 1080" aria-hidden="true" data-layout-allow-overflow></svg></div>
+          <div id="f09-vignette" data-layout-ignore></div>
+          <div class="f09-stage" id="f09-ustage">
+            <div id="f09-beads"></div>
+            <div id="f09-labs"></div>
+            <div id="f09-quote">Research-led. Decision-first.</div>
+          </div>
+          <div id="f09-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f09-defs">
+              <!-- bloom hugs the trace and the pulse (beam bbox + 60 px) -->
+              <filter id="f09-bloom" x="-100" y="340" width="2120" height="180" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f09-root");
+          var defs = document.getElementById("f09-defs");
+          var Q = function (s) { return root.querySelectorAll(s); };
+          var F = function (n) { return n / 30; }; // local frame -> seconds
+
+          // geometry. Y = 450 puts the trace at 750 on the cut, just above F8's run (767 on 1079), so the line keeps
+          // rising through the cut. Beads every 355 px; each readout hangs right of its cursor.
+          var Y = 450, BX = [180, 535, 890, 1245, 1600], SP = 355;
+          var HIT = [15, 30, 45, 60, 75]; // 1095, 1110, 1125, 1140, 1155: the pulse hard-stops in bead i
+          var STEPS = ["DISCOVER &\nFRAME", "RESEARCH &\nTEST", "DEFINE THE\nSYSTEM", "DESIGN &\nREFINE", "DELIVER &\nSUPPORT"];
+          var LEAD = 40, GP = SP / 2, GX0 = BX[0] - GP / 2; // lit lead-in either side of the pulse; graticule pitch, x origin
+          var LAB_X = 18, LAB_Y = Y + 58, CUR_A = Y + 44, CUR_B = Y + 128, QUOTE_Y = Y + 250;
+
+          // world: haze, graticule above the trace (fades upward), scope ticks, trace + pulse (bloom), cursors (crisp)
+          var w = '<defs><radialGradient id="f09-haze-g" cx="960" cy="' + Y + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + Y + ") scale(1150 330) translate(-960 -" + Y + ')">';
+          w += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+          w += '<linearGradient id="f09-grat-g" x1="0" y1="' + (Y - 640) + '" x2="0" y2="' + Y + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient>';
+          w += '<mask id="f09-grat-m" maskUnits="userSpaceOnUse" x="0" y="-400" width="1920" height="' + (Y + 400) + '"><rect x="0" y="-400" width="1920" height="' + (Y + 400) + '" fill="url(#f09-grat-g)"/></mask></defs>';
+          w += '<rect id="f09-haze" x="-200" y="-140" width="2320" height="1100" fill="url(#f09-haze-g)"/>';
+          w += '<g mask="url(#f09-grat-m)" stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5">';
+          // square divisions of half a step (177.5 px), offset so every bead sits mid-division, clear of the lines
+          for (var gx = GX0; gx < 1920; gx += GP) w += '<line x1="' + gx.toFixed(1) + '" y1="-400" x2="' + gx.toFixed(1) + '" y2="' + Y + '"/>';
+          for (var gy = Y - GP; gy > -400; gy -= GP) w += '<line x1="0" y1="' + gy.toFixed(1) + '" x2="1920" y2="' + gy.toFixed(1) + '"/>';
+          w += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6">';
+          for (var tk = -4; GX0 + (tk * GP) / 4 <= 1920; tk++) { var x = (GX0 + (tk * GP) / 4).toFixed(1), tall = tk % 4 === 0 ? 9 : 4; w += '<line x1="' + x + '" y1="' + (Y - tall) + '" x2="' + x + '" y2="' + (Y + tall) + '"/>'; }
+          w += "</g>";
+          w += '<g filter="url(#f09-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+          w += '<path class="f09-tr" d="M0 0" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          w += '<path class="f09-tr" d="M0 0" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.55"/>';
+          [0.45, 0.3, 0.18, 0.09].forEach(function (o) { w += '<path class="f09-gh" d="M0 0" stroke="#ff2e97" stroke-width="5" stroke-opacity="' + o + '"/>'; });
+          w += '<path class="f09-pu" d="M0 0" stroke="#ff2e97" stroke-width="6" stroke-opacity="0.8"/>';
+          w += '<path class="f09-pu" d="M0 0" stroke="#ffd9ec" stroke-width="3.2"/>';
+          w += '<path class="f09-pu" d="M0 0" stroke="#ffffff" stroke-width="1.6"/></g>';
+          w += '<g stroke="#22e6ff" stroke-width="2" stroke-linecap="square">';
+          BX.forEach(function (bx) { w += '<line class="f09-cur" x1="' + bx + '" y1="' + CUR_A + '" x2="' + bx + '" y2="' + CUR_B + '" stroke-dasharray="' + (CUR_B - CUR_A) + ' 200" stroke-dashoffset="' + (CUR_B - CUR_A) + '"/>'; });
+          document.getElementById("f09-world").innerHTML = w + "</g>";
+
+          // beads + readouts
+          var beads = "", labs = "";
+          BX.forEach(function (bx, i) {
+            beads += '<div class="f09-bead" style="left:' + (bx - 36) + "px;top:" + (Y - 36) + "px;backdrop-filter:url(#f09-bd-" + i + ')"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div></div>';
+            labs += '<div class="f09-lab" style="left:' + (bx + LAB_X) + "px;top:" + LAB_Y + 'px"><span class="f09-lt"></span><span class="f09-caret"></span></div>';
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f09-bd-" + i, { w: 72, h: 72, r: 36, bezel: 30, dir: -1, power: 1.6 }));
+          });
+          document.getElementById("f09-beads").innerHTML = beads;
+          document.getElementById("f09-labs").innerHTML = labs;
+          var quote = document.getElementById("f09-quote");
+          quote.style.left = BX[0] - 4 + "px";
+          quote.style.top = QUOTE_Y + "px";
+          var BF = BX.map(function (_, i) { return document.getElementById("f09-bd-" + i); });
+          var beadEls = Q(".f09-bead"), labEls = Q(".f09-lab"), labT = Q(".f09-lt"), carets = Q(".f09-caret"), curs = Q(".f09-cur");
+          var trace = Q(".f09-tr"), ghosts = Q(".f09-gh"), pulse = Q(".f09-pu");
+
+          function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+          function p2o(u) { u = c01(u); return 1 - Math.pow(1 - u, 3); } // GSAP power2.out
+          function p2i(u) { u = c01(u); return u * u * u; } // power2.in
+          function p2io(u) { u = c01(u); return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(2 - 2 * u, 3) / 2; } // power2.inOut
+          // pulse x as a pure function of local frame: enters fast and stops in bead 1, then per beat a 4 f hold and
+          // an 11 f launch-and-stop to the next bead (pen), then fires out right through the frame edge
+          function pulseX(f) {
+            if (f < 3) return -240;
+            if (f < HIT[0]) return -240 + (BX[0] + 240) * p2o((f - 3) / 12);
+            for (var i = 0; i < 4; i++) {
+              if (f < HIT[i] + 4) return BX[i];
+              if (f < HIT[i + 1]) return BX[i] + SP * p2io((f - HIT[i] - 4) / 11);
+            }
+            if (f < 79) return BX[4];
+            return BX[4] + (2160 - BX[4]) * p2i((f - 79) / 9);
+          }
+          // scope pulse: a 45-degree trapezoid. In flight it stands 44 px tall; it settles to 22 px as it stops inside
+          // a bead (fits the 72 px glass), and each bead keeps that small pulse once the signal has moved on
+          function bump(x, a, pt) { var pb = pt + a; return "L" + (x - pb) + " " + Y + " L" + (x - pt) + " " + (Y - a) + " H" + (x + pt) + " L" + (x + pb) + " " + Y; }
+          function amp(x) { var d = 1e9; for (var i = 0; i < 5; i++) d = Math.min(d, Math.abs(x - BX[i])); return c01(d / 60); }
+          function mbump(x) { var k = amp(x); return bump(x, 22 + 22 * k, 8 + 4 * k); }
+          function mpb(x) { var k = amp(x); return 30 + 26 * k; }
+          function setPaths(nodes, d) { for (var n = 0; n < nodes.length; n++) nodes[n].setAttribute("d", d); }
+          var CHIP = K.spring(0.45, 0.8, 0.7);
+          var CON = BX.map(function (_, i) { return F(2 + 2 * i); }); // beads condense in a ripple, 1082-1090
+
+          // everything that depends on the pulse: trace shape, ghosts (phosphor persistence), bead refraction
+          // (rest 0.3 of the bead scale; the beads around the pulse ramp to 0.45 and a landing adds a short 0.15 grab,
+          // kept low so the pulse stays legible inside the 72 px glass)
+          function render(t) {
+            var f = t * 30, x = pulseX(f), d = "M -40 " + Y;
+            // captured pulses rise in each bead the signal has left (once the moving pulse has cleared it)
+            for (var j = 0; j < 5; j++) { var a = BX[j] < x - 0.5 ? 22 * c01((x - BX[j] - 70) / 40) : 0; if (a > 0.5) d += " " + bump(BX[j], a, 8); }
+            if (x < 2040) d += " " + mbump(x);
+            setPaths(trace, d + " L 1960 " + Y);
+            setPaths(pulse, "M " + (x - mpb(x) - LEAD) + " " + Y + " " + mbump(x) + " L " + (x + mpb(x) + LEAD) + " " + Y);
+            for (var g = 0; g < 4; g++) {
+              var gx = pulseX(f - 1 - g);
+              ghosts[g].setAttribute("d", Math.abs(gx - x) < 3 ? "M0 0" : "M " + (gx - mpb(gx)) + " " + Y + " " + mbump(gx));
+            }
+            var pos = (x - BX[0]) / SP;
+            for (var i = 0; i < 5; i++) {
+              var c = t < CON[i] ? 0 : CHIP(c01((t - CON[i]) / 0.7));
+              var grab = f >= HIT[i] && f < HIT[i] + 9 ? 0.15 * (1 - (f - HIT[i]) / 9) : 0;
+              K.setRefraction(BF[i], 36 * c * (0.3 + 0.15 * c01(1.5 - Math.abs(i - pos)) + grab));
+            }
+          }
+          render(0);
+
+          var grain = document.getElementById("f09-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var tl = gsap.timeline({ paused: true });
+          var amb = { t: 0 };
+          tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () { render(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
+          tl.fromTo("#f09-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+
+          // 1080 continue upward: both stage layers rise y 300 -> 0 in 9 f, expo.out (F8 did the out)
+          tl.fromTo(".f09-stage", { y: 300 }, { y: 0, duration: F(9), ease: "expo.out" }, 0);
+
+          // 1082-1090 beads condense left to right (Tier B entrance); refraction rides render()
+          beadEls.forEach(function (b, i) {
+            tl.fromTo(b, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, CON[i]);
+            tl.fromTo(b.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, CON[i]);
+          });
+
+          // per beat: the pulse lands in bead i -> its rim catches the light, a cyan cursor drops (step measured) and
+          // the readout types beside it in cyan with a caret (60 cps), settling to ink-dim a beat later
+          HIT.forEach(function (h, i) {
+            var t0 = F(h), txt = STEPS[i], n = { v: 0 }, tf = Math.ceil(txt.length / 2);
+            tl.fromTo(beadEls[i].querySelector(".lg-rim"), { "--spec": "200deg" }, { "--spec": "290deg", duration: 0.4, ease: "power3.out", immediateRender: false }, t0);
+            tl.fromTo(curs[i], { strokeDashoffset: CUR_B - CUR_A }, { strokeDashoffset: 0, duration: F(4), ease: "power4.out" }, t0);
+            tl.to(n, { v: txt.length, duration: F(tf), ease: "steps(" + txt.length + ")", onUpdate: function () { labT[i].textContent = txt.slice(0, Math.round(n.v)); } }, t0);
+            tl.set(carets[i], { opacity: 1 }, t0);
+            if (i < 4) tl.set(carets[i], { opacity: 0 }, F(HIT[i + 1]));
+            tl.fromTo(labEls[i], { color: "#22e6ff" }, { color: "#b4a8da", duration: 0.5, ease: "power2.out", immediateRender: false }, F(h + 15));
+          });
+          // the last caret blinks in eighths, three times, then goes dark for the hold
+          [86, 94, 101, 109, 116].forEach(function (b, k) { tl.set(carets[4], { opacity: k % 2 ? 1 : 0 }, F(b)); });
+
+          // 1170 his line wipes on below the readouts; the key composition holds two beats to the cut
+          tl.to("#f09-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(90));
+
+          window.__timelines["f09"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

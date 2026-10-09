@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F7 "Proof: five days" (film 780-960, 6 s). A 15-cell calendar strip (3 weeks of workdays) folds down to
+         five glass day tiles that light in volt one per eighth; "3 WEEKS -> 5 DAYS" completes on the 840 stab and
+         the Doto counter lands ~70% FASTER exactly on 900. Local time = film frame - 780. Needs window.ReelKit. -->
+  </head>
+  <body>
+    <template id="f07-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        @font-face { font-family: "Doto"; src: url("assets/fonts/Doto-var.woff2") format("woff2"); font-weight: 100 900; }
+        #f07-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f07-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f07-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* opening type: rgb-glitch-text logic (solid ink copy over a beam and a cyan ghost), live only 780-783 */
+        .f07-gl { position: relative; white-space: nowrap; }
+        .f07-gl > span { position: absolute; left: 0; top: 0; opacity: 0; }
+        .f07-gl > .f07-gr { color: #ff2e97; }
+        .f07-gl > .f07-gc { color: #22e6ff; }
+        .f07-gl > strong { position: relative; display: block; font-weight: inherit; }
+        #f07-cap { position: absolute; left: 120px; top: 176px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; }
+
+        #f07-head { position: absolute; left: 112px; top: 218px; height: 130px; display: flex; align-items: center; }
+        .f07-mask { height: 130px; overflow: hidden; padding: 0 8px; }
+        .f07-big { font-family: "Mona Sans", sans-serif; font-size: 132px; line-height: 0.92; letter-spacing: -0.01em; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; white-space: nowrap; }
+        #f07-h1 > strong { color: #f3eeff; }
+        #f07-arrow { width: 150px; height: 64px; margin: 0 22px 0 26px; overflow: visible; }
+
+        /* Tier B day tiles: inward rim lens over the calendar outline underneath */
+        .f07-tile { position: absolute; top: 430px; width: 236px; height: 120px; border-radius: 22px; box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; }
+        .f07-tile .lg-tint { background: rgba(180, 150, 255, 0.07); }
+        .f07-day { position: absolute; left: 24px; top: 22px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #8c7eb8; }
+        .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
+        .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+        .f07-lab { position: absolute; top: 598px; font: 500 22px/1.3 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: pre; }
+        .f07-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; vertical-align: -0.14em; background: #ff2e97; opacity: 0; }
+
+        /* the stat: Doto arcade score + its unit on one baseline, bottom right */
+        #f07-stat { position: absolute; right: 120px; top: 753px; display: flex; font: 750 220px/1 "Doto", monospace; font-variant-numeric: tabular-nums; white-space: pre; color: #b4a8da; --glow: 0; text-shadow: 0 0 30px rgba(245, 255, 59, var(--glow)); opacity: 0; }
+        #f07-num { display: block; transform-origin: 100% 85%; }
+        #f07-unit { display: block; opacity: 0; }
+
+        #f07-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f07-root" data-composition-id="f07" data-width="1920" data-height="1080" data-duration="6">
+        <div id="f07-scene" class="clip" data-start="0" data-duration="6" data-track-index="0">
+          <svg id="f07-world" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+          <div id="f07-vignette" data-layout-ignore></div>
+
+          <div id="f07-tiles"></div>
+          <div id="f07-labs"></div>
+
+          <div id="f07-cap" class="f07-gl"><span class="f07-gr" data-layout-allow-overlap>ACTIVE DIRECTORY PROTOTYPE</span><span class="f07-gc" data-layout-allow-overlap>ACTIVE DIRECTORY PROTOTYPE</span><strong>ACTIVE DIRECTORY PROTOTYPE</strong></div>
+          <div id="f07-head">
+            <div class="f07-mask"><div class="f07-big f07-gl" id="f07-h1"><span class="f07-gr" data-layout-allow-overlap>3 WEEKS</span><span class="f07-gc" data-layout-allow-overlap>3 WEEKS</span><strong id="f07-h1s">3 WEEKS</strong></div></div>
+            <svg id="f07-arrow" viewBox="0 0 150 64" aria-hidden="true">
+              <g filter="url(#f07-arrow-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path class="f07-ar" d="M 6 32 H 140" stroke="#ff2e97" stroke-width="6" />
+                <path class="f07-ar" d="M 6 32 H 140" stroke="#ffd9ec" stroke-width="2.2" />
+                <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ff2e97" stroke-width="6" />
+                <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ffd9ec" stroke-width="2.2" />
+              </g>
+            </svg>
+            <div class="f07-mask"><div class="f07-big" id="f07-h2" data-layout-allow-overflow data-layout-allow-occlusion>5 DAYS</div></div>
+          </div>
+
+          <div id="f07-stat"><span id="f07-num">~00%</span><span id="f07-unit"> FASTER</span></div>
+          <div id="f07-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f07-defs">
+              <filter id="f07-bloom" x="-80" y="380" width="2080" height="250" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="f07-arrow-bloom" x="-40" y="-40" width="230" height="144" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f07-root");
+          var defs = document.getElementById("f07-defs");
+          var Q = function (s) { return root.querySelectorAll(s); };
+          var F = function (n) { return n / 30; }; // local frame -> seconds
+
+          // geometry: 15 workday cells (3 weeks x 5) -> survivors 1, 4, 7, 10, 13 slide into the 5 day tiles
+          var CW = 92, CH = 120, CY = 430, TW = 236, TH = 120, IN = 12;
+          var KEEP = [1, 4, 7, 10, 13];
+          var DAYS = ["INTERVIEWS +\nJTBD", "5 FLOW VARIANTS\nIN 4 HOURS", "HI-FI ON THE\nDESIGN SYSTEM", "PROTOTYPE +\nDESIGN QA", "WALKTHROUGH +\nHANDOFF"];
+          var TX = function (i) { return 120 + 284 * i; };
+          var BY = CY + TH + 22; // the beam returns under the row
+          var LIT = [75, 82.5, 90, 97.5, 105].map(F); // 855, 862.5, 870, 877.5, 885
+          var TC = [52, 54, 56, 58, 60].map(F); // tiles condense 832-840
+
+          var w = '<defs><radialGradient id="f07-haze-g" cx="860" cy="610" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(860 610) scale(1150 330) translate(-860 -610)">';
+          w += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient></defs>';
+          w += '<rect id="f07-haze" x="-200" y="170" width="2320" height="900" fill="url(#f07-haze-g)"/>';
+          w += '<g fill="none" stroke="#8c7eb8" stroke-width="2">';
+          for (var j = 0; j < 15; j++) {
+            var cx = 120 + Math.floor(j / 5) * 576 + (j % 5) * 108;
+            w += '<rect class="f07-cell" id="f07-cell-' + j + '" x="' + cx + '" y="' + CY + '" width="' + CW + '" height="' + CH + '" rx="10" vector-effect="non-scaling-stroke"/>';
+          }
+          w += "</g>";
+          var litR = function (cls, col, sw) {
+            var s = '<g fill="none" stroke="' + col + '" stroke-width="' + sw + '"' + (cls === "f07-lv" ? ' filter="url(#f07-bloom)"' : "") + ">";
+            for (var i = 0; i < 5; i++) s += '<rect class="' + cls + '" x="' + (TX(i) + IN) + '" y="' + (CY + IN) + '" width="' + (TW - 2 * IN) + '" height="' + (TH - 2 * IN) + '" rx="10" opacity="0"/>';
+            return s + "</g>";
+          };
+          w += litR("f07-li", "#f3eeff", 2) + litR("f07-lv", "#f5ff3b", 2.6);
+          w += '<g filter="url(#f07-bloom)" fill="none" stroke-linecap="round">';
+          w += '<path class="f07-b" d="M -40 ' + BY + ' H 1960" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          w += '<path class="f07-b" d="M -40 ' + BY + ' H 1960" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/></g>';
+          document.getElementById("f07-world").innerHTML = w;
+
+          // tiles + labels
+          var tiles = "", labs = "";
+          for (var i = 0; i < 5; i++) {
+            tiles += '<div class="f07-tile" id="f07-tile-' + i + '" style="left:' + TX(i) + "px;backdrop-filter:url(#f07-tf-" + i + ')"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div><div class="f07-day">D' + (i + 1) + "</div></div>";
+            labs += '<div class="f07-lab" style="left:' + TX(i) + 'px"><span class="f07-lt"></span><span class="f07-caret"></span></div>';
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f07-tf-" + i, { w: TW, h: TH, r: 22, bezel: 28, dir: -1, power: 1.8 }));
+          }
+          document.getElementById("f07-tiles").innerHTML = tiles;
+          document.getElementById("f07-labs").innerHTML = labs;
+          var TF = [0, 1, 2, 3, 4].map(function (i) { return document.getElementById("f07-tf-" + i); });
+          var tileEls = Q(".f07-tile"), dayEls = Q(".f07-day"), labT = Q(".f07-lt"), carets = Q(".f07-caret");
+
+          // glass: each tile's refraction = its condense spring x a 3-tile window that follows the lit day
+          // (|i - f| < 1.5, so never more than 3 tiles refract at once)
+          var CHIP = K.spring(0.45, 0.8, 0.7);
+          function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+          function winF(t) {
+            var f = 0;
+            for (var i = 1; i < 5; i++) { var u = clamp01((t - LIT[i]) / F(4)); f += 1 - (1 - u) * (1 - u); }
+            var v = clamp01((t - F(106)) / F(14));
+            return f - 2 * v * v * (3 - 2 * v);
+          }
+          function setGlass(t) {
+            var f = winF(t);
+            for (var i = 0; i < 5; i++) {
+              var p = (t - TC[i]) / 0.7;
+              var c = p <= 0 ? 0 : CHIP(Math.min(p, 1));
+              K.setRefraction(TF[i], 22 * c * clamp01(1.5 - Math.abs(i - f)));
+            }
+          }
+          // 900-912 the beam returns at its persisted 50 % under the row (pen, left to right)
+          var BL = 2010, beam = Q(".f07-b");
+          function setBeam(t) { var u = clamp01((t - F(120)) / 0.4); K.dash(beam, BL, BL * (1 - (1 - u) * (1 - u)), null); }
+          var grain = document.getElementById("f07-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          setGlass(0);
+          setBeam(0);
+
+          var tl = gsap.timeline({ paused: true });
+          var amb = { t: 0 };
+          tl.to(amb, { t: 6, duration: 6, ease: "none", onUpdate: function () { setGlass(amb.t); setBeam(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
+          tl.fromTo("#f07-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 5 }, 0);
+
+          // 780 hard cut: the opening type tears R/C for 2 steps of 2 f (+-6 px, then -+3 px) and is clean by 784
+          var gr = Q("#f07-cap .f07-gr, #f07-h1 .f07-gr"), gc = Q("#f07-cap .f07-gc, #f07-h1 .f07-gc");
+          tl.set(gr, { x: -6, opacity: 1 }, 0).set(gc, { x: 6, opacity: 1 }, 0);
+          tl.set(gr, { x: 3 }, F(2)).set(gc, { x: -3 }, F(2));
+          tl.set([gr, gc], { x: 0, opacity: 0 }, F(4));
+
+          // 780-800 the strip draws on left to right like a beam pass (pen), one cell per frame
+          var P = 2 * (CW + CH) - 80 + 20 * Math.PI;
+          Q(".f07-cell").forEach(function (c, j) {
+            tl.fromTo(c, { strokeDasharray: P + " " + (P + 10), strokeDashoffset: P }, { strokeDashoffset: 0, duration: F(6), ease: "power2.out" }, F(0.8 * j));
+            tl.set(c, { strokeDasharray: "none" }, F(0.8 * j + 6));
+          });
+          // 795-827 ten cells fold away in a ripple (collapse to a line, 3 f apart); click-lo ripple in the sound pass
+          var m = 0;
+          for (var j2 = 0; j2 < 15; j2++) {
+            if (KEEP.indexOf(j2) >= 0) continue;
+            var cx2 = 120 + Math.floor(j2 / 5) * 576 + (j2 % 5) * 108 + CW / 2;
+            var el = document.getElementById("f07-cell-" + j2);
+            tl.fromTo(el, { scaleY: 1, svgOrigin: cx2 + " " + (CY + CH / 2) }, { scaleY: 0, duration: F(5), ease: "power3.in" }, F(15 + 3 * m));
+            tl.set(el, { opacity: 0 }, F(20 + 3 * m));
+            m++;
+          }
+          // 825-835 the five survivors slide together and open into the tile outlines
+          KEEP.forEach(function (j3, i) {
+            tl.to("#f07-cell-" + j3, { attr: { x: TX(i) + IN, y: CY + IN, width: TW - 2 * IN, height: TH - 2 * IN }, duration: F(10), ease: "power3.inOut" }, F(45));
+          });
+          // 832-840 the tiles condense over them (Tier B entrance spring); refraction rides setGlass
+          tileEls.forEach(function (t, i) {
+            tl.fromTo(t, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, TC[i]);
+            tl.fromTo(t.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, TC[i]);
+            tl.fromTo(t.querySelector(".lg-rim"), { "--spec": "200deg" }, { "--spec": "240deg", duration: 3, ease: "sine.inOut", immediateRender: false }, TC[i] + 1.0);
+          });
+
+          // 840 the stab: the drawn arrow fires and 5 DAYS slams out of its mask, width axis opening 75 -> 125
+          var ar = Q(".f07-ar"), ah = Q(".f07-ah");
+          tl.fromTo(ar, { strokeDasharray: "140 300", strokeDashoffset: 140 }, { strokeDashoffset: 0, duration: F(4), ease: "power3.out" }, F(60));
+          tl.fromTo(ah, { strokeDasharray: "80 200", strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: F(3), ease: "power2.out" }, F(63));
+          tl.fromTo("#f07-h2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, F(60));
+          tl.fromTo("#f07-h1s", { color: "#f3eeff" }, { color: "#b4a8da", duration: 0.3, ease: "power2.out", immediateRender: false }, F(60));
+
+          // 855-885 the days light in volt one per eighth: outline flashes volt (bloom) and decays to ink in 0.5 s,
+          // the day number goes ink, and the label types under the tile with a caret
+          var lv = Q(".f07-lv"), li = Q(".f07-li");
+          LIT.forEach(function (t0, i) {
+            tl.set(lv[i], { opacity: 1 }, t0);
+            tl.fromTo(lv[i], { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false }, t0 + F(2));
+            tl.fromTo(li[i], { opacity: 0 }, { opacity: 0.6, duration: 0.5, ease: "power2.out", immediateRender: false }, t0 + F(2));
+            tl.set(dayEls[i], { color: "#f3eeff" }, t0);
+            var txt = DAYS[i], n = { v: 0 };
+            tl.to(n, { v: txt.length, duration: F(11), ease: "steps(" + txt.length + ")", onUpdate: function () { labT[i].textContent = txt.slice(0, Math.round(n.v)); } }, t0);
+            tl.set(carets[i], { opacity: 1 }, t0);
+            if (i < 4) tl.set(carets[i], { opacity: 0 }, LIT[i + 1]);
+          });
+          tl.fromTo(carets[4], { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true, immediateRender: false }, F(116));
+          tl.set(carets[4], { opacity: 0 }, F(161));
+
+          // 886-900 the arcade counter climbs ~00 -> ~70 in 14 steps and grows; lands volt exactly on 900, ink by 915
+          var num = document.getElementById("f07-num"), c = { n: 0 };
+          tl.set("#f07-stat", { opacity: 1 }, F(106));
+          tl.to(c, { n: 14, duration: F(14), ease: "steps(14)", onUpdate: function () { var v = Math.round(c.n) * 5; num.textContent = "~" + (v < 10 ? "0" : "") + v + "%"; } }, F(106));
+          tl.fromTo(num, { scale: 0.84 }, { scale: 1, duration: F(14), ease: "steps(14)" }, F(106));
+          tl.set("#f07-stat", { color: "#f5ff3b", "--glow": 0.5 }, F(120));
+          tl.set("#f07-unit", { opacity: 1 }, F(120));
+          tl.fromTo("#f07-stat", { color: "#f5ff3b", "--glow": 0.5 }, { color: "#f3eeff", "--glow": 0, duration: F(9), ease: "power2.out", immediateRender: false }, F(126));
+
+
+          window.__timelines["f07"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
