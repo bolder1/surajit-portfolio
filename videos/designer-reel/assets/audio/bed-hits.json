@@ -1,0 +1,297 @@
+{
+ "fps": 30,
+ "bpm": 120,
+ "beat_frames": 15,
+ "bar_frames": 60,
+ "duration_frames": 1560,
+ "key": "F# minor",
+ "progression": "F#m - D - A - E (i-VI-III-VII), cadence D - E - F#m at the end",
+ "sections": [
+  {
+   "id": "F1",
+   "name": "Origin",
+   "start": 0,
+   "end": 120
+  },
+  {
+   "id": "F2",
+   "name": "Thesis",
+   "start": 120,
+   "end": 240
+  },
+  {
+   "id": "F3",
+   "name": "Name (DROP)",
+   "start": 240,
+   "end": 360
+  },
+  {
+   "id": "F4",
+   "name": "Fortmindz 2022",
+   "start": 360,
+   "end": 480
+  },
+  {
+   "id": "F5",
+   "name": "Impero IT 2023",
+   "start": 480,
+   "end": 600
+  },
+  {
+   "id": "F6",
+   "name": "miniOrange 2024-now",
+   "start": 600,
+   "end": 780
+  },
+  {
+   "id": "F7",
+   "name": "Five days",
+   "start": 780,
+   "end": 960
+  },
+  {
+   "id": "F8",
+   "name": "What I do",
+   "start": 960,
+   "end": 1080
+  },
+  {
+   "id": "F9",
+   "name": "How I work",
+   "start": 1080,
+   "end": 1200
+  },
+  {
+   "id": "F10",
+   "name": "Numbers",
+   "start": 1200,
+   "end": 1320
+  },
+  {
+   "id": "F11",
+   "name": "Make complex feel calm (breakdown)",
+   "start": 1320,
+   "end": 1380
+  },
+  {
+   "id": "F12",
+   "name": "Invitation",
+   "start": 1380,
+   "end": 1560
+  }
+ ],
+ "hits": [
+  {
+   "frame": 0,
+   "what": "F1 start: pad fades up from silence with a filtered 16th arp"
+  },
+  {
+   "frame": 120,
+   "what": "F2: filtered kick, offbeat hats and root bass enter; white-noise riser starts"
+  },
+  {
+   "frame": 180,
+   "what": "build: 8th-note snares crescendo"
+  },
+  {
+   "frame": 210,
+   "what": "tom fill, 16ths high to low (210-229)"
+  },
+  {
+   "frame": 232,
+   "what": "near-silence gap 232-240 (everything cut to -40 dB)"
+  },
+  {
+   "frame": 240,
+   "what": "DROP (F3): crash + sub boom + full band + lead hook"
+  },
+  {
+   "frame": 360,
+   "what": "F4: crash, hook continues (answer phrase)"
+  },
+  {
+   "frame": 465,
+   "what": "16th snare pickup fill into F5 (465-480)"
+  },
+  {
+   "frame": 480,
+   "what": "F5: crash, claps + shaker join, arp switches to pedal pattern"
+  },
+  {
+   "frame": 585,
+   "what": "16th snare pickup fill into F6 (585-600)"
+  },
+  {
+   "frame": 600,
+   "what": "F6: crash, bass goes to 16th octaves (more drive)"
+  },
+  {
+   "frame": 720,
+   "what": "synth stab, lead rests for a bar"
+  },
+  {
+   "frame": 750,
+   "what": "tom fill into F7 (750-780)"
+  },
+  {
+   "frame": 780,
+   "what": "F7: crash + sub, arp climbs, glass-bell counter-melody"
+  },
+  {
+   "frame": 900,
+   "what": "F7 accent: synth stab + crash (lock the stat landing here)"
+  },
+  {
+   "frame": 930,
+   "what": "16th snare roll + riser into F8 (930-960)"
+  },
+  {
+   "frame": 960,
+   "what": "F8: crash, lead hook returns (octave-doubled)"
+  },
+  {
+   "frame": 1050,
+   "what": "16th snare pickup fill into F9 (1050-1080)"
+  },
+  {
+   "frame": 1080,
+   "what": "F9: crash, hook answer phrase"
+  },
+  {
+   "frame": 1170,
+   "what": "tom fill into F10 (1170-1200)"
+  },
+  {
+   "frame": 1200,
+   "what": "F10: crash, lead out, counter stabs"
+  },
+  {
+   "frame": 1230,
+   "what": "counter stab"
+  },
+  {
+   "frame": 1245,
+   "what": "counter stab"
+  },
+  {
+   "frame": 1260,
+   "what": "counter stab"
+  },
+  {
+   "frame": 1275,
+   "what": "counter stab"
+  },
+  {
+   "frame": 1305,
+   "what": "tape-stop on the whole band (1305-1320)"
+  },
+  {
+   "frame": 1320,
+   "what": "F11 BREAKDOWN: Amaj9 pad + arp only, filter closing"
+  },
+  {
+   "frame": 1350,
+   "what": "short riser + snare roll into F12 (1350-1377)"
+  },
+  {
+   "frame": 1377,
+   "what": "breath gap 1377-1380"
+  },
+  {
+   "frame": 1380,
+   "what": "FINAL LIFT (F12): crash + sub boom + big D(add9) chord + full band + lead"
+  },
+  {
+   "frame": 1470,
+   "what": "big tom fill into the final chord (1470-1500)"
+  },
+  {
+   "frame": 1500,
+   "what": "FINAL CHORD F#m9: last kick + crash + sub, band stops, tail fades to silence"
+  },
+  {
+   "frame": 1560,
+   "what": "end: silence"
+  }
+ ],
+ "full_band_kicks": [
+  240.0,
+  255.0,
+  270.0,
+  285.0,
+  300.0,
+  315.0,
+  330.0,
+  345.0,
+  360.0,
+  375.0,
+  390.0,
+  405.0,
+  420.0,
+  435.0,
+  450.0,
+  465.0,
+  480.0,
+  495.0,
+  510.0,
+  525.0,
+  540.0,
+  555.0,
+  570.0,
+  585.0,
+  600.0,
+  615.0,
+  630.0,
+  645.0,
+  660.0,
+  675.0,
+  690.0,
+  705.0,
+  720.0,
+  735.0,
+  750.0,
+  780.0,
+  795.0,
+  810.0,
+  825.0,
+  840.0,
+  855.0,
+  870.0,
+  885.0,
+  900.0,
+  915.0,
+  930.0,
+  945.0,
+  960.0,
+  975.0,
+  990.0,
+  1005.0,
+  1020.0,
+  1035.0,
+  1050.0,
+  1065.0,
+  1080.0,
+  1095.0,
+  1110.0,
+  1125.0,
+  1140.0,
+  1155.0,
+  1170.0,
+  1200.0,
+  1215.0,
+  1230.0,
+  1245.0,
+  1260.0,
+  1275.0,
+  1290.0,
+  1305.0,
+  1380.0,
+  1395.0,
+  1410.0,
+  1425.0,
+  1440.0,
+  1455.0,
+  1470.0,
+  1500.0
+ ]
+}

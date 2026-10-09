@@ -7,13 +7,13 @@ import type { Cue } from "../../lib/cues";
 import { DotGrid, flashAt, Mono, Stage, Wipe, type Pt } from "../_M1/kit";
 
 /**
- * SCOPE 02 · PASSWORD VAULT (60 f) — "Secrets, kept simple."
+ * SCOPE 02 · PASSWORD VAULT (60 f) · "Secrets, kept simple."
  * A blueprint combination dial on a slowly yawing 3D plane (rings on separate depth layers → parallax).
  * f0   dial already spinning (ratchet) → f8 snaps to 37 (8th)
  * f9   reverses → f15 snaps to 09 (beat 2)
  * f16  short turn → f19 snaps to 26 (16th); readout locks each pair in Doto
  * f19–28 eight bolts retract into the door, one after another
- * f29  near-silence
+ * f22–29 SFX near-silence
  * f30  (beat 3) centre slot turns 90° and lights vermilion: VAULT · OPEN, one pulse. Held f30–50, exit f51–58.
  */
 
@@ -268,11 +268,12 @@ export const Scene: React.FC = () => (
 );
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "dial", vol: 0.4 }, // one ratchet pass under all three turns and the bolts (≈27 f)
+  // no 27 f ratchet bed: it would run into the open. One click as the spin bites, then one sound per snap.
+  { f: 3, sfx: "click-lo", vol: 0.16 },
   { f: SNAPS[0], sfx: "snap", vol: 0.3 }, // 37
   { f: SNAPS[1], sfx: "click-lo", vol: 0.26 }, // 09
   { f: SNAPS[2], sfx: "snap", vol: 0.34 }, // 26
   { f: SNAPS[2] + 2, sfx: "click-lo", vol: 0.2 }, // bolts start to retract
-  // f27–29: near-silence before the open
+  // f22–29: near-silence before the open
   { f: GRANT, sfx: "lock", vol: 0.56 }, // slot turns: open
 ];

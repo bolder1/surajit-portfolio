@@ -3,8 +3,7 @@ import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoCon
 import { ModuleShell, Em } from "../../lib/ModuleShell";
 import { C, dots, mono, sans } from "../../lib/theme";
 import { clamp, EI, EO, prog } from "../../lib/anim";
-import { Glow } from "../../lib/FX";
-import type { Cue } from "../../lib/cues";
+import { keySfx, type Cue } from "../../lib/cues";
 
 /**
  * SCOPE 05 · IDENTITY GOVERNANCE (60 f) · access certification sweep.
@@ -12,9 +11,11 @@ import type { Cue } from "../../lib/cues";
  * A vermilion review line sweeps down; each row it crosses is decided:
  * GRANTED (pill fills vermilion) or REVOKED (strike, row dims and slides back). Standing high-risk access goes.
  *  f0–12  camera swings onto the table, rows PENDING
- *  f10–48 review line sweeps 7 rows; stamps at f15 20 25 30 34 39 44 (beats 1 and 2 land on rows 1 and 4)
- *  f45    beat 3: REVIEWED 07/07 → CERTIFIED
- *  f52–57 exit
+ *  f9–33  review line steps down the 7 rows, landing on each as it is decided: f15 (beat 1) 19 22 25 27 29 31,
+ *         a reviewer who speeds up once the pattern is clear
+ *  f32–37 near-silence; the line leaves the table
+ *  f38    (the and-of-2) REVIEWED 07/07 → CERTIFIED, held 15 f
+ *  f53–58 exit
  */
 type Row = { ini: string; id: string; res: string; risk: "LOW" | "MED" | "HIGH"; ok: boolean; svc?: boolean };
 const ROWS: Row[] = [
@@ -33,18 +34,16 @@ const RH = 76;
 const TH = HEAD + ROWS.length * RH;
 const COL = { av: 30, id: 94, res: 320, risk: 664, pill: 790 };
 
-const SWEEP_A = 10;
-const SWEEP_B = 48;
-// tuned so stamps land at f15 20 25 30 34 39 44: first on beat 1, AD › Domain Admins revoked on beat 2
-const SWEEP = Easing.bezier(0.3, 0.15, 0.7, 0.85);
-const lineY = (f: number) => interpolate(f, [SWEEP_A, SWEEP_B], [HEAD - 6, TH + 4], { ...clamp, easing: SWEEP });
-// frame at which the review line reaches each row's centre
-const DEC = ROWS.map((_, i) => {
-  const c = HEAD + i * RH + RH / 2;
-  for (let f = 0; f < 60; f++) if (lineY(f) >= c) return f;
-  return 59;
-});
-const DONE = 45;
+// frame each row is decided = frame the review line lands on its centre
+const DEC = [15, 19, 22, 25, 27, 29, 31];
+const SWEEP_A = 9;
+const SWEEP_B = 33;
+// stepped: the line moves row to row and settles on each one as its stamp lands
+const STEP = Easing.bezier(0.45, 0, 0.2, 1);
+const lineY = (f: number) =>
+  interpolate(f, [SWEEP_A, ...DEC, SWEEP_B], [HEAD - 6, ...ROWS.map((_, i) => HEAD + i * RH + RH / 2), TH + 4], { ...clamp, easing: STEP });
+const DONE = 38;
+const EXIT = 53;
 
 const TC = { x: 1282, y: 424 }; // table centre on screen
 const SC = 0.71;
@@ -70,7 +69,7 @@ const RowView: React.FC<{ r: Row; i: number; f: number; fps: number }> = ({ r, i
         style={{
           position: "absolute",
           inset: 0,
-          background: granted ? `rgba(255,59,31,${0.14 * flash})` : `rgba(243,236,222,${0.08 * flash + (snapFlash ? 0.06 : 0)})`,
+          background: `rgba(243,236,222,${0.08 * flash + (snapFlash ? 0.06 : 0)})`,
         }}
       />
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 1, background: C.paper, opacity: 0.1 }} />
@@ -87,8 +86,8 @@ const RowView: React.FC<{ r: Row; i: number; f: number; fps: number }> = ({ r, i
             border: `1.5px solid ${C.dim}`,
             fontFamily: sans,
             fontWeight: 600,
-            fontSize: 15,
-            letterSpacing: "0.04em",
+            fontSize: 18,
+            letterSpacing: "0.02em",
             color: C.paper,
             display: "flex",
             alignItems: "center",
@@ -117,13 +116,13 @@ const RowView: React.FC<{ r: Row; i: number; f: number; fps: number }> = ({ r, i
         >
           {r.res}
         </div>
-        <div style={{ position: "absolute", left: COL.risk, top: RH / 2 - 16, height: 32, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: COL.risk, top: RH / 2 - 20, height: 40, display: "flex", alignItems: "center" }}>
           <span
             style={{
               fontFamily: mono,
-              fontSize: 15,
-              letterSpacing: "0.18em",
-              padding: "5px 10px 5px 12px",
+              fontSize: 23,
+              letterSpacing: "0.12em",
+              padding: "3px 10px 3px 12px",
               borderRadius: 6,
               border: `1.5px solid rgba(243,236,222,${riskO})`,
               color: `rgba(243,236,222,${Math.max(0.5, riskO)})`,
@@ -133,25 +132,24 @@ const RowView: React.FC<{ r: Row; i: number; f: number; fps: number }> = ({ r, i
           </span>
         </div>
         {/* decision pill */}
-        <div style={{ position: "absolute", left: COL.pill, top: RH / 2 - 21, height: 42, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: COL.pill, top: RH / 2 - 24, height: 48, display: "flex", alignItems: "center" }}>
           <span
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 10,
-              height: 42,
+              height: 48,
               padding: "0 20px",
               borderRadius: 999,
               fontFamily: sans,
               fontWeight: 700,
-              fontSize: 18,
-              letterSpacing: "0.1em",
+              fontSize: 22,
+              letterSpacing: "0.08em",
               background: granted ? C.acc : "transparent",
               border: `1.5px solid ${granted ? C.acc : revoked ? C.paper : C.dim}`,
               color: granted ? C.ink : revoked ? C.paper : C.dim,
               transform: `scale(${decided ? 0.8 + 0.2 * s : 1})`,
               transformOrigin: "0 50%",
-              boxShadow: granted ? "0 0 22px rgba(255,59,31,0.4)" : "none",
             }}
           >
             {!decided ? <span style={{ width: 8, height: 8, borderRadius: 4, background: C.dim }} /> : null}
@@ -183,27 +181,24 @@ export const Scene: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const push = interpolate(f, [0, 60], [1, 1.05], clamp);
-  const exit = interpolate(f, [52, 57], [0, 1], { ...clamp, easing: EI });
+  const exit = interpolate(f, [EXIT, EXIT + 5], [0, 1], { ...clamp, easing: EI });
   const enter = interpolate(f, [0, 14], [0, 1], { ...clamp, easing: EO });
   const ly = lineY(f);
-  const sweeping = f >= SWEEP_A - 2 && f <= SWEEP_B + 2;
-  const lineO = interpolate(f, [SWEEP_A - 3, SWEEP_A, SWEEP_B, SWEEP_B + 4], [0, 1, 1, 0], clamp);
+  const sweeping = f >= SWEEP_A - 2 && f <= SWEEP_B + 3;
+  const lineO = interpolate(f, [SWEEP_A - 2, SWEEP_A, SWEEP_B, SWEEP_B + 3], [0, 1, 1, 0], clamp);
 
   const reviewed = DEC.filter((d) => f >= d).length;
-  const grantedN = ROWS.filter((r, i) => r.ok && f >= DEC[i]).length;
-  const revokedN = ROWS.filter((r, i) => !r.ok && f >= DEC[i]).length;
   const done = f >= DONE;
   const doneS = spring({ frame: f - DONE, fps, config: { stiffness: 300, damping: 16 } });
 
   // camera: swings onto the table; far edge toward the title, decision column toward camera
   const ry = interpolate(enter, [0, 1], [-40, -27]) + interpolate(f, [0, 60], [0, 3]);
   const rx = interpolate(f, [0, 60], [14, 10]);
-  const ty = interpolate(f, [0, 60], [14, -14]);
+  const ty = interpolate(f, [0, 60], [22, -2]); // keeps the far corner clear of the HUD status line
 
   return (
     <ModuleShell index={5} title="IDENTITY GOVERNANCE" line={<>Who has access, <Em>and why.</Em></>}>
       <AbsoluteFill style={{ opacity: 1 - exit, transform: `scale(${push + exit * 0.03})`, transformOrigin: "1300px 420px" }}>
-        <Glow x={1420} y={TC.y - (TH * SC) / 2 + ly * SC} r={340} opacity={0.32 * lineO} />
         <AbsoluteFill style={{ perspective: 1400, perspectiveOrigin: `${TC.x}px ${TC.y}px` }}>
           <div
             style={{
@@ -230,7 +225,7 @@ export const Scene: React.FC = () => {
               ).map(([t, x]) => (
                 <div
                   key={t}
-                  style={{ position: "absolute", left: x, top: 0, height: HEAD, display: "flex", alignItems: "center", fontFamily: mono, fontSize: 15, letterSpacing: "0.24em", color: C.dim }}
+                  style={{ position: "absolute", left: x, top: 0, height: HEAD, display: "flex", alignItems: "center", fontFamily: mono, fontSize: 23, letterSpacing: "0.16em", color: C.dim }}
                 >
                   {t}
                 </div>
@@ -239,21 +234,10 @@ export const Scene: React.FC = () => {
             {ROWS.map((r, i) => (
               <RowView key={i} r={r} i={i} f={f} fps={fps} />
             ))}
-            {/* review line */}
+            {/* review line: the only glow in the module */}
             {sweeping ? (
               <>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: -30,
-                    width: TW + 50,
-                    top: ly - 120,
-                    height: 120,
-                    background: "linear-gradient(180deg, rgba(255,59,31,0) 0%, rgba(255,59,31,0.15) 100%)",
-                    opacity: lineO,
-                  }}
-                />
-                <div style={{ position: "absolute", left: -30, width: TW + 50, top: ly - 1.5, height: 3, background: C.acc, opacity: lineO, boxShadow: `0 0 18px ${C.accGlow}` }} />
+                <div style={{ position: "absolute", left: -30, width: TW + 50, top: ly - 1.5, height: 3, background: C.acc, opacity: lineO, boxShadow: `0 0 14px ${C.accGlow}` }} />
                 <div
                   style={{
                     position: "absolute",
@@ -272,28 +256,22 @@ export const Scene: React.FC = () => {
           </div>
         </AbsoluteFill>
 
-        {/* flat readout in the free corner right of the title */}
-        <div style={{ position: "absolute", left: 1604, top: 690, width: 200 }}>
-          <div style={{ fontFamily: mono, fontSize: 14, letterSpacing: "0.26em", color: done ? C.acc : C.dim }}>{done ? "● CERTIFIED" : "REVIEWED"}</div>
+        {/* flat readout on the tagline row, right-aligned to the safe edge (clear of the title, which ends ~x1555) */}
+        <div style={{ position: "absolute", right: 140, bottom: 226, display: "flex", alignItems: "baseline", gap: 22, whiteSpace: "nowrap", opacity: f >= SWEEP_A - 3 ? 1 : 0 }}>
+          <div style={{ fontFamily: mono, fontSize: 18, letterSpacing: "0.24em", color: done ? C.acc : C.dim }}>{done ? "CERTIFIED" : "REVIEWED"}</div>
           <div
             style={{
               fontFamily: dots,
               fontWeight: 800,
-              fontSize: 60,
+              fontSize: 56,
               lineHeight: 1,
-              marginTop: 10,
               color: C.paper,
-              whiteSpace: "nowrap",
               transform: `scale(${done ? 1 + 0.08 * (1 - doneS) : 1})`,
-              transformOrigin: "0 50%",
+              transformOrigin: "100% 100%",
             }}
           >
             {String(reviewed).padStart(2, "0")}
-            <span style={{ color: C.faint }}>/{String(ROWS.length).padStart(2, "0")}</span>
-          </div>
-          <div style={{ fontFamily: mono, fontSize: 14, letterSpacing: "0.2em", marginTop: 14, lineHeight: 1.75, whiteSpace: "nowrap" }}>
-            <div style={{ color: grantedN ? C.acc : C.faint }}>■ {grantedN} GRANTED</div>
-            <div style={{ color: revokedN ? C.paper : C.faint }}>□ {revokedN} REVOKED</div>
+            <span style={{ color: C.dim }}>/{String(ROWS.length).padStart(2, "0")}</span>
           </div>
         </div>
       </AbsoluteFill>
@@ -302,11 +280,9 @@ export const Scene: React.FC = () => {
 };
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "glitch-2", vol: 0.3 },
-  { f: 0, sfx: "chatter", vol: 0.18 }, // rows snapping in
-  { f: SWEEP_A, sfx: "scan", vol: 0.2 },
-  // one stamp per row: grant = light click, revoke = heavier snap + low click
-  ...ROWS.map((r, i) => ({ f: DEC[i], sfx: r.ok ? ("click" as const) : ("snap" as const), vol: r.ok ? 0.2 : 0.3 })),
-  ...ROWS.flatMap((r, i) => (r.ok ? [] : [{ f: DEC[i] + 1, sfx: "click-lo" as const, vol: 0.2 }])),
+  { f: 1, sfx: "click-lo", vol: 0.16 }, // rows snap on
+  // one stamp per row: grants are light key ticks (varied), revokes a heavier snap
+  ...ROWS.map((r, i) => (r.ok ? { f: DEC[i], sfx: keySfx(i), vol: 0.17 } : { f: DEC[i], sfx: "snap" as const, vol: 0.3 })),
+  // f32–37 near-silence
   { f: DONE, sfx: "blip-up", vol: 0.32 },
 ];

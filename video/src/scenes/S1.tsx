@@ -293,10 +293,9 @@ export const cues: Cue[] = [
   ...Array.from({ length: N }, (_, i) => i)
     .filter((i) => i % 2 === 0)
     .map((i, k) => ({ f: dotAt(i), sfx: keySfx(k * 5 + 1), vol: 0.14 + rand(i * 3.3) * 0.06 }) as Cue),
-  { f: EYE, sfx: "click", vol: 0.32 },
-  { f: EYE + 2, sfx: "blip-hi", vol: 0.14 }, // the dots stand up
-  // three ticks across the L→R opening, then near-silence f54–59 before the downbeat
-  ...[48, 50, 53].map((fr, k) => ({ f: fr, sfx: keySfx(k + 2), vol: 0.13 }) as Cue),
+  { f: EYE, sfx: "click", vol: 0.32 }, // eye toggles; the dots stand up on the same gesture
+  // two ticks across the L→R opening, then near-silence f54–59 before the downbeat
+  ...[48, 51].map((fr, k) => ({ f: fr, sfx: keySfx(k + 2), vol: 0.13 }) as Cue),
   { f: DONE, sfx: "snap", vol: 0.3 },
   { f: DONE, sfx: "impact-soft", vol: 0.5 },
   { f: DONE + 3, sfx: "swish", vol: 0.34 }, // peaks at the reflow's fastest frame
