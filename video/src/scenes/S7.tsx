@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Easing, interpolate, interpolateColors, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { noise2D } from "@remotion/noise";
 import { C, mona, mono } from "../lib/theme";
 import { clamp, EI, EIO, EO, lerp, rand } from "../lib/anim";
@@ -142,31 +142,27 @@ const FLIGHT = 20;
 const LOCKED = 90; // beat 7: last dot lands at ~f89, the avatar locks on the beat
 const flyEase = Easing.bezier(0.7, 0, 0.3, 1);
 
-// network edges: each node to its 2 nearest neighbours in the scattered layout
-const EDGES: [number, number][] = (() => {
-  const out: [number, number][] = [];
-  const seen = new Set<string>();
-  NODES.forEach((n, i) => {
-    const near = NODES.map((m, j) => ({ j, d: Math.hypot(m.bx - n.bx, m.by - n.by) }))
-      .filter((q) => q.j !== i && q.d < 165)
-      .sort((p, q) => p.d - q.d)
-      .slice(0, 2);
-    for (const q of near) {
-      const key = i < q.j ? `${i}-${q.j}` : `${q.j}-${i}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        out.push([i, q.j]);
-      }
+// identity graph, not a plexus mesh: every identity links to its nearest resource hub (an app / IdP)
+const HUBS = NODES.map((n, i) => (n.hub ? i : -1)).filter((i) => i >= 0);
+const EDGES: [number, number][] = NODES.flatMap((n, i) => {
+  if (n.hub) return [];
+  let best = -1;
+  let bd = 250;
+  for (const h of HUBS) {
+    const d = Math.hypot(NODES[h].bx - n.bx, NODES[h].by - n.by);
+    if (d < bd) {
+      bd = d;
+      best = h;
     }
-  });
-  return out;
-})();
+  }
+  return best >= 0 && rand(i * 2.71) < 0.8 ? [[i, best] as [number, number]] : [];
+});
 
 /* ---------- lockup ---------- */
 const ACCESS = "ACCESS";
 const GRANTED = "GRANTED";
 
-const Word: React.FC<{ text: string; size: number; hit: number; color: string; glow: boolean; f: number; fps: number }> = ({ text, size, hit, color, glow, f, fps }) => {
+const Word: React.FC<{ text: string; size: number; hit: number; color: string; glow: boolean; heat?: number; f: number; fps: number }> = ({ text, size, hit, color, glow, heat = 0, f, fps }) => {
   const n = text.length;
   return (
     <div style={{ display: "flex", justifyContent: "center", fontSize: size, lineHeight: 1, letterSpacing: `${TRACK}em`, whiteSpace: "nowrap" }}>
@@ -176,7 +172,7 @@ const Word: React.FC<{ text: string; size: number; hit: number; color: string; g
         const wd = interpolate(s, [0, 1], [75, 125], clamp);
         const wg = interpolate(s, [0, 1], [200, 900], clamp);
         return (
-          <span key={i} style={{ ...mona(wd, wg), color, textShadow: glow ? `0 0 46px rgba(255,59,31,0.5)` : "none" }}>
+          <span key={i} style={{ ...mona(wd, wg), color, textShadow: glow ? `0 0 46px rgba(255,59,31,0.5)` : heat > 0.02 ? `0 0 ${30 + 30 * heat}px rgba(255,90,50,${0.85 * heat})` : "none" }}>
             {ch}
           </span>
         );
@@ -188,7 +184,8 @@ const Word: React.FC<{ text: string; size: number; hit: number; color: string; g
 const Lockup: React.FC<{ f: number; fps: number; tint?: string; exit: number }> = ({ f, fps, tint, exit }) => {
   const syA = f < HIT ? 0 : spring({ frame: f - HIT, fps, config: { stiffness: 320, damping: 15, mass: 0.7 } });
   const syG = f < HIT + 2 ? 0 : spring({ frame: f - HIT - 2, fps, config: { stiffness: 320, damping: 15, mass: 0.7 } });
-  const accessColor = tint ?? interpolateColors(f, [HIT, HIT + 6], [C.acc, C.paper]);
+  const accessColor = tint ?? C.paper;
+  const heat = tint ? 0 : interpolate(f, [HIT, HIT + 10], [1, 0], { ...clamp, easing: EO });
   // exit: each word slides up through a mask fixed at its own top edge
   const eA = interpolate(exit, [0, 0.8], [0, 1], { ...clamp, easing: EI });
   const eG = interpolate(exit, [0.15, 1], [0, 1], { ...clamp, easing: EI });
@@ -209,7 +206,7 @@ const Lockup: React.FC<{ f: number; fps: number; tint?: string; exit: number }> 
           clipPath: dA > 0 ? `inset(${dA + CAPTOP * F1 - 6}px 0 0 0)` : undefined,
         }}
       >
-        <Word text={ACCESS} size={F1} hit={HIT} color={accessColor} glow={false} f={f} fps={fps} />
+        <Word text={ACCESS} size={F1} hit={HIT} color={accessColor} glow={false} heat={heat} f={f} fps={fps} />
       </div>
       <div
         style={{
@@ -326,14 +323,14 @@ export const Scene: React.FC = () => {
               const p = pos[i];
               if (k === undefined) {
                 if (strayO[i] < 0.02) return null;
-                const s = n.hub ? 4.5 : 2.6;
-                return <rect key={i} x={p.x - s / 2} y={p.y - s / 2} width={s} height={s} fill={n.hot ? C.acc : C.paper} opacity={(n.hot ? 0.9 : n.o) * strayO[i]} />;
+                if (n.hub) return <circle key={i} cx={p.x} cy={p.y} r={5} fill="none" stroke={C.paper} strokeWidth={1.25} opacity={0.7 * strayO[i]} />;
+                return <rect key={i} x={p.x - 1.3} y={p.y - 1.3} width={2.6} height={2.6} fill={n.hot ? C.acc : C.paper} opacity={(n.hot ? 0.9 : n.o) * strayO[i]} />;
               }
               const tg = TARGETS[k];
               const lockF = startOf(k) + FLIGHT;
               const flash = f >= lockF - 1 && f < lockF + 3;
               const rEnd = tg.ring ? 3.3 : 4.6;
-              const s0 = n.hub ? 4.5 : 2.6;
+              const s0 = n.hub ? 6 : 2.6;
               const size = lerp(s0, rEnd * 2, t) * outro(k);
               if (size < 0.3) return null;
               const fill = flash ? C.acc : tg.ring ? C.paper : n.hot && t < 0.5 ? C.acc : C.paper;
