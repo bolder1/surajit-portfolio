@@ -35,6 +35,7 @@ This is a portfolio intro reel about Surajit **as a designer**: who he is, his p
 - One continuous neon light trail is the visual through-line. It starts as a circuit trace from his engineering years, becomes user flows, then his design system's single stroke weight, and finally signs off under his name.
 - Synthesised retrowave / synth-pop music at 120 BPM (energetic: driving arps, gated snares), with every cut on the beat (1 beat = 15 f).
 - Count-ups on the numbers (Doto dot-matrix).
+- **Full SFX coverage, intuitive and musical** (user request): every visible action gets the sound you would expect, and the same action always gets the same sound. Tonal SFX are pitched to the track's key. The full action→sound map is in `SOUND.md`.
 
 ## Notes
 

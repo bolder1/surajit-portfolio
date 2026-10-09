@@ -249,13 +249,16 @@ const Expiry: React.FC<{ f: number }> = ({ f }) => {
   const y = 534;
   const w = X1 - X0;
   const draw = prog(f, 0, 10, EO);
-  const dim = f >= APPROVE ? 0.35 : 1;
+  const dim = f >= APPROVE ? 0.35 : 1; // the bar freezes and steps back once approved
+  const labelP = prog(f, 3, 11, EO) * (1 - prog(f, APPROVE, APPROVE + 4, EO)); // wipes in, then wipes out on approve
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: dim }}>
+    <div style={{ position: "absolute", inset: 0 }}>
+      <div style={{ position: "absolute", inset: 0, opacity: dim }}>
       <div style={{ position: "absolute", left: X0, top: y, width: w * draw, height: 2, background: C.paper, opacity: 0.14, borderRadius: 1 }} />
       <div style={{ position: "absolute", left: X0, top: y, width: w * rem * draw, height: 2, background: C.paper, opacity: 0.75, borderRadius: 1 }} />
       {draw > 0.98 ? <div style={{ position: "absolute", left: X0 + w * rem - 1, top: y - 5, width: 2, height: 12, background: C.paper, opacity: 0.9 }} /> : null}
-      <Wipe p={prog(f, 3, 11, EO)} style={{ position: "absolute", left: X0, top: y + 20 }}>
+      </div>
+      <Wipe p={labelP} style={{ position: "absolute", left: X0, top: y + 20 }}>
         <Mono size={16} color="rgba(243,236,222,0.6)">Code expires in 0:{String(Math.floor(remS)).padStart(2, "0")}</Mono>
       </Wipe>
     </div>
