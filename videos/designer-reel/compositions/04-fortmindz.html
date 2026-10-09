@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <!-- F4 "Fortmindz, 2022" (film 360-480, 4 s). The camera rides the beam to the right like stations on
-         one long canvas: the beam threads a checkout flow through four Tier B chips while product-page
-         wireframes slide past. Local time = film frame - 360. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+         one long canvas: the beam threads a checkout flow through four Tier B chips while a shop page and a
+         checkout app (outline wireframes, ground) slide past above the route. From 456 the camera launches
+         and holds 2400 px/s right-to-left through the cut, so everything leaves frame left and F5 enters
+         from the right at the same speed on the same beam (y 610). Local time = film frame - 360.
+         Needs window.ReelKit (assets/lib/reel-kit.js). -->
   </head>
   <body>
     <template id="f04-template">
@@ -16,12 +19,15 @@
         .f04-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
         .f04-layer > svg, #f04-haze { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         #f04-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
-        .f04-tag { position: absolute; font: 500 22px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #8c7eb8; white-space: nowrap; }
+        .f04-tag { position: absolute; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #8c7eb8; white-space: nowrap; }
+        .f04-wf * { fill: none; stroke: #4a2c8c; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .f04-wf .b { stroke-width: 3.5; }
+        #f04-hud { position: absolute; inset: 0; }
 
         /* type */
         #f04-marker { position: absolute; left: 120px; top: 176px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         #f04-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
-        #f04-quote { position: absolute; left: 120px; top: 896px; font-family: "Mona Sans", sans-serif; font-size: 44px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        #f04-quote { position: absolute; left: 120px; top: 890px; font-family: "Mona Sans", sans-serif; font-size: 48px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
 
         /* Tier B liquid glass chips (backdrop-filter, inward rim); the beam runs under their bottom rim */
         .f04-chip { position: absolute; height: 80px; border-radius: 40px; box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; }
@@ -50,34 +56,16 @@
               </defs>
               <rect id="f04-haze-r" x="-200" y="200" width="2320" height="980" fill="url(#f04-haze-g)" />
             </svg>
-            <!-- far layer (x0.55): a product page wireframe; near layer (x0.75): an app checkout screen. Outlines only. -->
-            <div class="f04-layer" id="f04-web" data-layout-allow-overflow>
-              <div class="f04-tag" style="left: 692px; top: 264px" data-layout-allow-occlusion>WEBSITES</div>
-              <svg viewBox="0 0 1920 1080" aria-hidden="true">
-                <g transform="translate(692 300)" fill="none" stroke="#4a2c8c" stroke-width="1.5" stroke-linecap="round">
-                  <rect x="0" y="0" width="1000" height="360" rx="14" /><path d="M0 56 H1000" /><rect x="28" y="19" width="56" height="18" rx="4" />
-                  <path d="M420 28 H480 M504 28 H564 M588 28 H648" /><rect x="930" y="17" width="40" height="22" rx="5" />
-                  <rect x="32" y="84" width="360" height="248" rx="8" /><path d="M32 84 L392 332 M392 84 L32 332" stroke-opacity="0.5" />
-                  <path d="M430 106 H820 M430 138 H700 M430 186 H530" />
-                  <rect x="430" y="214" width="64" height="36" rx="18" /><rect x="506" y="214" width="64" height="36" rx="18" /><rect x="582" y="214" width="64" height="36" rx="18" />
-                  <rect x="430" y="276" width="280" height="56" rx="28" /><rect x="730" y="276" width="56" height="56" rx="28" />
-                </g>
-              </svg>
-            </div>
-            <div class="f04-layer" id="f04-app" data-layout-allow-overflow>
-              <div class="f04-tag" style="left: 2240px; top: 204px" data-layout-allow-occlusion>APPS</div>
-              <svg viewBox="0 0 1920 1080" aria-hidden="true">
-                <g transform="translate(2240 240)" fill="none" stroke="#4a2c8c" stroke-width="1.5" stroke-linecap="round">
-                  <rect x="0" y="0" width="300" height="600" rx="46" /><rect x="116" y="18" width="68" height="14" rx="7" /><path d="M28 70 H160" />
-                  <rect x="28" y="94" width="244" height="204" rx="14" /><path d="M28 94 L272 298 M272 94 L28 298" stroke-opacity="0.5" />
-                  <path d="M28 330 H232 M28 360 H164 M28 400 H108" /><rect x="178" y="382" width="94" height="36" rx="18" />
-                  <rect x="28" y="458" width="244" height="60" rx="30" /><path d="M0 542 H300" />
-                  <rect x="42" y="560" width="22" height="22" rx="6" /><rect x="108" y="560" width="22" height="22" rx="6" /><rect x="172" y="560" width="22" height="22" rx="6" /><rect x="236" y="560" width="22" height="22" rx="6" />
-                </g>
-              </svg>
-            </div>
+            <!-- ground: far layer (x0.55) a shop page, near layer (x0.75) a checkout app. Outline wireframes with
+                 content (nav, headline bars, product cards with price lines, buy and pay buttons), all above the
+                 beam route (y <= 524) so the route, pads and chips never cross them. Drawn by the script. -->
+            <div class="f04-layer" id="f04-web" data-layout-allow-overflow><svg class="f04-wf" viewBox="0 0 1920 1080" aria-hidden="true"></svg></div>
+            <div class="f04-layer" id="f04-app" data-layout-allow-overflow><svg class="f04-wf" viewBox="0 0 1920 1080" aria-hidden="true"></svg></div>
             <div class="f04-layer" id="f04-track" data-layout-allow-overflow><svg id="f04-beam" viewBox="0 0 1920 1080" aria-hidden="true"></svg></div>
             <div id="f04-vignette" data-layout-ignore></div>
+            <!-- frame labels (Figma style, above each frame's top-left corner) ride their wireframe's layer -->
+            <div class="f04-layer" id="f04-web-tags" data-layout-allow-overflow><div class="f04-tag" style="left: 692px; top: 250px">WEBSITES</div></div>
+            <div class="f04-layer" id="f04-app-tags" data-layout-allow-overflow><div class="f04-tag" style="left: 2200px; top: 64px">APPS</div></div>
             <div class="f04-layer" id="f04-chips" data-layout-allow-overflow>
               <div class="f04-chip" id="f04-chip-cart"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div><div class="f04-chip-text">CART</div></div>
               <div class="f04-chip" id="f04-chip-address"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div><div class="f04-chip-text">ADDRESS</div></div>
@@ -94,14 +82,16 @@
                 </svg>
               </div>
             </div>
-            <div id="f04-marker"><span id="f04-marker-text"></span><span id="f04-caret"></span></div>
-            <div id="f04-quote">Learned to ship on a deadline alongside developers.</div>
+            <div id="f04-hud" data-layout-allow-overflow>
+              <div id="f04-marker"><span id="f04-marker-text"></span><span id="f04-caret"></span></div>
+              <div id="f04-quote">Learned to ship on a deadline alongside developers.</div>
+            </div>
           </div>
           <div id="f04-grain" data-layout-ignore></div>
 
           <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs id="f04-defs">
-              <filter id="f04-bloom" x="-960" y="540" width="4460" height="400" filterUnits="userSpaceOnUse">
+              <filter id="f04-bloom" x="-560" y="540" width="5420" height="400" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
@@ -120,6 +110,35 @@
           var root = document.getElementById("f04-root");
           var defs = document.getElementById("f04-defs");
 
+          // ground wireframes, outline only (grid 1.5 px; .b = a bold price or total line). Layer coords:
+          // the shop page sits at x 692 on the x0.55 layer and the app at 2200 on the x0.75 layer, so at the
+          // DONE hold (pan 1040) they read at screen x 120-1000 and 1420-1628, both inside y 284-524.
+          function R(x, y, w, h, r) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + r + '"/>'; }
+          function P(d, c) { return '<path d="' + d + '"' + (c ? ' class="' + c + '"' : "") + "/>"; }
+          function O(x, y, r) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '"/>'; }
+          var PROD = [
+            function (x) { return R(x + 64, 98, 36, 56, 8) + R(x + 74, 86, 16, 12, 2) + P("M" + (x + 64) + " 118 H" + (x + 100)); }, // bottle
+            function (x) { return O(x + 82, 120, 20) + R(x + 72, 86, 20, 14, 3) + R(x + 72, 140, 20, 14, 3) + P("M" + (x + 82) + " 120 V108 M" + (x + 82) + " 120 H" + (x + 92)); }, // watch
+            function (x) { return P("M" + (x + 60) + " 140 V124 A22 22 0 0 1 " + (x + 104) + " 124 V140") + R(x + 54, 128, 14, 24, 5) + R(x + 96, 128, 14, 24, 5); }, // headphones
+          ];
+          var web = R(0, 0, 880, 240, 12) + P("M0 52 H880") + R(24, 18, 64, 16, 4) + P("M300 26 H344 M368 26 H412 M436 26 H480 M504 26 H548");
+          web += R(640, 13, 150, 26, 13) + O(658, 26, 6) + P("M663 31 L668 36") + P("M816 18 H822 L828 34 H848 L852 24 H826") + O(832, 39, 2) + O(846, 39, 2);
+          web += R(24, 76, 250, 24, 5) + R(24, 108, 180, 24, 5) + P("M24 152 H264 M24 168 H220") + R(24, 188, 132, 36, 18) + P("M56 206 H124");
+          for (var i = 0; i < 3; i++) {
+            var x = 330 + i * 181;
+            web += R(x, 70, 164, 154, 10) + R(x + 8, 78, 148, 84, 6) + PROD[i](x) + P("M" + (x + 12) + " 180 H" + (x + 108)) + P("M" + (x + 12) + " 202 H" + (x + 54), "b");
+            web += R(x + 112, 190, 40, 24, 12) + P("M" + (x + 132) + " 196 V208 M" + (x + 126) + " 202 H" + (x + 138));
+          }
+          var app = R(0, 0, 208, 428, 34) + R(80, 12, 48, 10, 5) + P("M26 46 L18 54 L26 62") + P("M84 54 H124");
+          [78, 142].forEach(function (y, i) {
+            app += R(16, y, 52, 52, 8) + (i ? O(42, y + 26, 13) : R(33, y + 12, 18, 30, 5)) + P("M80 " + (y + 14) + " H164") + P("M80 " + (y + 36) + " H110", "b");
+            app += R(136, y + 26, 56, 22, 11) + P("M146 " + (y + 37) + " H154 M174 " + (y + 37) + " H182 M178 " + (y + 33) + " V" + (y + 41));
+          });
+          app += P("M16 212 H192") + P("M16 232 H76 M150 232 H192 M16 252 H92 M160 252 H192") + P("M16 280 H62 M138 280 H192", "b");
+          app += R(16, 300, 176, 46, 10) + O(36, 323, 7) + P("M54 316 H164 M54 331 H132") + R(16, 358, 176, 40, 20) + P("M82 378 H126") + P("M80 414 H128");
+          document.querySelector("#f04-web svg").innerHTML = '<g transform="translate(692 284)">' + web + "</g>";
+          document.querySelector("#f04-app svg").innerHTML = '<g transform="translate(2200 96)">' + app + "</g>";
+
           // stations in world space (the track layer pans 1:1 with the camera), 440 px apart. Rails climb 90 px
           // per 45-degree step; each rail runs 24 px below the chip's centre, through its bottom rim band.
           // The route enters at y 880 (F3's exit) and DONE's rail is y 610, where it leaves for F5.
@@ -130,7 +149,7 @@
             { id: "pay", cx: 1780, w: 160, rail: 700, beat: 1.5 },
             { id: "done", cx: 2220, w: 180, rail: 610, beat: 2.0 },
           ];
-          var pts = [[-900, 880]];
+          var pts = [[-500, 880]];
           CHIPS.forEach(function (c, i) {
             c.left = c.cx - c.w / 2;
             c.pad = c.left - 34;
@@ -147,7 +166,7 @@
               pts.push([x, c.rail], [x + (c.rail - nx.rail), nx.rail]);
             }
           });
-          pts.push([3400, 610]);
+          pts.push([4800, 610]); // the head runs on off the right edge and the camera follows it into F5
           var d = "M " + pts.map(function (p) { return p[0] + " " + p[1]; }).join(" L ");
           // arc length of each pad along the route (polyline, so exact)
           function sAt(x, y) {
@@ -199,28 +218,39 @@
           setRun(0, 0);
 
           // camera: whip in (x 400 -> 0, blur 24 -> 0, 9 f expo.out) over a 520 px/s ride; hard stop on DONE,
-          // hold, then accelerate after the fired beam into F5 (600 px/s = 20 px/f leftward at the cut).
+          // hold 1.2 s, then follow the fired beam: launch 456 (power2.in, 12 f) to a 2400 px/s cruise that holds
+          // through the cut (80 px/f leftward on 468-479). Everything is off frame left by 479; F5 enters at 2400 px/s.
+          var T0 = 3.2, TA = 0.4, VX = 2400;
+          function exitPan(t) {
+            if (t <= T0) return 0;
+            if (t <= T0 + TA) { var u = (t - T0) / TA; return (VX * TA * u * u) / 2; }
+            return (VX * TA) / 2 + VX * (t - T0 - TA);
+          }
           function pan(t) {
             if (t <= 1.9) return 520 * t;
             if (t <= 2.2) { var u = (t - 1.9) / 0.3; return 988 + 52 * (1 - Math.pow(1 - u, 3)); }
-            if (t <= 11 / 3) return 1040;
-            var v = t - 11 / 3;
-            return 1040 + 900 * v * v;
+            return 1040 + exitPan(t);
           }
           function whip(t) { return t >= 0.3 ? 0 : Math.pow(2, (-10 * t) / 0.3); }
           var stage = document.getElementById("f04-stage");
-          var LAYERS = [[document.getElementById("f04-web"), 0.55], [document.getElementById("f04-app"), 0.75], [document.getElementById("f04-track"), 1], [document.getElementById("f04-chips"), 1]];
+          var byId = function (id) { return document.getElementById(id); };
+          var LAYERS = [[byId("f04-web"), 0.55], [byId("f04-web-tags"), 0.55], [byId("f04-app"), 0.75], [byId("f04-app-tags"), 0.75], [byId("f04-track"), 1], [byId("f04-chips"), 1]];
+          var hud = byId("f04-hud"), GROUND = [byId("f04-web"), byId("f04-web-tags"), byId("f04-app"), byId("f04-app-tags")];
           var grain = document.getElementById("f04-grain");
           grain.style.backgroundImage = K.grainURL(1337);
           function setCam(t) {
             var w = whip(t), cx = 400 * w - pan(t);
             for (var i = 0; i < LAYERS.length; i++) LAYERS[i][0].style.transform = "translate3d(" + (cx * LAYERS[i][1]).toFixed(2) + "px,0,0)";
             stage.style.filter = w > 0.002 ? "blur(" + (24 * w).toFixed(2) + "px)" : "none";
+            // marker and quote ride the exit 1:1; the far wireframes (parallax, slower) sink into the haze 466-478
+            var ex = exitPan(t), g = Math.min(1, Math.max(0, (t - 106 / 30) / 0.4));
+            hud.style.transform = ex > 0 ? "translate3d(" + (-ex).toFixed(2) + "px,0,0)" : "none";
+            for (var j = 0; j < GROUND.length; j++) GROUND[j].style.opacity = (1 - g * g).toFixed(3);
             grain.style.backgroundPosition = K.grainPos(t);
           }
           var MARK = "2022 · KOLKATA · UX/UI DESIGNER, FORTMINDZ";
           var markEl = document.getElementById("f04-marker-text");
-          setBeam(1000);
+          setBeam(600); // head at world x 100 on the first frame (route starts at -500)
           setCam(0);
 
           var tl = gsap.timeline({ paused: true });
@@ -229,7 +259,7 @@
           tl.fromTo("#f04-haze-r", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
 
           // the head threads the flow: decelerates into each pad on the beat (375, 390, 405, 420), fires on
-          var b = { s: 1000 };
+          var b = { s: 600 };
           var CHIP = K.spring(0.45, 0.8, 0.7);
           CHIPS.forEach(function (c, i) {
             var t0 = i === 0 ? 0 : CHIPS[i - 1].beat;
@@ -260,10 +290,11 @@
           // 435 his line wipes on
           tl.to("#f04-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 2.5);
 
-          // 470 the beam fires on to the right (launch) and leaves the frame at y 610; the camera follows
-          tl.set(head, { strokeOpacity: 1 }, 11 / 3);
-          tl.set(fresh, { strokeOpacity: 1 }, 11 / 3);
-          tl.to(b, { s: LEN, duration: 0.3, ease: "power2.in", onUpdate: function () { setBeam(b.s); } }, 11 / 3);
+          // 453 the beam fires on to the right (launch), leaves the frame at y 610 by 462; the camera follows (456)
+          tl.set(head, { strokeOpacity: 1 }, 3.1);
+          tl.set(fresh, { strokeOpacity: 1 }, 3.1);
+          tl.to(b, { s: LEN, duration: 0.53, ease: "power2.in", onUpdate: function () { setBeam(b.s); } }, 3.1);
+          tl.to(fresh, { strokeOpacity: 0.6, duration: 0.3, ease: "power2.out" }, 3.5);
 
           window.__timelines["f04"] = tl;
         })();

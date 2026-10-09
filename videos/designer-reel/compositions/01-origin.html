@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <!-- F1 "Where the line starts" · film frames 0-120 (4 s, local t = film frame / 30).
-         The tube powers on, a scope graticule draws, and one beam routes a PCB trace that solders
-         two Tier B year chips onto its pads. At 120 the head is still running: 02-thesis.html
-         continues the same path, timing function and world (match cut). Needs window.ReelKit. -->
+         The tube powers on, a scope graticule draws, and one beam routes a PCB trace. On pads A (45) and
+         D (90) a glass bead condenses on a 45° run of the trace, catches the light as the head passes
+         (48, 93) and stretches into a year chip as its caption types. At 120 the head is still running:
+         02-thesis.html continues the same route, timing and chips (match cut). Needs window.ReelKit. -->
   </head>
   <body>
     <template id="f01-template">
@@ -15,76 +16,37 @@
           src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2");
           font-weight: 100 800;
         }
-        #f01-root {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          background: #070410;
-        }
-        #f01-tube {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          background: #0b0716;
-        }
-        #f01-world {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 1920px;
-          height: 1080px;
-          overflow: visible;
-        }
+        #f01-root { position: absolute; inset: 0; overflow: hidden; background: #070410; }
+        #f01-tube { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f01-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         #f01-scan {
           position: absolute;
           inset: 0;
           opacity: 0;
           background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px);
         }
-        #f01-flash {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          background: #ffd9ec;
-        }
+        #f01-flash { position: absolute; inset: 0; opacity: 0; background: #ffd9ec; }
         #f01-vignette {
           position: absolute;
           inset: 0;
           background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%);
         }
-        /* Tier B year chips hang on the riser after their pad: the riser crosses the left cap off-centre,
-           so the inward lens bends it sideways (a visible kink), not just along its own length */
+        /* Tier B year chips: the trace's 45° run passes through the left cap's centre, so the glass bends it
+           where it leaves through the straight edge. Width grows from an 80 px bead as the caption types. */
         .f01-chip {
           position: absolute;
-          height: 76px;
-          border-radius: 38px;
+          width: 80px;
+          height: 80px;
+          border-radius: 40px;
           box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9);
           opacity: 0;
           visibility: hidden;
-          transform-origin: 27px 38px;
+          transform-origin: 40px 40px;
         }
-        #f01-chip1 {
-          left: 405px;
-          top: 710px;
-          width: 552px;
-          backdrop-filter: url(#f01-chip1-f);
-        }
-        #f01-chip2 {
-          left: 1125px;
-          top: 678px;
-          width: 699px;
-          backdrop-filter: url(#f01-chip2-f);
-        }
-        .f01-tint,
-        .f01-shade,
-        .f01-rim {
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-        }
-        .f01-tint {
-          background: rgba(20, 12, 38, 0.42);
-        }
+        #f01-chip1 { left: 398.75px; top: 704px; backdrop-filter: url(#f01-chip1-f); }
+        #f01-chip2 { left: 1005px; top: 440px; backdrop-filter: url(#f01-chip2-f); }
+        .f01-tint, .f01-shade, .f01-rim, .f01-glint { position: absolute; inset: 0; border-radius: inherit; }
+        .f01-tint { background: rgba(20, 12, 38, 0.42); }
         .f01-shade {
           box-shadow:
             inset 0 2px 1px -1px rgba(255, 255, 255, 0.7),
@@ -93,8 +55,15 @@
             inset 0 0 36px rgba(255, 255, 255, 0.05),
             inset 0 0 0 1px rgba(243, 238, 255, 0.1);
         }
-        .f01-rim {
+        .f01-rim, .f01-glint {
           padding: 2px;
+          -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+        }
+        .f01-rim {
           --spec: 60deg;
           background: conic-gradient(
             from var(--spec),
@@ -106,44 +75,36 @@
             rgba(34, 230, 255, 0.45) 300deg,
             rgba(255, 255, 255, 0.95) 360deg
           );
-          -webkit-mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
+        }
+        /* the edge catching the beam's light: a full bright rim, hottest where the head passes (lower left) */
+        .f01-glint {
+          padding: 2.5px;
+          opacity: 0;
+          background: conic-gradient(
+            from 160deg,
+            rgba(255, 255, 255, 0.35) 0deg,
+            rgba(255, 255, 255, 1) 70deg,
+            rgba(255, 217, 236, 0.9) 130deg,
+            rgba(255, 255, 255, 0.4) 220deg,
+            rgba(255, 255, 255, 0.35) 360deg
+          );
         }
         .f01-ctext {
           position: absolute;
-          left: 57px;
+          left: 84px;
           top: 0;
-          height: 76px;
+          height: 80px;
           display: flex;
           align-items: center;
-          font: 500 22px/1 "JetBrains Mono", monospace;
+          font: 500 26px/1 "JetBrains Mono", monospace;
           letter-spacing: 0.14em;
           color: #b4a8da;
           white-space: nowrap;
         }
-        .f01-ctext span {
-          white-space: pre;
-        }
-        .f01-yr {
-          color: #f3eeff;
-        }
-        .f01-caret {
-          display: inline-block;
-          width: 0.6em;
-          height: 1em;
-          margin-left: 4px;
-          background: #ff2e97;
-          opacity: 0;
-        }
-        #f01-grain {
-          position: absolute;
-          inset: 0;
-          opacity: 0.1;
-          mix-blend-mode: overlay;
-        }
+        .f01-ctext span { white-space: pre; }
+        .f01-yr { color: #f3eeff; }
+        .f01-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; background: #ff2e97; opacity: 0; }
+        #f01-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
       </style>
 
       <div id="f01-root" data-composition-id="f01" data-width="1920" data-height="1080" data-duration="4">
@@ -156,15 +117,11 @@
           <div id="f01-vignette" data-layout-ignore></div>
 
           <div class="f01-chip" id="f01-chip1">
-            <div class="f01-tint"></div>
-            <div class="f01-shade"></div>
-            <div class="f01-rim"></div>
+            <div class="f01-tint"></div><div class="f01-shade"></div><div class="f01-rim"></div><div class="f01-glint"></div>
             <div class="f01-ctext"><span class="f01-yr"></span><span class="f01-rest"></span><span class="f01-caret"></span></div>
           </div>
           <div class="f01-chip" id="f01-chip2">
-            <div class="f01-tint"></div>
-            <div class="f01-shade"></div>
-            <div class="f01-rim"></div>
+            <div class="f01-tint"></div><div class="f01-shade"></div><div class="f01-rim"></div><div class="f01-glint"></div>
             <div class="f01-ctext"><span class="f01-yr"></span><span class="f01-rest"></span><span class="f01-caret"></span></div>
           </div>
 
@@ -180,12 +137,12 @@
           var defs = document.getElementById("f01-defs");
           function F(f) { return f / 30; } // film frame -> local seconds (F1 starts at film 0)
 
-          // The route (shared verbatim with 02-thesis.html): 90° PCB bends with 45° mitres, four equal
-          // 413.25 px legs so pads land on beats 45/60/75/90 at a constant 826.5 px/s. After pad D the head
-          // decelerates (power2.out over 1.5 s) and stops at E in F2 (film 135); F2 draws E -> F.
-          var PATH = "M 18.75 828 H 432 V 668 L 464 636 H 672 V 476 L 704 444 H 912 V 604 L 944 636 H 1152 V 796 L 1184 828 H 1776 L 1808 796 V 540";
-          var PADS = [[432, 828], [672, 636], [912, 444], [1152, 636]];
-          var V = 826.5, SD = 1653, R = 620.25;
+          // The PCB route (shared verbatim with 02-thesis.html): 90° bends, 45° mitres, and two long 45° runs
+          // that the year chips sit on. Four 360 px legs put pads A-D on beats 45/60/75/90 at a constant
+          // 720 px/s. After pad D the head decelerates (quad out over 1.5 s) and stops on pad E at film 135.
+          var PATH = "M 18.75 828 H 378.75 V 804 L 498.75 684 V 517.706 H 661.022 L 693.022 485.706 V 333.233 H 953 L 985 365.233 V 420 L 1105 540 V 828 H 1187.294";
+          var PADS = [[378.75, 828], [498.75, 517.706], [693.022, 333.233], [985, 420]];
+          var V = 720, SD = 1440, R = 540;
           function headAt(t) {
             if (t < 1) return 0;
             if (t < 3) return V * (t - 1);
@@ -197,7 +154,7 @@
           var s = "<defs>";
           s += '<radialGradient id="f01-haze-g" cx="960" cy="600" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 600) scale(1150 380) translate(-960 -600)">';
           s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
-          s += '<filter id="f01-bloom" x="-45" y="380" width="1890" height="520" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+          s += '<filter id="f01-bloom" x="-45" y="270" width="1300" height="620" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
           s += '<clipPath id="f01-axclip"><rect id="f01-axh" x="960" y="520" width="0" height="40"/><rect id="f01-axv" x="940" y="540" width="40" height="0"/></clipPath></defs>';
           s += '<rect id="f01-haze" x="-200" y="100" width="2320" height="1100" fill="url(#f01-haze-g)"/>';
           s += '<g stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5" fill="none">';
@@ -231,24 +188,55 @@
             K.dash(head, LEN, d, 70);
           }
 
-          // year chips: typed at 60 chars/s, year in ink, the rest ink-dim; caret blinks 3 times in eighths
+          // Year chips. 26 px mono: one character advances 0.74em = 19.24 px; caption starts 84 px in, caret
+          // 19.6 px, 28 px right pad. The bead condenses on the pad (45/90) and lands with a rim glint at
+          // 48/93, then the body widens at 60 chars/s with a character appearing as soon as it fits.
+          var ADV = 19.24, BASE = 84 + 19.6 + 28, GROW = 60 * ADV;
           var CH = [
-            { id: "f01-chip1", text: "2016 · ELECTRONICS & TELECOM", w: 552, at: F(45), type: F(48) },
-            { id: "f01-chip2", text: "2019 · B.TECH, INFORMATION TECHNOLOGY", w: 699, at: F(90), type: F(93) },
+            { id: "f01-chip1", text: "2016 · ELECTRONICS & TELECOM", at: F(45), lit: F(48) },
+            { id: "f01-chip2", text: "2019 · B.TECH, INFORMATION TECHNOLOGY", at: F(90), lit: F(93) },
           ];
           CH.forEach(function (c) {
             var el = document.getElementById(c.id);
+            c.el = el;
             c.yr = el.querySelector(".f01-yr");
             c.rest = el.querySelector(".f01-rest");
             c.caret = el.querySelector(".f01-caret");
-            c.end = c.type + c.text.length / 60;
+            c.glint = el.querySelector(".f01-glint");
+            c.W = BASE + c.text.length * ADV; // final width (670.32 / 843.48)
+            c.end = c.lit + (c.W - 80) / GROW; // film 63.34 / 112.84
+            var f = K.lensFilter(c.id + "-f", { w: Math.ceil(c.W), h: 80, r: 40, bezel: 34, dir: -1, power: 1.6 });
+            // the map's right cap follows the growing edge: a shifted copy of the map covers the right half
+            f = f.replace('result="map"/>', 'result="mapA"/><feOffset in="mapA" dx="0" dy="0" x="0" y="0" width="80" height="80" result="mapB"/><feMerge result="map"><feMergeNode in="mapA"/><feMergeNode in="mapB"/></feMerge>');
+            defs.insertAdjacentHTML("beforeend", f);
+            c.f = document.getElementById(c.id + "-f");
+            c.f.setAttribute("width", Math.ceil(c.W) + 60);
+            c.off = c.f.querySelector("feOffset");
           });
-          function typeAt(c, t) {
-            var n = Math.max(0, Math.min(c.text.length, Math.floor((t - c.type) * 60 + 1e-6)));
+          // low-chroma lens: the line bends cleanly instead of splitting into a rainbow
+          function setLens(fEl, sc) {
+            fEl.querySelector('[data-lg="r"]').setAttribute("scale", sc);
+            fEl.querySelector('[data-lg="g"]').setAttribute("scale", sc * 0.97);
+            fEl.querySelector('[data-lg="b"]').setAttribute("scale", sc * 0.94);
+          }
+          function chipAt(c, t) {
+            var lin = t < c.lit ? 80 : Math.min(c.W, 80 + GROW * (t - c.lit)),
+              w = lin;
+            if (t > c.end) { // the glass overruns its caption by a few px and springs back
+              var u = t - c.end;
+              w = c.W + (GROW / 18.85) * Math.exp(-25.13 * u) * Math.sin(18.85 * u);
+            }
+            c.el.style.width = w + "px";
+            c.off.setAttribute("dx", w - Math.ceil(c.W));
+            c.off.setAttribute("x", w / 2);
+            c.off.setAttribute("width", w / 2 + 40);
+            var n = Math.max(0, Math.min(c.text.length, Math.floor((lin - BASE) / ADV + 1e-6)));
             c.yr.textContent = c.text.slice(0, Math.min(n, 4));
             c.rest.textContent = c.text.slice(4, Math.max(n, 4));
             var k = Math.floor((t - c.end) / 0.25 + 1e-6);
-            c.caret.style.opacity = t < c.type ? 0 : t < c.end ? 1 : k < 6 && k % 2 === 0 ? 1 : 0;
+            c.caret.style.opacity = lin < BASE ? 0 : t < c.end ? 1 : k < 6 && k % 2 === 0 ? 1 : 0;
+            var q = (t - c.lit) / 0.4; // glint: full on the tink frame, gone 12 frames later (power2.out)
+            c.glint.style.opacity = q < -1e-6 || q >= 1 ? 0 : Math.pow(1 - q, 3);
           }
 
           var grain = document.getElementById("f01-grain");
@@ -256,10 +244,11 @@
           var axH = document.getElementById("f01-axh"),
             axV = document.getElementById("f01-axv");
           setBeam(0);
+          CH.forEach(function (c) { chipAt(c, 0); setLens(c.f, 0); });
 
           var tl = gsap.timeline({ paused: true, defaults: { lazy: false } }); // no deferred first renders: any frame can be the first seek
 
-          // master clock: beam head, typing, caret and grain are pure functions of local time
+          // master clock: beam head, chip width, typing, caret and grain are pure functions of local time
           var clock = { t: 0 };
           tl.to(clock, {
             t: 4,
@@ -267,7 +256,7 @@
             ease: "none",
             onUpdate: function () {
               setBeam(headAt(clock.t));
-              CH.forEach(function (c) { typeAt(c, clock.t); });
+              CH.forEach(function (c) { chipAt(c, clock.t); });
               grain.style.backgroundPosition = K.grainPos(clock.t);
             },
           }, 0);
@@ -304,14 +293,13 @@
             tl.fromTo("#f01-pad" + n, { scale: 0, svgOrigin: p[0] + " " + p[1] }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(45 + 15 * n));
           });
 
-          // 45 and 90: a year chip condenses on the riser leaving the pad (Tier B entrance); the head passes through its cap
-          var CHIP = K.spring(0.45, 0.8, 0.7);
+          // 45 / 90: the bead condenses on the run leaving the pad; its spring lands (first crossing) on 48 / 93,
+          // the exact frame the rim catches the passing head's light (glass-tink). Then --spec drifts round.
+          var BEAD = K.spring(0.151, 0.8, 0.5);
           CH.forEach(function (c) {
-            defs.insertAdjacentHTML("beforeend", K.lensFilter(c.id + "-f", { w: c.w, h: 76, r: 38, bezel: 32, dir: -1, power: 1.6 }));
-            var fEl = document.getElementById(c.id + "-f"),
-              g = { k: 0 };
-            tl.fromTo("#" + c.id, { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: CHIP }, c.at);
-            tl.to(g, { k: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(fEl, 44 * g.k); } }, c.at);
+            var g = { k: 0 };
+            tl.fromTo("#" + c.id, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: BEAD }, c.at);
+            tl.to(g, { k: 1, duration: 0.5, ease: BEAD, onUpdate: function () { setLens(c.f, 40 * g.k); } }, c.at);
             tl.fromTo("#" + c.id + " .f01-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, c.at);
           });
 

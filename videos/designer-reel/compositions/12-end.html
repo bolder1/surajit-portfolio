@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- F12 "Invitation" (film 1380-1560, 6 s). The tube powers back on (1380-1392) into the end card: his portrait
-         in a Tier H slab (left third), the name slams (1388), "Product designer" wipes (1395), the status chip
-         condenses with one rim-light lap (1410), contact lines type (1425-1453), the beam signs off under the name
-         (1440-1500) and its pad lands on the final chord (1500); hold, then fade to void-deep (1530-1560).
+    <!-- F12 "Invitation" (film 1380-1560, 6 s). The tube powers back on ON the final lift: F11's dot snaps to a white-hot
+         raster line on 1380 (the brightest frames are 1380-1382), then the line opens to the frame (1382-1388).
+         End card: his portrait in a Tier H slab (left), the name slams (1388), "Product designer" wipes (1395), the
+         status chip condenses on the floor with one rim-light lap (1410), contact lines type (1425-1453), and the beam
+         signs off as a routed trace (45 deg bends): leg 1 out of the glass into pad A (1440-1455), leg 2 into pad B on
+         the final chord (1470-1500); hold, then fade to void-deep (1530-1560).
          Local time = film frame - 1380. Needs window.ReelKit (assets/lib/reel-kit.js). -->
   </head>
   <body>
@@ -19,23 +21,23 @@
         .f12-world { background: #0b0716; }
         #f12-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
 
-        /* type: name, role, contacts (right of the slab, one left edge at x 760) */
-        .f12-mask { position: absolute; left: 752px; height: 170px; overflow: hidden; padding: 0 8px; }
-        #f12-m1 { top: 196px; }
-        #f12-m2 { top: 368px; }
+        /* type column: one left edge at x 720 (slab 120-600 + a 120 px gutter); all of it sits above the floor */
+        .f12-mask { position: absolute; left: 712px; height: 170px; overflow: hidden; padding: 0 8px; }
+        #f12-m1 { top: 83px; }
+        #f12-m2 { top: 255px; }
         .f12-name { display: block; font-family: "Mona Sans", sans-serif; font-size: 176px; line-height: 0.92; letter-spacing: -0.01em; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; white-space: nowrap; }
-        #f12-role { position: absolute; left: 760px; top: 548px; font-family: "Mona Sans", sans-serif; font-size: 52px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
-        .f12-contact { position: absolute; left: 760px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.04em; color: #f3eeff; white-space: nowrap; }
-        #f12-c1 { top: 836px; }
-        #f12-c2 { top: 880px; color: #b4a8da; }
+        #f12-role { position: absolute; left: 720px; top: 436px; font-family: "Mona Sans", sans-serif; font-size: 52px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        .f12-contact { position: absolute; left: 720px; font: 500 32px/1 "JetBrains Mono", monospace; letter-spacing: 0.02em; color: #f3eeff; white-space: nowrap; }
+        #f12-c1 { top: 664px; }
+        #f12-c2 { top: 716px; color: #b4a8da; }
         .f12-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
 
-        /* Tier H liquid glass: the portrait slab (lens over a duplicated world) */
-        #f12-slab, #f12-slab-shadow { position: absolute; left: 150px; top: 100px; width: 480px; height: 880px; border-radius: 76px; }
+        /* Tier H liquid glass: the portrait slab (lens over a duplicated world), on the 120 px margin */
+        #f12-slab, #f12-slab-shadow { position: absolute; left: 120px; top: 100px; width: 480px; height: 880px; border-radius: 76px; }
         #f12-slab { overflow: hidden; isolation: isolate; }
         #f12-slab-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
         #f12-lens { position: absolute; inset: 0; filter: url(#f12-lens-f); }
-        #f12-lens > .f12-world { left: -150px; top: -100px; }
+        #f12-lens > .f12-world { left: -120px; top: -100px; }
         #f12-screen { position: absolute; left: 40px; top: 40px; width: 400px; height: 800px; border-radius: 40px; overflow: hidden; background: #0e0d10; }
         #f12-screen img { position: absolute; left: -121px; top: 0; width: 667px; height: 800px; display: block; }
         #f12-dither { image-rendering: pixelated; }
@@ -43,18 +45,21 @@
         .f12-shade { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
         .f12-grim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 
-        /* Tier B status chip (backdrop lens, inward rim) + the rim light that runs once around it */
-        #f12-chip { position: absolute; left: 760px; top: 100px; width: 728px; height: 72px; border-radius: 36px; backdrop-filter: url(#f12-chip-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 36px 36px; }
+        /* Tier B status chip standing on the floor (backdrop lens, inward rim: the floor lines bend at its edge),
+           bottom aligned with the slab; the rim light that runs once around it is its only light */
+        #f12-chip { position: absolute; left: 720px; top: 904px; width: 760px; height: 76px; border-radius: 38px; backdrop-filter: url(#f12-chip-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 38px 38px; }
         #f12-chip .f12-tint { background: rgba(20, 12, 38, 0.42); }
-        #f12-chip-text { position: absolute; inset: 0; display: flex; align-items: center; gap: 16px; padding-left: 30px; font: 500 22px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #f3eeff; white-space: nowrap; }
-        #f12-chip-text svg { width: 16px; height: 16px; overflow: visible; flex: none; }
-        .f12-rl { position: absolute; left: 720px; top: 60px; width: 808px; height: 152px; overflow: visible; opacity: 0; }
+        #f12-chip-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 0.14em; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #f3eeff; white-space: nowrap; }
+        .f12-rl { position: absolute; left: 680px; top: 864px; width: 840px; height: 156px; overflow: visible; opacity: 0; }
 
-        /* power-on layers, the end fade, grain */
+        /* power-on: the raster line (a light source, so it may bloom), its halo, the two raster edges, a capped flash */
         #f12-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px); opacity: 0; }
         #f12-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
-        /* the raster line the tube opens from (continues F11's collapse line): a light source, so it may bloom */
-        #f12-cline { position: absolute; left: 0; top: 538px; width: 1920px; height: 4px; background: #ffd9ec; opacity: 0; box-shadow: 0 0 10px 2px rgba(255, 217, 236, 0.7), 0 0 34px 6px rgba(255, 46, 151, 0.22); }
+        /* the line's phosphor bloom: an even band along the whole line (not a flare), ~gaussian in y, only on 1380-1385 */
+        #f12-halo { position: absolute; left: 0; top: 190px; width: 1920px; height: 700px; opacity: 0; } /* gaussian band, built in the script */
+        .f12-line { position: absolute; left: 0; width: 1920px; background: #ffd9ec; opacity: 0; }
+        #f12-cline { top: 537px; height: 6px; background: #ffffff; box-shadow: 0 0 8px 2px rgba(255, 217, 236, 0.95), 0 0 28px 8px rgba(255, 46, 151, 0.5), 0 0 90px 24px rgba(255, 46, 151, 0.2); }
+        .f12-edge { top: 539px; height: 2px; box-shadow: 0 0 8px 2px rgba(255, 217, 236, 0.7), 0 0 26px 6px rgba(255, 46, 151, 0.25); }
         #f12-fade { position: absolute; inset: 0; background: #070410; opacity: 0; }
         #f12-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
       </style>
@@ -84,36 +89,36 @@
             <div class="f12-mask" id="f12-m2"><span class="f12-name" id="f12-n2" data-layout-allow-overflow data-layout-allow-occlusion>DUTTA</span></div>
             <div id="f12-role">Product designer</div>
 
-            <svg class="f12-rl" id="f12-rl-under" viewBox="0 0 808 152" aria-hidden="true" data-layout-ignore><defs><g id="f12-rl-glow"></g><g id="f12-rl-core"></g></defs><g transform="translate(40,40)" id="f12-rl-u"></g></svg>
+            <div class="f12-contact" id="f12-c1"><span id="f12-c1-t"></span><span class="f12-caret" id="f12-k1"></span></div>
+            <div class="f12-contact" id="f12-c2"><span id="f12-c2-t"></span><span class="f12-caret" id="f12-k2"></span></div>
+
+            <svg class="f12-rl" id="f12-rl-under" viewBox="0 0 840 156" aria-hidden="true" data-layout-ignore><defs><g id="f12-rl-glow"></g><g id="f12-rl-core"></g></defs><g transform="translate(40,40)" id="f12-rl-u"></g></svg>
             <div id="f12-chip">
               <div class="f12-tint"></div>
               <div class="f12-shade"></div>
               <div class="f12-grim" id="f12-chip-rim"></div>
-              <div id="f12-chip-text">
-                <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#ff2e97" stroke-width="2.6" /></svg>
-                <span>OPEN TO SENIOR ROLES &amp; SELECT FREELANCE</span>
-              </div>
+              <div id="f12-chip-text"><span>OPEN TO SENIOR ROLES &amp; SELECT FREELANCE</span></div>
             </div>
-            <svg class="f12-rl" id="f12-rl-over" viewBox="0 0 808 152" aria-hidden="true" data-layout-ignore><g transform="translate(40,40)" id="f12-rl-o"></g></svg>
-
-            <div class="f12-contact" id="f12-c1"><span id="f12-c1-t"></span><span class="f12-caret" id="f12-k1"></span></div>
-            <div class="f12-contact" id="f12-c2"><span id="f12-c2-t"></span><span class="f12-caret" id="f12-k2"></span></div>
+            <svg class="f12-rl" id="f12-rl-over" viewBox="0 0 840 156" aria-hidden="true" data-layout-ignore><g transform="translate(40,40)" id="f12-rl-o"></g></svg>
 
             <div id="f12-scan" data-layout-ignore></div>
             <div id="f12-flash" data-layout-ignore></div>
           </div>
-          <div id="f12-cline" data-layout-ignore></div>
+          <div id="f12-halo" data-layout-ignore></div>
+          <div class="f12-line f12-edge" id="f12-edge-t" data-layout-ignore></div>
+          <div class="f12-line f12-edge" id="f12-edge-b" data-layout-ignore></div>
+          <div class="f12-line" id="f12-cline" data-layout-ignore></div>
           <div id="f12-fade" data-layout-ignore></div>
           <div id="f12-grain" data-layout-ignore></div>
 
           <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs id="f12-defs">
-              <!-- bloom regions hug the signature (frame copy) and the slab's right rim (lens copy) -->
-              <filter id="f12-bloom" x="550" y="575" width="1220" height="225" filterUnits="userSpaceOnUse">
+              <!-- bloom regions hug the trace (frame copy) and the slab's right bezel (lens copy): bbox + 60 px -->
+              <filter id="f12-bloom" x="496" y="486" width="1278" height="292" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
-              <filter id="f12-bloom-lens" x="540" y="600" width="200" height="170" filterUnits="userSpaceOnUse">
+              <filter id="f12-bloom-lens" x="496" y="560" width="210" height="218" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
@@ -129,13 +134,16 @@
           var defs = document.getElementById("f12-defs");
           function F(f) { return (f - 1380) / 30; } // film frame -> local seconds
           defs.insertAdjacentHTML("beforeend", K.lensFilter("f12-lens-f", { w: 480, h: 880, r: 76, bezel: 84, dir: 1, power: 2, pad: 90 }));
-          defs.insertAdjacentHTML("beforeend", K.lensFilter("f12-chip-f", { w: 728, h: 72, r: 36, bezel: 30, dir: -1, power: 1.6 }));
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f12-chip-f", { w: 760, h: 76, r: 38, bezel: 32, dir: -1, power: 1.6 }));
           var lensF = document.getElementById("f12-lens-f"), chipF = document.getElementById("f12-chip-f");
           K.setRefraction(lensF, 112);
 
-          // The signature: born inside the slab's right bezel, one loop under "Product designer", a long rising sweep, a pad.
-          var HZ = 780, FH = 1560, NH = 44, PADX = 1708, PADY = 658;
-          var SIG = "M 612 690 C 700 676 760 722 840 720 C 930 718 990 668 958 646 C 924 624 872 668 912 704 C 960 748 1240 738 1470 694 C 1580 674 1650 662 " + PADX + " " + PADY;
+          // The sign-off, routed like a PCB trace (45 deg bends only). It is born under the portrait's edge and climbs out
+          // through the slab's right rim on a diagonal (so the glass visibly kinks it), runs flat under "Product designer",
+          // stops on pad A at the bend, steps down and runs out to pad B.
+          var HZ = 800, FH = 1560, NH = 44;
+          var A = [1150, 558], B = [1714, 606];
+          var SIG = "M 556 716 L 714 558 H " + A[0] + " L 1198 606 H " + B[0];
           var copies = 0;
           function world(bloom) {
             var t = "f12-w" + copies++; // unique gradient/mask ids per copy
@@ -145,7 +153,7 @@
             s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
             s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect x="0" y="' + HZ + '" width="1920" height="' + (1080 - HZ) + '" fill="url(#' + t + '-fade)"/></mask>';
             s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#ff2e97" stop-opacity="0.3"/><stop offset="1" stop-color="#ff2e97" stop-opacity="0"/></radialGradient></defs>';
-            s += '<rect class="f12-haze" x="-200" y="280" width="2320" height="980" fill="url(#' + t + '-haze)"/>';
+            s += '<rect class="f12-haze" x="-200" y="' + (HZ - 500) + '" width="2320" height="1000" fill="url(#' + t + '-haze)"/>';
             s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
             for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
             for (var k = 0; k < NH; k++) s += '<line class="f12-hl" x1="0" y1="1200" x2="1920" y2="1200"/>';
@@ -154,13 +162,14 @@
               var tall = x % 240 === 0 ? 9 : 4;
               s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>';
             }
-            s += '</g><ellipse cx="390" cy="1000" rx="269" ry="30" fill="url(#' + t + '-caustic)"/>';
+            s += '</g><ellipse cx="360" cy="1000" rx="269" ry="30" fill="url(#' + t + '-caustic)"/>';
             s += '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
             s += '<path class="f12-b-old" d="' + SIG + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
             s += '<path class="f12-b-fresh" d="' + SIG + '" stroke="#ff2e97" stroke-width="6"/>';
             s += '<path class="f12-b-core" d="' + SIG + '" stroke="#ffd9ec" stroke-width="2.2"/>';
             s += '<path class="f12-b-head" d="' + SIG + '" stroke="#ffffff" stroke-width="7"/>';
-            s += '<circle class="f12-pad" cx="' + PADX + '" cy="' + PADY + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
+            s += '<circle class="f12-pad f12-pad-a" cx="' + A[0] + '" cy="' + A[1] + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
+            s += '<circle class="f12-pad f12-pad-b" cx="' + B[0] + '" cy="' + B[1] + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
             return s + "</g></svg>";
           }
           document.getElementById("f12-world-main").innerHTML = world("f12-bloom");
@@ -175,14 +184,17 @@
               rows[i].setAttribute("y2", y);
             }
           }
-          var LEN = Math.ceil(root.querySelector(".f12-b-old").getTotalLength()) + 2;
+          var LEN = Math.ceil(root.querySelector(".f12-b-old").getTotalLength()) + 2, LA = 158 * Math.SQRT2 + (A[0] - 714); // LA: arc length to pad A
           var drawn = root.querySelectorAll(".f12-b-old, .f12-b-core"), fresh = root.querySelectorAll(".f12-b-fresh"), head = root.querySelectorAll(".f12-b-head");
           function setBeam(s) { K.dash(drawn, LEN, s, null); K.dash(fresh, LEN, s, 560); K.dash(head, LEN, s, 70); }
-          // pen: constant cruise for 80% of the stroke time, then power2-style braking into the pad (velocity-matched)
-          function penEase(p) { var a = 0.8, m = 2 / (1 + a); return p <= a ? m * p : m * a + m * (p - a) - (m * (p - a) * (p - a)) / (2 * (1 - a)); }
+          // pen: trapezoid velocity (ramp up over a, cruise, brake over d into the pad: power2-style stop, velocity-matched)
+          function pen(a, d) {
+            var v = 1 / (1 - (a + d) / 2);
+            return function (p) { return p < a ? (v * p * p) / (2 * a) : p <= 1 - d ? v * (a / 2 + p - a) : 1 - (v * (1 - p) * (1 - p)) / (2 * d); };
+          }
 
           // Rim light (edge-travel math from compositions/lt-neon-border.html, recoloured beam / beam-core, one lap)
-          var NS = "http://www.w3.org/2000/svg", RW = 728, RH = 72, RR = 36;
+          var NS = "http://www.w3.org/2000/svg", RW = 760, RH = 76, RR = 38;
           var RD = "M " + RR + " 0 H " + (RW - RR) + " A " + RR + " " + RR + " 0 0 1 " + (RW - RR) + " " + RH + " H " + RR + " A " + RR + " " + RR + " 0 0 1 " + RR + " 0 Z";
           function buildSegs(id, count, falloff) {
             var g = document.getElementById(id), segs = [];
@@ -223,7 +235,7 @@
               segs[i].setAttribute("stroke-dashoffset", String(-st));
             }
           }
-          var RSTART = 2 * (RW - 2 * RR) + 1.5 * Math.PI * RR; // the left cap's midpoint, where the status ring sits
+          var RSTART = 2 * (RW - 2 * RR) + 1.5 * Math.PI * RR; // the left cap's midpoint: the lap starts where the chip grows from
           function glide(x) { return x <= 0 ? 0 : x >= 1 ? 1 : x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; } // cubic in-out
           function setRim(p) { var h = RSTART + RP * glide(p); lay(glowSegs, h, GLOW_LEN); lay(coreSegs, h, CORE_LEN); }
 
@@ -240,6 +252,15 @@
             k2.style.opacity = t < T2 ? 0 : t < E2 ? 1 : b < 6 && b % 2 === 0 ? 1 : 0;
           }
 
+          // the line's bloom profile: two gaussians (core sigma 40 px, tail sigma 140 px), beam-core easing out to beam
+          var hs = [];
+          for (var d = -350; d <= 350; d += 14) {
+            var u = Math.abs(d), al = Math.min(1, 0.6 * Math.exp(-(u * u) / 3200) + 0.48 * Math.exp(-(u * u) / 39200)) * (1 - Math.pow(u / 350, 6));
+            var m = Math.pow(Math.min(1, u / 240), 1.2), g = Math.round(217 - 171 * m), bl = Math.round(236 - 85 * m);
+            hs.push("rgba(255, " + g + ", " + bl + ", " + al.toFixed(3) + ") " + ((d + 350) / 7).toFixed(2) + "%");
+          }
+          document.getElementById("f12-halo").style.background = "linear-gradient(180deg, " + hs.join(", ") + ")";
+
           var grain = document.getElementById("f12-grain");
           grain.style.backgroundImage = K.grainURL(1337);
           setGrid(0);
@@ -254,13 +275,19 @@
           tl.to(clock, { t: 6, duration: 6, ease: "none", onUpdate: function () { setGrid(clock.t); typeAt(clock.t); grain.style.backgroundPosition = K.grainPos(clock.t); } }, 0);
           tl.fromTo(root.querySelectorAll(".f12-haze"), { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 5 }, 0);
 
-          // 1380-1392: CRT power-on out of F11's dot. scaleX opens a line, scaleY opens the tube, white-hot flash, scanlines off
-          tl.fromTo("#f12-tube", { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, 0);
-          tl.to("#f12-tube", { scaleY: 1, duration: 0.24, ease: "expo.out" }, 0.12);
-          tl.fromTo("#f12-cline", { opacity: 1, scaleX: 0.02 }, { opacity: 1, scaleX: 1, duration: 0.12, ease: "power4.out" }, 0);
-          tl.to("#f12-cline", { opacity: 0, duration: 0.2, ease: "power2.out" }, 0.12);
-          tl.fromTo("#f12-flash", { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out" }, 0.12);
-          tl.fromTo("#f12-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in" }, 0.12);
+          // 1380-1382 THE PUNCH, on the lift's downbeat: F11's dot is already a full-width white-hot raster line with its
+          // halo (the brightest frames of the end). 1382: the line splits into the raster's two edges and the tube opens
+          // to the frame (scaleY, expo.out). The flash under it is capped at 8% and gone in 0.2 s: no wash.
+          tl.fromTo("#f12-tube", { scaleY: 0.006 }, { scaleY: 1, duration: 0.24, ease: "expo.out" }, F(1382));
+          tl.fromTo("#f12-cline", { opacity: 1 }, { opacity: 0, duration: 0.1, ease: "power1.in" }, F(1382));
+          tl.fromTo("#f12-halo", { opacity: 1 }, { opacity: 0.94, duration: F(1382), ease: "none" }, 0);
+          tl.to("#f12-halo", { opacity: 0, duration: 0.1, ease: "power2.out" }, F(1382));
+          tl.fromTo("#f12-edge-t", { y: 0 }, { y: -540, duration: 0.24, ease: "expo.out" }, F(1382));
+          tl.fromTo("#f12-edge-b", { y: 0 }, { y: 540, duration: 0.24, ease: "expo.out" }, F(1382));
+          tl.fromTo(".f12-edge", { opacity: 0 }, { opacity: 0.9, duration: 0.001, ease: "none" }, F(1382) - 0.001); // seek-safe: 0 before 1382
+          tl.to(".f12-edge", { opacity: 0, duration: 0.2, ease: "power2.out" }, F(1382));
+          tl.fromTo("#f12-flash", { opacity: 0.08 }, { opacity: 0, duration: 0.2, ease: "power2.out" }, F(1382));
+          tl.fromTo("#f12-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in" }, F(1382));
           // the portrait resolves out of the raster print, 35% dither left as texture
           tl.fromTo("#f12-dither", { opacity: 1 }, { opacity: 0.35, duration: 0.5, ease: "power2.out" }, F(1392));
           tl.fromTo("#f12-rim", { "--spec": "150deg" }, { "--spec": "190deg", duration: 4.0, ease: "sine.inOut" }, 0);
@@ -271,19 +298,26 @@
           // 1395 "Product designer" wipes on under it
           tl.to("#f12-role", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(1395));
 
-          // 1410 the status chip condenses (Tier B spring) and a light runs once around its rim
+          // 1410 the status chip condenses on the floor (Tier B spring) and a light runs once around its rim
           var CHIP = K.spring(0.45, 0.8, 0.7), chip = { k: 0 }, rim = { p: 0 };
           tl.fromTo("#f12-chip", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, F(1410));
-          tl.to(chip, { k: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(chipF, 42 * chip.k); } }, F(1410));
+          tl.to(chip, { k: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(chipF, 44 * chip.k); } }, F(1410));
           tl.fromTo("#f12-chip-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, F(1410));
           tl.to(rim, { p: 1, duration: 0.9, ease: "none", onUpdate: function () { setRim(rim.p); } }, F(1410));
           tl.fromTo(".f12-rl", { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "none" }, F(1410));
           tl.to(".f12-rl", { opacity: 0, duration: 0.22, ease: "power2.in" }, F(1410) + 0.68);
 
-          // 1440-1500 the beam signs off under the name (laser start, pen cruise, braking) and the pad lands on the final chord
-          var b = { s: 0 };
-          tl.to(b, { s: LEN, duration: F(1500) - F(1440), ease: penEase, onUpdate: function () { setBeam(b.s); } }, F(1440));
-          tl.fromTo(root.querySelectorAll(".f12-pad"), { scale: 0, svgOrigin: PADX + " " + PADY }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(1499)); // first visible on 1500
+          // 1440-1455 leg 1: the beam fires out of the glass, steps up under the role and brakes into pad A on the beat.
+          // 1470-1500 leg 2: it relights on the tom fill, steps down and brakes into pad B exactly on the final chord.
+          var b = { s: 0 }, padA = root.querySelectorAll(".f12-pad-a"), padB = root.querySelectorAll(".f12-pad-b");
+          tl.to(b, { s: LA, duration: F(1455) - F(1440), ease: pen(0.12, 0.3), onUpdate: function () { setBeam(b.s); } }, F(1440));
+          tl.fromTo(padA, { scale: 0, svgOrigin: A[0] + " " + A[1] }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(1454)); // first visible on 1455
+          tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(1455));
+          tl.to(fresh, { strokeOpacity: 0.58, duration: 0.45, ease: "power2.out" }, F(1455));
+          tl.to(b, { s: LEN, duration: F(1500) - F(1470), ease: pen(0.3, 0.3), immediateRender: false, onUpdate: function () { setBeam(b.s); } }, F(1470));
+          tl.to(head, { strokeOpacity: 1, duration: 4 / 30, ease: "power1.in" }, F(1470));
+          tl.to(fresh, { strokeOpacity: 1, duration: 0.2, ease: "power2.out" }, F(1470));
+          tl.fromTo(padB, { scale: 0, svgOrigin: B[0] + " " + B[1] }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(1499)); // first visible on 1500
           tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(1500));
           tl.to(fresh, { strokeOpacity: 0.58, duration: 0.65, ease: "power2.out" }, F(1500));
 

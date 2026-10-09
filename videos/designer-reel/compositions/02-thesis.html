@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <!-- F2 "The thesis" · film frames 120-240 (4 s, local t = (film frame - 120) / 30).
-         Opens on F1's last frame (same route, head timing, chips and graticule), so the cut is invisible.
-         The graticule dissolves, three Tier B screen tiles condense on the pads and the trace becomes the
-         flow's connectors while his two lines land. 210-220 the flow folds in, 220-232 the frame pinches
-         into the beam head, 232-240 is void (grain only) for the drop in F3. Needs window.ReelKit. -->
+         Opens on F1's last frame (same PCB route, head timing, chips and graticule), so the cut is invisible.
+         120-150 the engineering material holds while "The systems thinking came from here." lands (135).
+         150-195 the trace reroutes: the PCB route decays and the beam fires a new user-flow route out of pad A,
+         condensing three Tier B screen tiles on its pads (150, 165, 180) as "The design fluency came later."
+         lands (180). 210 the tiles fold away, 217 the lines wipe off, 220-229 the line retracts into its head,
+         229-231 one white-hot dot, 232-240 void (grain only) for the drop in F3. Needs window.ReelKit. -->
   </head>
   <body>
     <template id="f02-template">
@@ -23,25 +25,18 @@
           font-weight: 100 800;
         }
         #f02-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
-        /* both layers pinch into pad F together (frame.md: vignette sits between world and glass/type) */
-        #f02-wworld, #f02-ui { position: absolute; inset: 0; transform-origin: 1808px 540px; }
+        #f02-wworld, #f02-ui { position: absolute; inset: 0; }
         #f02-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         #f02-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
         .f02-glass { position: absolute; box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); }
-        #f02-chip1 { left: 405px; top: 710px; width: 552px; height: 76px; border-radius: 38px; backdrop-filter: url(#f02-chip1-f); }
-        #f02-chip2 { left: 1125px; top: 678px; width: 699px; height: 76px; border-radius: 38px; backdrop-filter: url(#f02-chip2-f); }
-        #f02-t0 { left: 332px; top: 688px; width: 200px; height: 280px; border-radius: 22px; backdrop-filter: url(#f02-t0-f); }
-        #f02-t1 { left: 742px; top: 332px; width: 340px; height: 224px; border-radius: 22px; backdrop-filter: url(#f02-t1-f); }
-        #f02-t2 { left: 1483px; top: 712px; width: 232px; height: 232px; border-radius: 22px; backdrop-filter: url(#f02-t2-f); }
+        /* chips exactly as F1 leaves them (final widths 670.32 / 843.48) */
+        #f02-chip1 { left: 398.75px; top: 704px; width: 670.32px; height: 80px; border-radius: 40px; backdrop-filter: url(#f02-chip1-f); }
+        #f02-chip2 { left: 1005px; top: 440px; width: 843.48px; height: 80px; border-radius: 40px; backdrop-filter: url(#f02-chip2-f); }
+        #f02-t0 { left: 278.75px; top: 688px; width: 200px; height: 280px; border-radius: 22px; backdrop-filter: url(#f02-t0-f); }
+        #f02-t1 { left: 815.1px; top: 332px; width: 340px; height: 224px; border-radius: 22px; backdrop-filter: url(#f02-t1-f); }
+        #f02-t2 { left: 1475.45px; top: 712px; width: 232px; height: 232px; border-radius: 22px; backdrop-filter: url(#f02-t2-f); }
         .f02-tile { opacity: 0; visibility: hidden; }
-        .f02-tint,
-        .f02-shade,
-        .f02-rim,
-        .f02-wf {
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-        }
+        .f02-tint, .f02-shade, .f02-rim, .f02-glint, .f02-wf { position: absolute; inset: 0; border-radius: inherit; }
         .f02-tint { background: rgba(20, 12, 38, 0.42); }
         .f02-shade {
           box-shadow:
@@ -51,40 +46,22 @@
             inset 0 0 36px rgba(255, 255, 255, 0.05),
             inset 0 0 0 1px rgba(243, 238, 255, 0.1);
         }
+        .f02-rim, .f02-glint { padding: 2px; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
         .f02-rim {
-          padding: 2px;
           --spec: 200deg;
-          background: conic-gradient(
-            from var(--spec),
-            rgba(255, 255, 255, 0.95) 0deg,
-            rgba(255, 255, 255, 0.18) 46deg,
-            rgba(255, 255, 255, 0) 90deg,
-            rgba(255, 46, 151, 0.7) 168deg,
-            rgba(255, 255, 255, 0) 214deg,
-            rgba(34, 230, 255, 0.45) 300deg,
-            rgba(255, 255, 255, 0.95) 360deg
-          );
-          -webkit-mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
+          background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg,
+            rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg);
+        }
+        /* a tile's edge catches the arriving head's light on the frame its glass lands */
+        .f02-glint {
+          padding: 2.5px;
+          opacity: 0;
+          background: conic-gradient(from 160deg, rgba(255, 255, 255, 0.35) 0deg, rgba(255, 255, 255, 1) 70deg, rgba(255, 217, 236, 0.9) 130deg, rgba(255, 255, 255, 0.4) 220deg, rgba(255, 255, 255, 0.35) 360deg);
         }
         .f02-wf { width: 100%; height: 100%; overflow: visible; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         .f02-wf .d { stroke: #b4a8da; }
         .f02-wf .f { stroke: #8c7eb8; }
-        .f02-ctext {
-          position: absolute;
-          left: 57px;
-          top: 0;
-          height: 76px;
-          display: flex;
-          align-items: center;
-          font: 500 22px/1 "JetBrains Mono", monospace;
-          letter-spacing: 0.14em;
-          color: #b4a8da;
-          white-space: nowrap;
-        }
+        .f02-ctext { position: absolute; left: 84px; top: 0; height: 80px; display: flex; align-items: center; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         .f02-ctext span { white-space: pre; }
         .f02-yr { color: #f3eeff; }
         #f02-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; background: #ff2e97; opacity: 0; }
@@ -103,13 +80,13 @@
         #f02-l2 { top: 188px; }
         #f02-dot {
           position: absolute;
-          left: 1800px;
-          top: 532px;
-          width: 16px;
-          height: 16px;
+          left: 1798px;
+          top: 530px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: #ffd9ec;
-          box-shadow: 0 0 10px 3px rgba(255, 46, 151, 0.85), 0 0 34px 10px rgba(255, 46, 151, 0.35);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 12px 4px rgba(255, 46, 151, 0.9), 0 0 40px 14px rgba(255, 46, 151, 0.4);
           opacity: 0;
         }
         #f02-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
@@ -130,15 +107,15 @@
             </div>
             <!-- three screens of one user flow, outlines only: list -> detail -> done -->
             <div class="f02-glass f02-tile" id="f02-t0">
-              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div>
+              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div><div class="f02-glint"></div>
               <svg class="f02-wf" viewBox="0 0 170 240"><rect class="d" x="26" y="30" width="64" height="10" rx="5"/><rect class="f" x="26" y="50" width="118" height="22" rx="11"/><circle class="f" cx="44" cy="98" r="9"/><rect class="f" x="62" y="90" width="72" height="7" rx="3.5"/><rect class="f" x="62" y="102" width="42" height="6" rx="3"/><rect class="d" x="26" y="121" width="118" height="36" rx="12"/><circle class="d" cx="44" cy="139" r="9"/><rect class="d" x="62" y="131" width="72" height="7" rx="3.5"/><rect class="d" x="62" y="143" width="42" height="6" rx="3"/><circle class="f" cx="44" cy="180" r="9"/><rect class="f" x="62" y="172" width="72" height="7" rx="3.5"/><rect class="f" x="62" y="184" width="42" height="6" rx="3"/></svg>
             </div>
             <div class="f02-glass f02-tile" id="f02-t1">
-              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div>
+              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div><div class="f02-glint"></div>
               <svg class="f02-wf" viewBox="0 0 300 196"><rect class="f" x="26" y="26" width="40" height="144" rx="10"/><rect class="d" x="80" y="26" width="110" height="10" rx="5"/><path class="d" d="M80 100 L110 84 L140 92 L170 64 L200 74 L230 50 L256 58 L274 40"/><path class="f" d="M80 110 H274"/><rect class="f" x="80" y="124" width="90" height="46" rx="10"/><rect class="f" x="184" y="124" width="90" height="46" rx="10"/></svg>
             </div>
             <div class="f02-glass f02-tile" id="f02-t2">
-              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div>
+              <div class="f02-tint"></div><div class="f02-shade"></div><div class="f02-rim"></div><div class="f02-glint"></div>
               <svg class="f02-wf" viewBox="0 0 200 200"><circle class="d" cx="100" cy="74" r="30"/><path class="d" d="M86 75 L96 85 L115 64"/><rect class="f" x="60" y="118" width="80" height="8" rx="4"/><rect class="d" x="46" y="140" width="108" height="30" rx="15"/></svg>
             </div>
             <div class="f02-line" id="f02-l1">The systems thinking came from here.</div>
@@ -157,28 +134,40 @@
           var defs = document.getElementById("f02-defs");
           function F(f) { return (f - 120) / 30; } // film frame -> local seconds (F2 starts at film 120)
 
-          // same route and head timing as 01-origin.html; E (film 135) is where the head stops, F the final pad
-          var PATH = "M 18.75 828 H 432 V 668 L 464 636 H 672 V 476 L 704 444 H 912 V 604 L 944 636 H 1152 V 796 L 1184 828 H 1776 L 1808 796 V 540";
-          var PADS = [[432, 828], [672, 636], [912, 444], [1152, 636], [1599, 828], [1808, 540]];
-          var V = 826.5, SD = 1653, R = 620.25, SE = SD + R;
-          // tiles sit on pads A, C, E; the beam is masked inside them (22 px rim band stays, so the glass bends it)
+          // PCB route, pads and head timing exactly as 01-origin.html; the head settles on pad E at film 135
+          var PCB = "M 18.75 828 H 378.75 V 804 L 498.75 684 V 517.706 H 661.022 L 693.022 485.706 V 333.233 H 953 L 985 365.233 V 420 L 1105 540 V 828 H 1187.294";
+          var PCB_PADS = [[378.75, 828], [498.75, 517.706], [693.022, 333.233], [985, 420], [1187.294, 828]];
+          var SD = 1440, R = 540, SA = 360;
+          // the user-flow route shares leg 1 and pad A, then runs at 1943 px/s through the tiles' pads:
+          // A (film 150) -> C (165) -> E (180), and eases (quad out) into the final pad F on 195
+          var FLOW = "M 18.75 828 H 378.75 V 476 L 410.75 444 H 985.1 V 796 L 1017.1 828 H 1776 L 1808 796 V 540";
+          var FLOW_PADS = [[985.1, 444, 1331.6], [1591.45, 828, 2303.2], [1808, 540, 2789]];
+          var VF = 971.6 / 15; // px per frame
           var TILES = [
-            { id: "f02-t0", p: 0, x: 332, y: 688, w: 200, h: 280, at: F(128) },
-            { id: "f02-t1", p: 2, x: 742, y: 332, w: 340, h: 224, at: F(143) },
-            { id: "f02-t2", p: 4, x: 1483, y: 712, w: 232, h: 232, at: F(158) },
+            { id: "f02-t0", p: [378.75, 828], x: 278.75, y: 688, w: 200, h: 280, at: 147 },
+            { id: "f02-t1", p: [985.1, 444], x: 815.1, y: 332, w: 340, h: 224, at: 162 },
+            { id: "f02-t2", p: [1591.45, 828], x: 1475.45, y: 712, w: 232, h: 232, at: 177 },
           ];
 
+          function beamGroup(cls, d) {
+            return '<path class="' + cls + '-old" d="' + d + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>' +
+              '<path class="' + cls + '-fresh" d="' + d + '" stroke="#ff2e97" stroke-width="6"/>' +
+              '<path class="' + cls + '-old" d="' + d + '" stroke="#ffd9ec" stroke-width="2.2"/>' +
+              '<path class="' + cls + '-head" d="' + d + '" stroke="#ffffff" stroke-width="7"/>';
+          }
+          function pad(id, p) { return '<circle id="' + id + '" cx="' + p[0] + '" cy="' + p[1] + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>'; }
           var s = "<defs>";
           s += '<radialGradient id="f02-haze-g" cx="960" cy="600" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 600) scale(1150 380) translate(-960 -600)">';
           s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
-          s += '<filter id="f02-bloom" x="-45" y="380" width="1890" height="520" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+          s += '<filter id="f02-bloom" x="-45" y="270" width="1915" height="620" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
           s += '<mask id="f02-holes" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect width="1920" height="1080" fill="#fff"/>';
           TILES.forEach(function (t, n) {
             s += '<rect id="f02-hole' + n + '" x="' + (t.x + 22) + '" y="' + (t.y + 22) + '" width="' + (t.w - 44) + '" height="' + (t.h - 44) + '" rx="6" fill="#000" opacity="0"/>';
           });
-          s += "</mask></defs>";
-          s += '<rect id="f02-haze" x="-200" y="100" width="2320" height="1100" fill="url(#f02-haze-g)"/>';
-          s += '<g id="f02-grat"><g stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5" fill="none"><path d="M0 156H1920M0 348H1920M0 732H1920M0 924H1920';
+          s += '</mask><mask id="f02-knock" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect width="1920" height="1080" fill="#fff"/>';
+          s += '<rect id="f02-knockr" x="96" y="88" width="1196" height="112" fill="#000" opacity="0"/></mask></defs>';
+          s += '<g id="f02-hazeg"><rect id="f02-haze" x="-200" y="100" width="2320" height="1100" fill="url(#f02-haze-g)"/></g>';
+          s += '<g id="f02-grat" mask="url(#f02-knock)"><g stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5" fill="none"><path d="M0 156H1920M0 348H1920M0 732H1920M0 924H1920';
           for (var i = 1; i <= 9; i++) if (i !== 5) s += "M" + i * 192 + " 0V1080";
           s += '"/></g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6" fill="none"><path d="M0 540H1920M960 0V1080';
           for (var x = 0; x <= 1920; x += 48) s += "M" + x + " " + (540 - (x % 192 ? 4 : 9)) + "V" + (540 + (x % 192 ? 4 : 9));
@@ -187,106 +176,147 @@
           // pad -> tile morph rings (card-morph-anchor): a beam outline grows from the pad to the tile edge
           s += '<g fill="none" stroke="#ff2e97" stroke-width="2.5">';
           TILES.forEach(function (t, n) {
-            var p = PADS[t.p];
-            s += '<rect id="f02-morph' + n + '" x="' + (p[0] - 11) + '" y="' + (p[1] - 11) + '" width="22" height="22" rx="11" opacity="0"/>';
+            s += '<rect id="f02-morph' + n + '" x="' + (t.p[0] - 11) + '" y="' + (t.p[1] - 11) + '" width="22" height="22" rx="11" opacity="0"/>';
           });
           s += '</g><g mask="url(#f02-holes)"><g filter="url(#f02-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
-          s += '<path class="f02-old" d="' + PATH + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
-          s += '<path class="f02-fresh" d="' + PATH + '" stroke="#ff2e97" stroke-width="6"/>';
-          s += '<path class="f02-core" d="' + PATH + '" stroke="#ffd9ec" stroke-width="2.2"/>';
-          s += '<path class="f02-head" d="' + PATH + '" stroke="#ffffff" stroke-width="7"/>';
-          PADS.forEach(function (p, n) {
-            s += '<circle id="f02-pad' + n + '" cx="' + p[0] + '" cy="' + p[1] + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
-          });
+          s += '<g id="f02-pcb">' + beamGroup("f02-p", PCB);
+          PCB_PADS.forEach(function (p, n) { if (n) s += pad("f02-pp" + n, p); });
+          s += '</g><g id="f02-flow">' + beamGroup("f02-f", FLOW) + "</g>";
+          s += pad("f02-padA", PCB_PADS[0]);
+          FLOW_PADS.forEach(function (p, n) { s += pad("f02-fp" + n, p); });
           document.getElementById("f02-world").innerHTML = s + "</g></g>";
 
-          var oldP = root.querySelector(".f02-old");
-          var END = oldP.getTotalLength(),
-            LEN = Math.ceil(END) + 2;
-          var drawn = root.querySelectorAll(".f02-old, .f02-core"),
-            fresh = root.querySelectorAll(".f02-fresh"),
-            head = root.querySelectorAll(".f02-head");
-          function setBeam(d) {
-            K.dash(drawn, LEN, d, null);
-            K.dash(fresh, LEN, d, 560);
-            K.dash(head, LEN, d, 70);
-          }
-          function headAt(t) {
-            if (t < 2) {
-              var p = Math.min((t + 1) / 1.5, 1); // seconds since pad D (film 90), same curve as F1
-              return SD + R * (1 - (1 - p) * (1 - p));
+          TILES.forEach(function (t, n) {
+            t.ring = document.getElementById("f02-morph" + n);
+            t.glint = document.querySelector("#" + t.id + " .f02-glint");
+          });
+          var LEN = 2800;
+          function win(paths, a, b) { // show [a, b] of each path
+            for (var i = 0; i < paths.length; i++) {
+              paths[i].style.strokeDasharray = Math.max(b - a, 0) + " " + (LEN + 10);
+              paths[i].style.strokeDashoffset = -a;
             }
-            var q = Math.min((t - 2) / 0.5, 1); // 180: final segment E -> F, a fast start decelerating into the pad
-            return SE + (END - SE) * (1 - (1 - q) * (1 - q));
           }
+          var P = { old: root.querySelectorAll(".f02-p-old"), fresh: root.querySelectorAll(".f02-p-fresh"), head: root.querySelectorAll(".f02-p-head") },
+            Q = { old: root.querySelectorAll(".f02-f-old"), fresh: root.querySelectorAll(".f02-f-fresh"), head: root.querySelectorAll(".f02-f-head") };
+          function setBeam(B, a, d, floor) { // floor: the fresh trail never re-lights the route before it
+            var b = Math.max(a, floor || 0);
+            win(B.old, a, d);
+            win(B.fresh, Math.max(b, d - 560), d);
+            win(B.head, Math.max(b, d - 70), d);
+          }
+          function pcbHead(t) {
+            var p = Math.min((t + 1) / 1.5, 1); // seconds since pad D (film 90), same curve as F1
+            return SD + R * (1 - (1 - p) * (1 - p));
+          }
+          function flowHead(f) { // f = film frame
+            if (f < 180) return SA + VF * Math.max(f - 150, 0);
+            var q = Math.min((f - 180) / 15, 1);
+            return 2303.2 + 485.8 * (1 - (1 - q) * (1 - q));
+          }
+          var PINCH = gsap.parseEase("power3.in"), END = 2789;
+          var flowG = document.getElementById("f02-flow"),
+            pcbG = document.getElementById("f02-pcb"),
+            dot = document.getElementById("f02-dot"),
+            padA = document.getElementById("f02-padA"),
+            fpads = FLOW_PADS.map(function (p, n) { return document.getElementById("f02-fp" + n); });
           var caret = document.getElementById("f02-caret"),
-            CARET_END = (93 + 37 * 0.5 - 120) / 30; // F1 finished typing chip 2 at film 111.5
-          function caretAt(t) {
-            var k = Math.floor((t - CARET_END) / 0.25 + 1e-6);
-            return k < 6 && k % 2 === 0 ? 1 : 0;
-          }
+            CARET_END = (93 + 763.48 / 38.48 - 120) / 30; // F1 finished typing chip 2 at film 112.84
           var grain = document.getElementById("f02-grain");
-          // 232-240 void: visibility is owned by the clock alone (no tween writes it), so any seek order lands right
-          var VOID = F(231.5),
-            layers = ["f02-wworld", "f02-ui", "f02-dot", "f02-vignette"].map(function (id) { return document.getElementById(id); });
+          var layers = ["f02-wworld", "f02-ui", "f02-dot", "f02-vignette"].map(function (id) { return document.getElementById(id); });
           grain.style.backgroundImage = K.grainURL(1337);
-          setBeam(headAt(0));
+
+          // every beam, pad, dot and caret state is a pure function of the film frame (seek-safe in any order)
+          function frameAt(t) {
+            var f = Math.round((120 + t * 30) * 1e4) / 1e4; // film frame, snapped so 229 is 229 after float drift
+            setBeam(P, f < 150 ? 0 : SA, pcbHead(t));
+            var tail = f < 220 ? 0 : END * PINCH(Math.min((f - 220) / 9, 1));
+            setBeam(Q, tail, flowHead(f), SA);
+            flowG.style.visibility = f >= 150 && f < 229 ? "visible" : "hidden";
+            padA.style.visibility = tail < SA ? "visible" : "hidden";
+            fpads.forEach(function (el, n) { el.style.visibility = tail < FLOW_PADS[n][2] - (n === 2 ? 1 : 0) && f < 229 ? "visible" : "hidden"; });
+            TILES.forEach(function (tt, n) { // ring: pad -> tile edge in 3 f (expo.out), fades by +8 f; glint on landing (+3 f)
+              var u = f - tt.at, e = 1 - Math.pow(2, -10 * Math.min(Math.max(u, 0) / 3, 1)), r = tt.ring;
+              r.setAttribute("x", tt.p[0] - 11 + (tt.x - tt.p[0] + 11) * e);
+              r.setAttribute("y", tt.p[1] - 11 + (tt.y - tt.p[1] + 11) * e);
+              r.setAttribute("width", 22 + (tt.w - 22) * e);
+              r.setAttribute("height", 22 + (tt.h - 22) * e);
+              r.setAttribute("rx", 11 + 11 * e);
+              r.setAttribute("opacity", u < 0 || u >= 8 ? 0 : 1 - Math.pow(u / 8, 3));
+              var q = (u - 3) / 12;
+              tt.glint.style.opacity = q < -1e-6 || q >= 1 ? 0 : Math.pow(1 - q, 3);
+            });
+            var k = Math.floor((t - CARET_END) / 0.25 + 1e-6);
+            caret.style.opacity = k < 6 && k % 2 === 0 ? 1 : 0;
+            // 220-229 the dot gathers at pad F; 229 it flares white-hot and holds alone to 231; 232-240 void
+            var u = (f - 220) / 9, dScale = 1, dOp = 0;
+            if (f >= 220 && f < 229) { dOp = u * u; dScale = 0.5 + 0.5 * u * u; }
+            else if (f >= 229) { dOp = 1; dScale = 1.7 - 0.7 * Math.min((f - 229) / 2, 1); }
+            dot.style.opacity = dOp;
+            dot.style.transform = "scale(" + dScale + ")";
+            layers.forEach(function (el) { el.style.visibility = f < 231.5 ? "visible" : "hidden"; });
+            grain.style.backgroundPosition = K.grainPos(t);
+          }
+          frameAt(0);
 
           var tl = gsap.timeline({ paused: true, defaults: { lazy: false } }); // no deferred first renders: any frame can be the first seek
           var clock = { t: 0 };
-          tl.to(clock, {
-            t: 4,
-            duration: 4,
-            ease: "none",
-            onUpdate: function () {
-              setBeam(headAt(clock.t));
-              caret.style.opacity = caretAt(clock.t);
-              layers.forEach(function (el) { el.style.visibility = clock.t < VOID ? "visible" : "hidden"; });
-              grain.style.backgroundPosition = K.grainPos(clock.t);
-            },
-          }, 0);
+          tl.to(clock, { t: 4, duration: 4, ease: "none", onUpdate: function () { frameAt(clock.t); } }, 0);
           tl.fromTo("#f02-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
 
-          // 120-128: the graticule dissolves to the node layout; the 2016 chip melts
-          tl.fromTo("#f02-grat", { opacity: 1 }, { opacity: 0, duration: 0.267, ease: "power1.inOut" }, 0);
-          var CHIP_F = {};
+          // year chips: static at F1's end state (same composite lens map), melt at 146 and 157
           ["f02-chip1", "f02-chip2"].forEach(function (id, n) {
-            var w = n ? 699 : 552;
-            defs.insertAdjacentHTML("beforeend", K.lensFilter(id + "-f", { w: w, h: 76, r: 38, bezel: 32, dir: -1, power: 1.6 }));
-            var fEl = document.getElementById(id + "-f"),
-              g = { k: 1 };
-            K.setRefraction(fEl, 44);
-            var at = n ? F(143) : 0; // the 2019 chip holds until the second tile lands
-            tl.to(g, { k: 0, duration: 0.25, ease: "power2.in", onUpdate: function () { K.setRefraction(fEl, 44 * g.k); } }, at);
+            var W = n ? 843.48 : 670.32, M = Math.ceil(W);
+            var f = K.lensFilter(id + "-f", { w: M, h: 80, r: 40, bezel: 34, dir: -1, power: 1.6 });
+            f = f.replace('result="map"/>', 'result="mapA"/><feOffset in="mapA" dx="' + (W - M) + '" dy="0" x="' + W / 2 + '" y="0" width="' + (W / 2 + 40) + '" height="80" result="mapB"/><feMerge result="map"><feMergeNode in="mapA"/><feMergeNode in="mapB"/></feMerge>');
+            defs.insertAdjacentHTML("beforeend", f);
+            var fEl = document.getElementById(id + "-f"), g = { k: 1 };
+            fEl.setAttribute("width", M + 60);
+            function lens() {
+              fEl.querySelector('[data-lg="r"]').setAttribute("scale", 40 * g.k);
+              fEl.querySelector('[data-lg="g"]').setAttribute("scale", 38.8 * g.k);
+              fEl.querySelector('[data-lg="b"]').setAttribute("scale", 37.6 * g.k);
+            }
+            lens();
+            var at = F(n ? 157 : 146);
+            tl.to(g, { k: 0, duration: 0.25, ease: "power2.in", onUpdate: lens }, at);
             tl.to("#" + id, { autoAlpha: 0, duration: 0.25, ease: "power2.in" }, at);
           });
 
-          // 132-135: the head settles on pad E (phosphor persistence); 195: the final pad F
-          tl.fromTo("#f02-pad4", { scale: 0, svgOrigin: "1599 828" }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(134));
-          tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(135));
-          tl.to(fresh, { strokeOpacity: 0.6, duration: 0.6, ease: "power2.out" }, F(135));
-          tl.set(head, { strokeOpacity: 1 }, F(180));
-          tl.set(fresh, { strokeOpacity: 1 }, F(180));
-          tl.fromTo("#f02-pad5", { scale: 0, svgOrigin: "1808 540" }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(194));
-          tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(195));
-          tl.to(fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, F(195));
+          // 134-135: the head settles on pad E (phosphor persistence)
+          tl.fromTo("#f02-pp4", { scale: 0, svgOrigin: "1187.294 828" }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(134));
+          tl.to(P.head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(135));
+          tl.to(P.fresh, { strokeOpacity: 0.6, duration: 0.6, ease: "power2.out" }, F(135));
 
-          // 128, 143, 158: a pad grows into a screen, the glass condenses on it, its wireframe draws on
-          var CHIP = K.spring(0.45, 0.8, 0.7);
+          // 150: the reroute. Graticule dissolves, the PCB route decays and its pads blink out one by one,
+          // while the beam fires the user flow out of pad A
+          tl.fromTo("#f02-grat", { opacity: 1 }, { opacity: 0, duration: 0.267, ease: "power1.inOut" }, F(150));
+          tl.fromTo(pcbG, { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power1.in" }, F(150));
+          [1, 2, 3, 4].forEach(function (n) {
+            var p = PCB_PADS[n];
+            tl.to("#f02-pp" + n, { scale: 0, svgOrigin: p[0] + " " + p[1], duration: 0.1, ease: "power3.in" }, F(148 + 2 * n));
+          });
+          FLOW_PADS.forEach(function (p, n) {
+            tl.fromTo("#f02-fp" + n, { scale: 0, svgOrigin: p[0] + " " + p[1] }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(165 + 15 * n));
+          });
+          tl.to(Q.head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, F(195));
+          tl.to(Q.fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, F(195));
+          tl.set([Q.head, Q.fresh], { strokeOpacity: 1 }, F(220)); // the energy gathers back into the head
+
+          // 150, 165, 180: a pad grows into a screen, the glass condenses on it, its wireframe draws on
+          var LAND = K.spring(0.151, 0.8, 0.5); // first crossing 3 f after the start: the glass lands on the beat
           TILES.forEach(function (t, n) {
-            var p = PADS[t.p];
             defs.insertAdjacentHTML("beforeend", K.lensFilter(t.id + "-f", { w: t.w, h: t.h, r: 22, bezel: 28, dir: -1, power: 1.8 }));
             var fEl = document.getElementById(t.id + "-f"),
               g = { k: 0 };
-            tl.fromTo("#f02-morph" + n, { attr: { x: p[0] - 11, y: p[1] - 11, width: 22, height: 22, rx: 11 } }, { attr: { x: t.x, y: t.y, width: t.w, height: t.h, rx: 22 }, duration: 0.2, ease: "expo.out", immediateRender: false }, t.at);
-            tl.fromTo("#f02-morph" + n, { opacity: 1 }, { opacity: 0, duration: 0.26, ease: "power2.in", immediateRender: false }, t.at);
-            tl.fromTo("#f02-hole" + n, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, t.at + 0.05);
-            tl.fromTo("#" + t.id, { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: CHIP }, t.at);
-            tl.to(g, { k: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(fEl, 40 * g.k); } }, t.at);
-            tl.fromTo("#" + t.id + " .f02-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, t.at);
+            var at = F(t.at);
+            tl.fromTo("#f02-hole" + n, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, at + 0.05);
+            tl.fromTo("#" + t.id, { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: LAND }, at);
+            tl.to(g, { k: 1, duration: 0.5, ease: LAND, onUpdate: function () { K.setRefraction(fEl, 40 * g.k); } }, at);
+            tl.fromTo("#" + t.id + " .f02-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, at);
             var parts = root.querySelectorAll("#" + t.id + " .f02-wf > *");
             parts.forEach(function (el) { el.setAttribute("pathLength", "1"); });
-            tl.fromTo(parts, { strokeDasharray: "1 1", strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.025 }, t.at + 0.1);
+            tl.fromTo(parts, { strokeDasharray: "1 1", strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.025 }, at + 0.1);
             // 210-220: the flow folds back into its pads (melt), the beam shows through again
             tl.to(g, { k: 0, duration: 0.25, ease: "power2.in", onUpdate: function () { K.setRefraction(fEl, 40 * g.k); } }, F(210));
             tl.to("#" + t.id, { autoAlpha: 0, duration: 0.25, ease: "power2.in" }, F(210));
@@ -294,14 +324,14 @@
             tl.to("#f02-hole" + n, { opacity: 0, duration: 0.3, ease: "power2.in" }, F(210));
           });
 
-          // 135 and 180: his line, in two halves, wipes on above the flow
-          tl.to("#f02-l1", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(135));
-          tl.to("#f02-l2", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(180));
+          // 135 and 180: his line, in two halves, wipes on; 217 both wipe off toward the beam at full size
+          tl.to("#f02-l1", { clipPath: "inset(0 0% 0 0%)", duration: 0.45, ease: "power3.out" }, F(135));
+          tl.fromTo("#f02-knockr", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, F(135)); // the scope grid clears from under the type
+          tl.to("#f02-l2", { clipPath: "inset(0 0% 0 0%)", duration: 0.45, ease: "power3.out" }, F(180));
+          tl.to(["#f02-l1", "#f02-l2"], { clipPath: "inset(0 0% 0 100%)", duration: 0.2, ease: "power3.in", stagger: 0.033 }, F(217));
+          // 220-228: the haze drains with the line, leaving the dot alone on the void
+          tl.to("#f02-hazeg", { opacity: 0, duration: 0.27, ease: "power2.in" }, F(220));
 
-          // 220-229: the whole frame pinches into the beam head; the lone beam-core dot holds 229-231; 232-240 void
-          tl.to(["#f02-wworld", "#f02-ui"], { scale: 0.003, duration: 0.3, ease: "power3.in" }, F(220));
-          tl.fromTo("#f02-dot", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.in" }, F(220));
-          
           window.__timelines["f02"] = tl;
         })();
       </script>

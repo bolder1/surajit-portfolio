@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <!-- F3 "Name" (film 240-360, 4 s). The style frame at full energy: the drop, SURAJIT / DUTTA slam,
          a Tier H portrait slab, and the beam routing his head-and-shoulders behind the glass.
-         Local time = film frame - 240. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+         Local time = film frame - 240. Frame 240 (local 0) is the build state, so the drop flash and the
+         SURAJIT slam are authored into it (a paused timeline seeked to 0 renders nothing new).
+         Needs window.ReelKit (assets/lib/reel-kit.js). -->
   </head>
   <body>
     <template id="f03-template">
@@ -15,17 +17,18 @@
         #f03-cam { position: absolute; inset: 0; }
         .f03-world, .f03-world svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         .f03-world { background: #0b0716; }
-        #f03-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+        /* the vignette is part of each world copy, so the glass (before it condenses) is seamless with the world */
+        .f03-vig { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
 
         /* type */
-        #f03-label { position: absolute; left: 120px; top: 176px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        #f03-label { position: absolute; left: 120px; top: 168px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         #f03-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
-        .f03-mask { position: absolute; left: 112px; height: 170px; overflow: hidden; padding: 0 8px; }
-        #f03-m1 { top: 214px; }
-        #f03-m2 { top: 386px; }
-        .f03-name { display: block; font-family: "Mona Sans", sans-serif; font-size: 176px; line-height: 0.92; letter-spacing: -0.01em; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; white-space: nowrap; }
+        .f03-mask { position: absolute; left: 112px; height: 194px; overflow: hidden; padding: 0 8px; }
+        #f03-m1 { top: 204px; }
+        #f03-m2 { top: 388px; }
+        .f03-name { display: block; font-family: "Mona Sans", sans-serif; font-size: 200px; line-height: 0.92; letter-spacing: -0.01em; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; white-space: nowrap; }
         .f03-sheen { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255, 217, 236, 0) 40%, rgba(255, 217, 236, 0.85) 50%, rgba(255, 217, 236, 0) 60%); background-size: 300% 100%; background-position: 120% 0; mix-blend-mode: soft-light; }
-        #f03-quote { position: absolute; left: 120px; top: 896px; font-family: "Mona Sans", sans-serif; font-size: 44px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        #f03-quote { position: absolute; left: 120px; top: 884px; font-family: "Mona Sans", sans-serif; font-size: 52px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
 
         /* Tier H liquid glass: the portrait slab (lens over a duplicated world) */
         #f03-slab, #f03-slab-shadow { position: absolute; left: 1250px; top: 100px; width: 480px; height: 880px; border-radius: 76px; }
@@ -33,7 +36,7 @@
         #f03-slab-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
         #f03-lens { position: absolute; inset: 0; filter: url(#f03-lens-f); }
         #f03-lens > .f03-world { left: -1250px; top: -100px; }
-        #f03-screen { position: absolute; left: 40px; top: 40px; width: 400px; height: 800px; border-radius: 40px; overflow: hidden; background: #0e0d10; }
+        #f03-screen { position: absolute; left: 40px; top: 40px; width: 400px; height: 800px; border-radius: 40px; overflow: hidden; background: #0e0d10; opacity: 0; }
         #f03-screen img { position: absolute; left: -121px; top: 0; width: 667px; height: 800px; display: block; }
         #f03-dither { image-rendering: pixelated; }
         /* beam-only copy of the world inside the screen: his silhouette trace shows through the dark print */
@@ -46,8 +49,12 @@
         .lg-rim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
         .f03-skin { opacity: 0; }
 
-        /* finishing: the drop flash and grain sit over everything */
-        #f03-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
+        /* finishing: the drop flash and grain sit over everything. The flash is light (screen blend): a
+           white-hot beam-core burst on the horizon and a hot scope line, not a flat wash. Frame 240 = 1. */
+        #f03-flash { position: absolute; inset: 0; mix-blend-mode: screen; }
+        #f03-flash > div { position: absolute; inset: 0; }
+        #f03-flash-core { background: linear-gradient(180deg, rgba(255, 217, 236, 0) 676px, rgba(255, 255, 255, 0.9) 688px, rgba(255, 255, 255, 0.9) 692px, rgba(255, 217, 236, 0) 704px), radial-gradient(ellipse 40% 30% at 50% 64%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 217, 236, 0.6) 34%, rgba(255, 217, 236, 0) 100%); }
+        #f03-flash-halo { background: radial-gradient(ellipse 66% 50% at 50% 64%, rgba(255, 46, 151, 0.42) 0%, rgba(255, 46, 151, 0.26) 40%, rgba(255, 46, 151, 0.08) 72%, rgba(255, 46, 151, 0) 100%); }
         #f03-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
       </style>
 
@@ -55,7 +62,6 @@
         <div id="f03-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
           <div id="f03-cam">
             <div class="f03-world" id="f03-world-main" data-layout-allow-overflow></div>
-            <div id="f03-vignette" data-layout-ignore></div>
 
             <div id="f03-label"><span id="f03-label-text"></span><span id="f03-caret"></span></div>
             <div class="f03-mask" id="f03-m1"><span class="f03-name" id="f03-n1" data-layout-allow-overflow data-layout-allow-occlusion>SURAJIT</span><div class="f03-sheen" data-layout-ignore></div></div>
@@ -81,21 +87,21 @@
             </div>
           </div>
 
-          <div id="f03-flash" data-layout-ignore></div>
+          <div id="f03-flash" data-layout-ignore><div id="f03-flash-halo"></div><div id="f03-flash-core"></div></div>
           <div id="f03-grain" data-layout-ignore></div>
 
           <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs id="f03-defs">
               <!-- bloom regions hug the beam: frame copy, lens copy (slab + pad) and the in-screen trace -->
-              <filter id="f03-bloom" x="-100" y="158" width="2300" height="782" filterUnits="userSpaceOnUse">
+              <filter id="f03-bloom" x="-100" y="170" width="2560" height="770" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
-              <filter id="f03-bloom-lens" x="1160" y="158" width="660" height="634" filterUnits="userSpaceOnUse">
+              <filter id="f03-bloom-lens" x="1160" y="170" width="660" height="700" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
-              <filter id="f03-bloom-scr" x="1290" y="158" width="400" height="634" filterUnits="userSpaceOnUse">
+              <filter id="f03-bloom-scr" x="1250" y="170" width="480" height="560" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
@@ -112,10 +118,13 @@
           defs.insertAdjacentHTML("beforeend", K.lensFilter("f03-lens-f", { w: 480, h: 880, r: 76, bezel: 84, dir: 1, power: 2, pad: 90 }));
           var lensF = document.getElementById("f03-lens-f");
 
-          // The beam: in under the name to a pad, then his head-and-shoulders (45/90 routing, traced from his
-          // real cut-out with ~22 px clearance), down off the right shoulder (crosses the right edge at y 805, levels at 880 where F4 enters).
+          // The beam: in under the name to a pad, then his head-and-shoulders. The silhouette is derived offline
+          // from his real cut-out (video/public/img/portrait-cut.png alpha, mapped onto the portrait as shown in
+          // the slab): the outline offset 20 px outward, simplified, every segment snapped to 45/90 degrees with
+          // bends that bulge outward (left shoulder, neck, jaw and ear, hair, temple, chin, right shoulder).
+          // Off the right shoulder it crosses the right edge at y 841 and levels at 880, where F4 enters.
           var HZ = 690, FH = 1560, NH = 44, PAD_S = 1000;
-          var BEAM = "M -40 612 H 960 L 1079 731 H 1165 L 1316 580 V 314 L 1412 218 H 1616 L 1666 268 V 586 L 1811 731 H 1846 L 1995 880 H 2140";
+          var BEAM = "M -40 612 H 960 L 1072 724 H 1182 L 1292 614 H 1378 V 569 L 1314 505 V 316 L 1399 231 H 1609 L 1656 278 V 418 L 1680 442 V 594 L 1638 636 H 1715 L 1959 880 H 2400";
           function beamSVG(bloom) {
             var s = '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
             s += '<path class="f03-b-old" d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
@@ -145,7 +154,7 @@
             s += '</g><ellipse cx="1490" cy="1000" rx="300" ry="40" class="f03-skin" fill="url(#' + t + '-caustic)"/>';
             s += beamSVG(bloom);
             s += '<circle class="f03-pad" cx="960" cy="612" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
-            return s + "</g></svg>";
+            return s + '</g></svg><div class="f03-vig" data-layout-ignore></div>';
           }
           document.getElementById("f03-world-main").innerHTML = world("f03-bloom");
           document.getElementById("f03-world-lens").innerHTML = world("f03-bloom-lens");
@@ -175,7 +184,7 @@
             K.dash(fresh, LEN, s, 560);
             K.dash(head, LEN, s, 70);
           }
-          var cam = document.getElementById("f03-cam");
+          var cam = document.getElementById("f03-cam"), fcore = document.getElementById("f03-flash-core"), fhalo = document.getElementById("f03-flash-halo");
           var grain = document.getElementById("f03-grain");
           grain.style.backgroundImage = K.grainURL(1337);
           var LABEL = "PRODUCT DESIGNER · UX / UI";
@@ -190,8 +199,12 @@
           tl.to(amb, {
             t: 4, duration: 4, ease: "none",
             onUpdate: function () {
-              var t = amb.t;
+              var t = amb.t, n = Math.round(t * 30);
               setGrid(floorPhase(t));
+              // 240-241 drop flash: white-hot on 240 (the build state); on 241 the core is spent and only
+              // the beam-pink halo remains (phosphor decay); dark from 242
+              fcore.style.opacity = n <= 0 ? 1 : n === 1 ? 0.18 : 0;
+              fhalo.style.opacity = n <= 0 ? 1 : n === 1 ? 0.6 : 0;
               grain.style.backgroundPosition = K.grainPos(t);
               var p = t <= 3.8 ? 0 : Math.min(1, (t - 3.8) / 0.2);
               var e = p * p * p;
@@ -201,12 +214,12 @@
           }, 0);
           tl.fromTo(root.querySelectorAll(".f03-haze"), { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
 
-          // 240 drop: 2 f beam-core flash @ 35%
-          tl.set("#f03-flash", { opacity: 0.35 }, 0);
-          tl.set("#f03-flash", { opacity: 0 }, 2 / 30);
-
-          // 240 SURAJIT, 247 DUTTA: rise out of the mask while the width axis opens 75 -> 125 (slam)
-          tl.fromTo("#f03-n1", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 0);
+          // 240 SURAJIT, 247 DUTTA: rise out of the mask while the width axis opens 75 -> 125 (slam).
+          // SURAJIT is pre-rolled 2 frames (the same expo.out curve started at 238), so on frame 240 it is
+          // already 2/3 risen under the flash instead of hidden below its mask.
+          var PRE = 2 / 30, E0 = 1 - Math.pow(2, (-10 * PRE) / 0.42);
+          var slam = function (p) { return (1 - Math.pow(2, (-10 * (p * (0.42 - PRE) + PRE)) / 0.42) - E0) / (1 - E0); };
+          tl.fromTo("#f03-n1", { yPercent: 105 * (1 - E0), "--wdth": 75 + 50 * E0 }, { yPercent: 0, "--wdth": 125, duration: 0.42 - PRE, ease: slam }, 0);
           tl.fromTo("#f03-n2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 7 / 30);
 
           // 255 Tier H slab condenses: liquid spring on refraction, skin up, rim light sweeps. No move, no scale.
@@ -217,7 +230,9 @@
           tl.fromTo("#f03-rim", { "--spec": "110deg" }, { "--spec": "210deg", duration: 1.6, ease: "power3.out" }, 0.5);
           tl.to("#f03-rim", { "--spec": "222deg", duration: 1.9, ease: "sine.inOut" }, 2.1);
 
-          // 258 the portrait powers on like a tube: dot -> line -> frame, white-hot flash, scanlines fade off
+          // 258 the portrait powers on like a tube: dot -> line -> frame, white-hot flash, scanlines fade off.
+          // The screen stays hidden until then (no stray dot inside the unformed slab, 240-257).
+          tl.set("#f03-screen", { opacity: 1 }, 0.6);
           tl.fromTo("#f03-screen", { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, 0.6);
           tl.to("#f03-screen", { scaleY: 1, duration: 0.24, ease: "expo.out" }, 0.72);
           tl.set("#f03-pflash", { opacity: 0.95 }, 0.6);
@@ -240,12 +255,19 @@
           tl.fromTo(root.querySelectorAll(".f03-pad"), { scale: 0, svgOrigin: "960 612" }, { scale: 1, duration: 0.18, ease: "power4.out" }, 1.86);
           tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "power1.out" }, 1.9);
           tl.to(fresh, { strokeOpacity: 0.7, duration: 0.1, ease: "power2.out" }, 1.9);
-          // 300 it fires (launch) and routes his silhouette behind the slab; one sheen crosses the name
+          // 300 it fires: launch (power2.in, 6 f) into a 2000 px/s pen cruise that routes his silhouette behind
+          // the slab: enters the glass 308, left shoulder to the hair 309-317, over the head 317-321, right
+          // shoulder 328, off the right edge 333. The head reaches the route end at 340.
+          // One sheen crosses the name as it fires.
+          var V = 2000, TL = 0.2, fire = { u: 0 }, FIRE_T = TL + (LEN - PAD_S - (V * TL) / 2) / V;
           tl.set(head, { strokeOpacity: 1 }, 2.0);
           tl.set(fresh, { strokeOpacity: 1 }, 2.0);
-          tl.to(b, { s: LEN, duration: 0.5, ease: "power2.in", onUpdate: function () { setBeam(b.s); } }, 2.0);
+          tl.to(fire, { u: FIRE_T, duration: FIRE_T, ease: "none", onUpdate: function () {
+            var u = fire.u;
+            setBeam(PAD_S + (u < TL ? (V * u * u) / (2 * TL) : (V * TL) / 2 + V * (u - TL)));
+          } }, 2.0);
           tl.fromTo(root.querySelectorAll(".f03-sheen"), { backgroundPosition: "120% 0" }, { backgroundPosition: "-20% 0", duration: 0.6, ease: "power2.inOut", stagger: 0.06 }, 2.0);
-          tl.to(fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, 2.5);
+          tl.to(fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, 3.1);
 
           // 330 his line wipes on bottom left (bed backbeat), then hold
           tl.to("#f03-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 3.0);

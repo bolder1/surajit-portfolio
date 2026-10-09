@@ -49,7 +49,7 @@ TAIL_FADE = (1520, 1558)   # the shimmer (and any tail) fades with the bed, digi
 # shared plate send per sound family (the SFX sit in the bed's room, not on top of it)
 SEND = [("glass-tink", 0.06), ("blip", 0.14), ("arcade", 0.10), ("synth-stab", 0.0), ("sine-calm", 0.10),
         ("shimmer", 0.0), ("key-", 0.03), ("click", 0.04), ("snap", 0.04), ("swish", 0.08),
-        ("whoosh", 0.06), ("laser", 0.06), ("hum-", 0.08), ("gated-snare", 0.0), ("boom", 0.0),
+        ("whoosh", 0.06), ("laser-rev", 0.0), ("laser", 0.06), ("hum-", 0.08), ("gated-snare", 0.0), ("boom", 0.0),
         ("crt-", 0.06), ("tape-rewind", 0.0)]
 CATS = [("tonal", ("blip", "glass-tink", "arcade", "synth-stab", "sine-calm", "shimmer")),
         ("type / UI", ("key-", "click", "snap")),
@@ -198,16 +198,19 @@ def ebur128(path):
 
 
 # --------------------------------------------------------------------------- checks
-def click_suspects(y, placements):
+def click_suspects(y, placements, own_of=None):
     """Run on the SFX bus (the bed is a finished master). A click at a cue edge shows as a spike in the
     2nd difference right at the edge that is bigger than anything in the 10 ms of the cue next to it.
-    Count edges where that happens (>1.5x)."""
+    Count edges where that happens (>1.5x). With `own_of` (index -> that cue's own rendered buffer, at y's gain),
+    a flagged edge is traced: if the cue's own 2nd difference at that edge is under 10% of the spike, the spike
+    belongs to another cue sounding there (typically the next key's attack) and the edge is listed as masked,
+    not as a click. `worst` is the worst ratio among edges that were not traced away."""
     m = y.mean(1)
     d2 = np.abs(np.diff(m, 2))
-    sus, worst = [], 0.0
+    sus, masked, worst = [], [], 0.0
     w, body = S(0.001), S(0.010)
     starts = np.array(sorted(p[2] for p in placements))
-    for f, name, i0, n in placements:
+    for idx, (f, name, i0, n) in enumerate(placements):
         for e, side in ((i0, +1), (i0 + n, -1)):
             if e - w < 0 or e + w + body >= len(d2):
                 continue
@@ -216,11 +219,19 @@ def click_suspects(y, placements):
             at = d2[e - w:e + w].max()
             near = d2[e + w:e + w + body].max() if side > 0 else d2[e - w - body:e - w].max()
             r = at / (near + 1e-12)
-            if at > 1e-3:                       # ignore edges sitting in near-silence (< -60 dBFS steps)
+            if r > 1.5 and at > 1e-3:           # ignore edges sitting in near-silence (< -60 dBFS steps)
+                if own_of is not None:
+                    o = np.abs(np.diff(own_of(idx).mean(1), 2))
+                    k = e - i0
+                    own = o[max(0, k - w):min(len(o), k + w)].max() if len(o) else 0.0
+                    if own < 0.1 * at:
+                        masked.append((f, name, "start" if side > 0 else "end", round(float(r), 2),
+                                       round(20 * np.log10(max(own, 1e-12) / at), 1)))
+                        continue
+                sus.append((f, name, "start" if side > 0 else "end", round(float(r), 2)))
+            if at > 1e-3:
                 worst = max(worst, r)
-            if r > 1.5 and at > 1e-3:
-                sus.append((f, name, "start" if side > 0 else "end", round(r, 2)))
-    return sus, worst
+    return sus, worst, masked
 
 
 def rms_db(y, a, b):
@@ -345,7 +356,7 @@ def main():
     bus_post = bus * gain
     clip_samples = int((np.abs(d.astype(int)) >= 32767).sum())
     tp_env = true_peak_env(w)
-    sus, worst = click_suspects(bus_post, placements)
+    sus, worst, masked = click_suspects(bus_post, placements, lambda i: render_cue(cs[i], ref_db)[1] * gain)
     edge_max = max(st["edge"] for _, st in cue_stats)
     sil = {f"{a}-{b}": rms_db(w, a, b) for a, b in Q.SILENCES}
     ref_post = ref_db + gdb
@@ -372,9 +383,13 @@ def main():
     P(f"cue edges            {FADE_IN * 1000:.0f} ms fade-in / {FADE_OUT * 1000:.0f} ms fade-out on every cue; "
       f"largest first/last sample = {edge_max:.1e} of the cue's peak (0 = starts and ends in silence)")
     P(f"click scan (SFX bus) {len(sus)} suspect edges of {2 * len(placements)} (2nd-difference spike at a cue edge "
-      f"> 1.5x the cue's own next 10 ms); worst ratio {worst:.2f}")
+      f"> 1.5x the cue's own next 10 ms); worst ratio {worst:.2f} (edges not traced to another cue)")
     for s in sus[:20]:
         P(f"                       {s}")
+    P(f"                     {len(masked)} more edges flagged on the bus but traced to another cue (this cue's own "
+      f"2nd difference there is under 10% of the spike)")
+    for s in masked[:20]:
+        P(f"                       {s[:4]} own edge {s[4]:+.1f} dB vs the spike")
     for k, v in sil.items():
         P(f"silence {k:<12} {v:6.1f} dBFS RMS  ({'OK' if v < -40 else 'TOO LOUD'}: must stay below -40)")
     P(f"after 1505           only the shimmer tail starts; mix RMS 1505-1530 {rms_db(w, 1505, 1530):.1f} dBFS, "

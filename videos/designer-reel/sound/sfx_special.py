@@ -16,6 +16,8 @@
   tape-rewind       F11: tape-stop.wav reversed and stretched x1.5 (a fifth down), the wind-up only
   sine-calm         F11: one pure C#6 sine, 1.2 s, slow attack and release
   crt-off           F11: the first 0.38 s of crt-on.wav reversed (the power-off blip)
+  laser-rev         F2: the laser's dive synthesised backwards and dry, 5 f: a rising zip as the line
+                    retracts into its head (the inverse of a beam firing)
   hum-<N>f          soft electric hum under a beam draw, N frames long, fading out
 
 Imports the shared toolkit ../../video/sound/dsp.py read-only (via compose.py's sys.path entry).
@@ -149,6 +151,22 @@ def crt_off(length=0.38):
     return fade(x, 0.004, 0.006)
 
 
+def laser_rev(frames=5):
+    """F2: the line retracting into its head. The laser's own recipe (sfx_retro.laser: pulse + sine diving
+    from 2.7 kHz to 160 Hz) run backwards and kept dry: a zip that rises and swells for `frames` frames and is
+    loudest on its last one, where it stops (12 ms release) on the flare. No echo, so nothing smears into the
+    silence that follows."""
+    n = S(frames / FPS)
+    t = np.arange(n) / SR
+    f = 160 + 2600 * np.exp(-t / 0.07)
+    mod = np.sin(2 * np.pi * np.cumsum(f * 1.5) / SR) * 0.6
+    x = C.pulse(f * (1 + 0.04 * mod), n, 0.5) * 0.5 + np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.4
+    x = lp(x * np.exp(-t / 0.12), 8000)[::-1]
+    r = S(0.012)
+    x[-r:] *= np.cos(np.linspace(0, np.pi / 2, r)) ** 2
+    return C.to_st(x)
+
+
 def hum(frames, f0=None, seed=5):
     """Soft electric hum under a beam draw. Mains-style partial stack, but tuned to F# (46.25 Hz
     fundamental, 92.5 / 138.75 Hz carrying the buzz) instead of a literal 60 Hz, which sits a
@@ -183,6 +201,7 @@ DERIVED = {
     "tape-rewind": tape_rewind,
     "sine-calm": sine_calm,
     "crt-off": crt_off,
+    "laser-rev": laser_rev,
 }
 
 

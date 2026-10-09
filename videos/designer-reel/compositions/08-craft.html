@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- F8 "What I do" (film 960-1080, 4 s). The cut lands mid-shot: the beam runs in under the list and up a rail; seven disciplines slam in on the
-         eighths (975-1020) while one Tier B liquid-glass selector slides down the list, magnifying the selected
-         word; deselected words relax to vector outlines. The toolbox types along the beam at 1035 and everything
-         pushes up for the "continue upward" cut (last 6 f, power3.in). Local time = film frame - 960. Needs ReelKit. -->
+    <!-- F8 "What I do" (film 960-1080, 4 s). Seven disciplines, one per line on a 128 px pitch, slam in on the eighths
+         from the cut (960, 967.5 ... 1005). One Tier B liquid-glass selector carries each new word down into its line and
+         hugs it exactly (same ease, same centre, width fitted to the word as its width axis opens); the beam head steps
+         down the rail with it, one pad per word. Deselected words stay solid: ink-dim, wdth 75, wght 640. 1020 the beam fires along the bottom,
+         the toolbox types behind it, and everything pushes up for the "continue upward" cut (last 6 f).
+         Local time = film frame - 960. Needs ReelKit. -->
   </head>
   <body>
     <template id="f08-template">
@@ -17,22 +19,18 @@
         #f08-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         #f08-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
 
-        /* the list: display rows in masks; selected = solid ink, expanded; at rest = condensed vector outline */
-        .f08-row { position: absolute; left: 160px; width: 1700px; height: 112px; overflow: hidden; padding-left: 8px; }
-        .f08-wr { position: relative; font-family: "Mona Sans", sans-serif; font-size: 120px; line-height: 112px; letter-spacing: -0.01em; white-space: nowrap; --wdth: 75; font-variation-settings: "wdth" var(--wdth), "wght" 900; }
-        .f08-w { display: block; color: #f3eeff; }
-        /* the rest state is a vector outline cut from the rendered glyph alpha (erode + out), so the variable
-           font's overlapping contours never show the way -webkit-text-stroke draws them */
-        .f08-o { position: absolute; left: 0; top: 0; display: block; color: #b4a8da; filter: url(#f08-ol); opacity: 0; }
+        /* the list: one masked line per word, 128 px pitch (cap 89 px, so 39 px of clear leading between lines) */
+        .f08-row { position: absolute; left: 160px; width: 1720px; height: 128px; overflow: hidden; padding-left: 8px; }
+        .f08-wr { position: relative; display: block; font-family: "Mona Sans", sans-serif; font-size: 120px; line-height: 128px; letter-spacing: -0.01em; white-space: nowrap; color: #b4a8da; --wdth: 75; --wght: 900; font-variation-settings: "wdth" var(--wdth), "wght" var(--wght); }
 
         /* Tier B selector pill: a lens over the list (inward rim magnifies the word under it) */
-        #f08-pill { position: absolute; left: 104px; top: 0; height: 128px; border-radius: 64px; backdrop-filter: url(#f08-sel-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 0% 50%; }
+        #f08-pill { position: absolute; left: 108px; top: 0; height: 128px; border-radius: 64px; backdrop-filter: url(#f08-sel-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 0% 50%; }
         #f08-pill .lg-tint { background: rgba(180, 150, 255, 0.07); }
         .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
         .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
         .lg-rim { padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 
-        #f08-tools { position: absolute; left: 168px; top: 936px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        #f08-tools { position: absolute; left: 168px; top: 988px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         #f08-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
         #f08-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
       </style>
@@ -50,10 +48,7 @@
 
           <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs id="f08-defs">
-              <filter id="f08-ol" x="-2%" y="-10%" width="104%" height="120%">
-                <feMorphology in="SourceAlpha" operator="erode" radius="2" result="e" /><feComposite in="SourceGraphic" in2="e" operator="out" />
-              </filter>
-              <filter id="f08-bloom" x="76" y="90" width="1944" height="886" filterUnits="userSpaceOnUse">
+              <filter id="f08-bloom" x="76" y="-60" width="1944" height="1090" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
@@ -69,40 +64,39 @@
           var Q = function (s) { return root.querySelectorAll(s); };
           var F = function (n) { return n / 30; };
 
-          // seven disciplines (FACTS.md), selected width-axis value and measured advance at 120 px (headless Chrome 152)
+          // seven disciplines (FACTS.md); selected width-axis value; advance (px) at 120 px for wdth 75, 88, 100, 112.5, 125,
+          // measured in headless Chrome 152 (the pill is fitted from these, so it hugs the word at every width)
           var WORDS = ["PRODUCT DESIGN", "INTERACTION DESIGN", "DESIGN SYSTEMS", "UX RESEARCH", "PROTOTYPING", "INFORMATION ARCHITECTURE", "USABILITY TESTING"];
           var WSEL = [125, 125, 125, 125, 125, 88, 125];
-          var WPX = [1201, 1469, 1178, 978, 987, 1544, 1309];
-          var TOP = function (i) { return 96 + 112 * i; };
-          var MID = function (i) { return TOP(i) + 58; }; // cap middle of row i
-          var PH = 128, PL = 104, RX = 136, BY = 912;
-          var PW = WPX.map(function (w) { return w + 112; });
-          var LW = WORDS.map(function (_, i) { return F(15 + 7.5 * i); }); // 975, 982.5 ... 1020
+          var WS = [75, 88, 100, 112.5, 125];
+          var ADV = [[702.2, 911.2, 1108.2, 1152.2, 1201.2], [849.4, 1106.4, 1352.4, 1408.4, 1469.4], [696.2, 894.2, 1082.2, 1129.2, 1178.2], [557.8, 731.8, 893.8, 934.8, 977.8], [573.8, 747.8, 904.8, 943.8, 986.8], [1184.2, 1544.2, 1882.2, 1960.2, 2047.2], [772.6, 1000.6, 1216.6, 1262.6, 1308.6]];
+          function adv(i, wd) { for (var k = 1; k < 5; k++) if (wd <= WS[k]) return ADV[i][k - 1] + ((ADV[i][k] - ADV[i][k - 1]) * (wd - WS[k - 1])) / (WS[k] - WS[k - 1]); return ADV[i][4]; }
+          var P = 128, TOP = function (i) { return 42 + P * i; };
+          var MID = function (i) { return TOP(i) + 66; }; // cap middle of line i (baseline TOP + 110.5, cap 89)
+          var LX = 168, PL = 108, PH = 128, R = PH / 2, RX = 136, BY = 968;
+          var LW = WORDS.map(function (_, i) { return F(7.5 * i); }); // 960, 967.5, 975, 982.5, 990, 997.5, 1005
 
           var list = "";
-          WORDS.forEach(function (w, i) { list += '<div class="f08-row" style="top:' + TOP(i) + 'px"><div class="f08-wr" data-layout-allow-overflow><span class="f08-w" data-layout-allow-occlusion data-layout-allow-overlap>' + w + '</span><span class="f08-o" data-layout-allow-occlusion data-layout-allow-overlap>' + w + "</span></div></div>"; });
+          WORDS.forEach(function (w, i) { list += '<div class="f08-row" style="top:' + TOP(i) + 'px"><span class="f08-wr" data-layout-allow-overflow data-layout-allow-occlusion>' + w + "</span></div>"; });
           document.getElementById("f08-list").innerHTML = list;
-          var rows = Q(".f08-wr"), solid = Q(".f08-w"), outl = Q(".f08-o");
+          var rows = Q(".f08-wr");
 
-          // world: haze and one beam route: in from the right edge under the list, a 90-degree bend, up the rail to row 1
-          var RAIL = "M 1960 " + BY + " H " + RX + " V " + MID(0);
+          // world: haze and one beam: in from the top edge, down the rail through a pad per line, a 90-degree bend at the
+          // bottom and out along the floor line under the list (the toolbox types along it)
+          var ROUTE = "M " + RX + " -20 V " + BY + " H 1960";
           var w = '<defs><radialGradient id="f08-haze-g" cx="760" cy="600" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(760 600) scale(1150 330) translate(-760 -600)">';
           w += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient></defs>';
           w += '<rect id="f08-haze" x="-200" y="160" width="2320" height="900" fill="url(#f08-haze-g)"/>';
           w += '<g filter="url(#f08-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
-          [["r", RAIL]].forEach(function (p) {
-            w += '<path class="f08-old f08-' + p[0] + '" d="' + p[1] + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
-            w += '<path class="f08-fresh f08-' + p[0] + '" d="' + p[1] + '" stroke="#ff2e97" stroke-width="6"/>';
-            w += '<path class="f08-core f08-' + p[0] + '" d="' + p[1] + '" stroke="#ffd9ec" stroke-width="2.2"/>';
-            w += '<path class="f08-head f08-' + p[0] + '" d="' + p[1] + '" stroke="#ffffff" stroke-width="7"/>';
-          });
+          w += '<path class="f08-old" d="' + ROUTE + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          w += '<path class="f08-fresh" d="' + ROUTE + '" stroke="#ff2e97" stroke-width="6"/>';
+          w += '<path class="f08-core" d="' + ROUTE + '" stroke="#ffd9ec" stroke-width="2.2"/>';
+          w += '<path class="f08-head" d="' + ROUTE + '" stroke="#ffffff" stroke-width="7"/>';
           WORDS.forEach(function (_, i) { w += '<circle class="f08-pad" cx="' + RX + '" cy="' + MID(i) + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>'; });
           document.getElementById("f08-world").innerHTML = w + "</g>";
-          function beam(cls) { return { all: Q(".f08-" + cls), drawn: Q(".f08-old.f08-" + cls + ", .f08-core.f08-" + cls), fresh: Q(".f08-fresh.f08-" + cls), head: Q(".f08-head.f08-" + cls) }; }
-          var BR = beam("r");
-          var RL = 1960 - RX + BY - MID(0) + 2;
-          function setBeam(B, len, s) { K.dash(B.drawn, len, s, null); K.dash(B.fresh, len, s, 560); K.dash(B.head, len, s, 70); }
-          setBeam(BR, RL, 0);
+          var BD = Q(".f08-old, .f08-core"), BF = Q(".f08-fresh"), BH = Q(".f08-head");
+          var RL = BY + 20 + (1960 - RX); // route length
+          function setBeam(s) { K.dash(BD, RL, s, null); K.dash(BF, RL, s, 560); K.dash(BH, RL, s, 70); }
 
           // selector lens: an exact stadium map for any width, built from three feImages (left cap, a 1 px middle
           // column stretched, right cap) so the pill can slide and re-fit each word without re-decoding a map
@@ -120,43 +114,64 @@
             ctx.putImageData(img, 0, 0);
             return c.toDataURL("image/png");
           }
-          var R = PH / 2, W0 = PH + 2, MAPO = [PH, R, 46, -1, 1.6];
+          var W0 = PH + 2, MAPO = [PH, R, 46, -1, 1.6], PW0 = 1400;
           var mapL = f08Map.apply(null, [W0, 0, R].concat(MAPO)), mapM = f08Map.apply(null, [W0, R, R + 1].concat(MAPO)), mapR = f08Map.apply(null, [W0, W0 - R, W0].concat(MAPO));
           var ch = function (n, sel) { return '<feDisplacementMap data-lg="' + n + '" in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G" result="d' + n + '"/><feColorMatrix in="d' + n + '" type="matrix" values="' + sel + '" result="' + n + '"/>'; };
-          var fm = '<filter id="f08-sel-f" x="0" y="0" width="' + PW[0] + '" height="' + PH + '" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">';
+          var fm = '<filter id="f08-sel-f" x="0" y="0" width="' + PW0 + '" height="' + PH + '" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">';
           fm += '<feImage href="' + mapL + '" x="0" y="0" width="' + R + '" height="' + PH + '" preserveAspectRatio="none" result="mL"/>';
-          fm += '<feImage id="f08-mapm" href="' + mapM + '" x="' + R + '" y="0" width="' + (PW[0] - PH) + '" height="' + PH + '" preserveAspectRatio="none" result="mM"/>';
-          fm += '<feImage id="f08-mapr" href="' + mapR + '" x="' + (PW[0] - R) + '" y="0" width="' + R + '" height="' + PH + '" preserveAspectRatio="none" result="mR"/>';
+          fm += '<feImage id="f08-mapm" href="' + mapM + '" x="' + R + '" y="0" width="' + (PW0 - PH) + '" height="' + PH + '" preserveAspectRatio="none" result="mM"/>';
+          fm += '<feImage id="f08-mapr" href="' + mapR + '" x="' + (PW0 - R) + '" y="0" width="' + R + '" height="' + PH + '" preserveAspectRatio="none" result="mR"/>';
           fm += '<feMerge result="map"><feMergeNode in="mL"/><feMergeNode in="mM"/><feMergeNode in="mR"/></feMerge>';
           fm += ch("r", "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0") + ch("g", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0") + ch("b", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0");
           fm += '<feBlend in="r" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b" mode="screen"/></filter>';
           document.getElementById("f08-defs").insertAdjacentHTML("beforeend", fm);
           var selF = document.getElementById("f08-sel-f"), mapMEl = document.getElementById("f08-mapm"), mapREl = document.getElementById("f08-mapr");
           var pill = document.getElementById("f08-pill");
-          var CHIP = K.spring(0.45, 0.8, 0.7), GLASS = K.spring(0.55, 0.62, 1.2);
+          var CHIP = K.spring(0.45, 0.8, 0.7);
           function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+          function expo(v) { v = c01(v); return v >= 1 ? 1 : 1 - Math.pow(2, -10 * v); }
           function out(v, p) { return 1 - Math.pow(1 - c01(v), p); }
+          function mix(a, b, u) { var r = "#"; for (var n = 1; n < 7; n += 2) { var x = Math.round(parseInt(a.substr(n, 2), 16) + (parseInt(b.substr(n, 2), 16) - parseInt(a.substr(n, 2), 16)) * u); r += (x < 16 ? "0" : "") + x.toString(16); } return r; }
           function so(nodes, v) { for (var n = 0; n < nodes.length; n++) nodes[n].style.strokeOpacity = v.toFixed(3); }
-          // pure function of local time: selector position / width / refraction and both beam runs
+
+          // one pure function of local time drives the words, the selector and the beam, so they cannot drift apart.
+          // word i (i >= 1) drops into its line from the line above while the pill slides down with it: same expo.out
+          // (0.3 s), same centre; its width axis opens 75 -> selected (0.42 s expo.out) and the pill's right edge follows
+          var ent = [], wdA = [];
           function render(t) {
-            var i = 0;
+            var a = 0, i = 0;
             while (i < 6 && t >= LW[i + 1]) i++;
-            var a = i > 0 ? out((t - LW[i]) / F(5), 4) : 1, from = i > 0 ? i - 1 : 0;
-            var y = MID(from) + (MID(i) - MID(from)) * a - R, wd = Math.round(PW[from] + (PW[i] - PW[from]) * a);
-            // condense on the first word, dip and recover on each slide, one liquid wobble on the last (peaks ~1029)
-            var k = i === 0 ? (t < LW[0] ? 0 : CHIP(c01((t - LW[0]) / 0.7))) : i < 6 ? 0.7 + 0.3 * out((t - LW[i]) / 0.25, 2) : 0.5 + 0.5 * GLASS(c01((t - LW[6]) / 1.2));
-            pill.style.width = wd + "px";
-            pill.style.top = y.toFixed(2) + "px";
-            selF.setAttribute("width", wd);
-            mapMEl.setAttribute("width", wd - PH);
-            mapREl.setAttribute("x", wd - R);
-            K.setRefraction(selF, 36 * k);
-            // beam: the cut lands mid-shot (bottom run mostly drawn), the head rounds the corner and decelerates up the
-            // rail into row 1's pad at 975 (hard stop), then phosphor persistence
-            var sr = 1500 + (RL - 1500) * out(t / F(15), 2), tr = t - F(15);
-            setBeam(BR, RL, sr);
-            so(BR.head, tr <= 0 ? 1 : 1 - out(tr / 0.12, 1));
-            so(BR.fresh, tr <= 0 ? 1 : 1 - 0.4 * out(tr / 0.6, 2));
+            for (var j = 0; j < 7; j++) {
+              var e = j === 0 ? expo(t / 0.3) : expo((t - LW[j]) / 0.3), ow = j === 0 ? expo(t / 0.35) : expo((t - LW[j]) / 0.42);
+              var dsel = j < 6 ? out((t - LW[j + 1]) / 0.25, 2) : 0;
+              var wd = (j === 0 ? 88 : 75) + (WSEL[j] - (j === 0 ? 88 : 75)) * ow;
+              wd = wd + (75 - wd) * dsel;
+              ent[j] = e; wdA[j] = wd;
+              rows[j].style.transform = "translateY(" + (-(j === 0 ? 12 : P) * (1 - e)).toFixed(2) + "px)";
+              rows[j].style.setProperty("--wdth", wd.toFixed(2));
+              rows[j].style.setProperty("--wght", (900 - 260 * dsel).toFixed(1));
+              rows[j].style.color = mix("#f3eeff", "#b4a8da", dsel);
+            }
+            a = ent[i];
+            var from = i > 0 ? i - 1 : 0, cy = i > 0 ? MID(i) - P * (1 - a) : MID(0) - 12 * (1 - a);
+            var rNew = LX + adv(i, wdA[i]) + 61, rOld = LX + adv(from, wdA[from]) + 61;
+            var wdp = Math.round((i > 0 ? rOld + (rNew - rOld) * a : rNew) - PL);
+            pill.style.width = wdp + "px";
+            pill.style.top = (cy - R).toFixed(2) + "px";
+            selF.setAttribute("width", wdp);
+            mapMEl.setAttribute("width", wdp - PH);
+            mapREl.setAttribute("x", wdp - R);
+            // refraction: condense spring from the cut, then one liquid wobble as it settles on the last word
+            var u = t - LW[6], wob = u > 0 ? Math.exp(-3.5 * u) * Math.sin(2 * Math.PI * 1.8 * u) : 0;
+            K.setRefraction(selF, 36 * (t <= 0 ? 0 : CHIP(c01(t / 0.7))) * (1 + 0.45 * wob));
+            // beam head: at pad 0 on the cut, steps one pad per word with the selector, hard stop, phosphor persistence;
+            // 1020 it fires down and out along the bottom (launch, power2.in, 0.6 s)
+            var s = 20 + MID(0) + (i > 0 ? P * (i - 1) + P * a : 0), tf = t - F(60);
+            if (tf > 0) s += (RL - s) * Math.pow(c01(tf / 0.6), 2);
+            setBeam(s);
+            var st = tf > 0.6 ? tf - 0.6 : tf > 0 ? -1 : t - LW[6] - F(4); // time since the last hard stop (< 0: moving)
+            so(BH, st > 0 ? 1 - out(st / 0.12, 1) : 1);
+            so(BF, st > 0 ? 1 - 0.42 * out(st / 0.65, 2) : 1);
           }
           render(0);
 
@@ -170,28 +185,21 @@
           tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () { render(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
           tl.fromTo("#f08-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
 
-          // 975-1020 one word per eighth: it slams out of its mask (width axis 75 -> selected), its pad pops, the
-          // selector (render) slides to it and re-fits; the previous word relaxes to a condensed vector outline
-          rows.forEach(function (el, i) {
-            var t0 = LW[i];
-            tl.fromTo(el, { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": WSEL[i], duration: 0.42, ease: "expo.out" }, t0);
-            tl.fromTo(Q(".f08-pad")[i], { scale: 0, svgOrigin: RX + " " + MID(i) }, { scale: 1, duration: 0.18, ease: "power4.out" }, t0);
-            if (i > 0) {
-              tl.fromTo(rows[i - 1], { "--wdth": WSEL[i - 1] }, { "--wdth": 75, duration: 0.25, ease: "power2.out", immediateRender: false }, t0);
-              tl.fromTo(solid[i - 1], { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power2.in", immediateRender: false }, t0);
-              tl.fromTo(outl[i - 1], { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out", immediateRender: false }, t0);
-            }
-          });
-          tl.fromTo(pill, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, LW[0]);
-          tl.fromTo("#f08-pill-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, LW[0]);
+          // a pad pops as each word lands (pad 0 is already lit on the cut)
+          var pads = Q(".f08-pad");
+          tl.set(pads[0], { scale: 1, svgOrigin: RX + " " + MID(0) }, 0);
+          for (var p = 1; p < 7; p++) tl.fromTo(pads[p], { scale: 0, svgOrigin: RX + " " + MID(p) }, { scale: 1, duration: 0.18, ease: "power4.out" }, LW[p] + F(1));
+          // the selector condenses over the first word on the cut (Tier B entrance spring), rim light turns with it
+          tl.fromTo(pill, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, 0);
+          tl.fromTo("#f08-pill-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, 0);
           tl.fromTo("#f08-pill-rim", { "--spec": "200deg" }, { "--spec": "250deg", duration: 1.5, ease: "power2.out", immediateRender: false }, LW[6]);
 
-          // 1035 the toolbox types along the beam under the list (1035-1050); caret blinks in eighths, goes dark
+          // 1024-1053 the toolbox types along the beam behind its head (~2 characters a frame); caret blinks in eighths
           var tc = { n: 0 };
-          tl.to(tc, { n: TOOLS.length, duration: F(15), ease: "steps(" + TOOLS.length + ")", onUpdate: function () { toolsEl.textContent = TOOLS.slice(0, Math.round(tc.n)); } }, F(75));
-          tl.set("#f08-caret", { opacity: 1 }, F(75));
-          tl.fromTo("#f08-caret", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 2, yoyo: true, immediateRender: false }, F(90));
-          tl.set("#f08-caret", { opacity: 0 }, F(114));
+          tl.to(tc, { n: TOOLS.length, duration: F(29), ease: "steps(" + TOOLS.length + ")", onUpdate: function () { toolsEl.textContent = TOOLS.slice(0, Math.round(tc.n)); } }, F(64));
+          tl.set("#f08-caret", { opacity: 1 }, F(64));
+          tl.fromTo("#f08-caret", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 2, yoyo: true, immediateRender: false }, F(93));
+          tl.set("#f08-caret", { opacity: 0 }, F(116));
 
           // 1074-1080 continue upward: the whole frame lifts y 0 -> -300 in 6 f, power3.in (F9 brings its own in)
           tl.fromTo("#f08-stage", { y: 0 }, { y: -300, duration: F(6), ease: "power3.in" }, F(114));

@@ -2,10 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- F6 "miniOrange, 2024 -> now" (film 600-780, 6 s). Dolly in over the vector floor past three real
-         captures in tilted Tier B frames; the hero capture lands under a Tier H device; on the 720 stab the
-         beam pulls itself off the floor into one straight 2 px stroke (the design system's single stroke)
-         and the device cuts to the MODS docs. Holds, hard cut at 780 (F7 owns the chroma split).
+    <!-- F6 "miniOrange, 2024 -> now" (film 600-780, 6 s). Dolly in over the vector floor past two real
+         captures in tilted Tier B frames (UEM data discovery, the UEM designed screens); the hero lands as a
+         Tier H plate holding the UEM dashboard at full width; on the 720 stab the beam pulls itself off the
+         floor into one straight 2 px stroke (the design system's single stroke), the plate re-powers onto
+         the MODS docs and the design-system cover condenses in a small Tier B frame. Hard cut at 780.
          Local time = film frame - 600. Needs window.ReelKit (assets/lib/reel-kit.js). -->
   </head>
   <body>
@@ -21,35 +22,37 @@
         #f06-vignette { position: absolute; left: -480px; top: -270px; width: 2880px; height: 1620px; background: radial-gradient(ellipse 1497.6px 799.2px at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
 
         /* type */
-        .f06-label { position: absolute; left: 120px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        .f06-label { position: absolute; left: 120px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         #f06-marker { top: 176px; }
-        #f06-marker svg { width: 34px; height: 16px; margin: 0 14px 0 6px; vertical-align: 0; overflow: visible; opacity: 0; }
-        #f06-tag { top: 548px; font-size: 22px; }
-        #f06-spec { top: 590px; color: #f3eeff; }
+        #f06-marker svg { width: 36px; height: 17px; margin: 0 14px 0 6px; vertical-align: 0; overflow: visible; opacity: 0; }
+        #f06-tag { top: 486px; font-size: 24px; }
+        #f06-spec1 { top: 528px; color: #f3eeff; }
+        #f06-spec2 { top: 568px; color: #f3eeff; }
         .f06-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
         .f06-line { position: absolute; left: 120px; font-family: "Mona Sans", sans-serif; font-size: 56px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
-        #f06-l1 { top: 272px; }
-        #f06-l2 { top: 339px; }
+        #f06-l1 { top: 250px; }
+        #f06-l2 { top: 317px; }
 
-        /* Tier B capture frames on the fly-by (backdrop-filter, inward rim; Tier B may scale and rotate) */
-        .f06-card { position: absolute; left: 640px; top: 480px; width: 640px; height: 420px; border-radius: 34px; box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); opacity: 0; }
-        #f06-c0 { backdrop-filter: url(#f06-c0-f); }
-        #f06-c1 { backdrop-filter: url(#f06-c1-f); }
-        #f06-c2 { backdrop-filter: url(#f06-c2-f); }
+        /* Tier B capture frames (backdrop-filter, inward rim; Tier B may scale and rotate) */
+        .f06-card { position: absolute; border-radius: 34px; box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); opacity: 0; }
+        #f06-c0 { left: 140px; top: 275px; width: 760px; height: 490px; backdrop-filter: url(#f06-c0-f); }
+        #f06-c1 { left: 1060px; top: 399px; width: 680px; height: 323px; backdrop-filter: url(#f06-c1-f); }
+        #f06-c2 { left: 120px; top: 650px; width: 496px; height: 340px; backdrop-filter: url(#f06-c2-f); }
         .f06-card .lg-tint { background: rgba(20, 12, 38, 0.42); }
-        .f06-shot { position: absolute; left: 20px; top: 20px; width: 600px; height: 380px; border-radius: 16px; overflow: hidden; background: #0e0d10; }
-        .f06-shot img { position: absolute; left: 0; top: 0; width: 600px; height: 380px; object-fit: cover; object-position: 50% 0; display: block; }
+        .f06-shot { position: absolute; left: 20px; top: 20px; right: 20px; bottom: 20px; border-radius: 16px; overflow: hidden; background: #0e0d10; }
+        .f06-shot img { position: absolute; left: 0; top: 0; width: 100%; display: block; }
         .f06-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px); opacity: 0; }
         .f06-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
 
-        /* Tier H liquid glass: the hero device (lens over a duplicated world) */
-        #f06-device, #f06-device-shadow { position: absolute; left: 1240px; top: 100px; width: 480px; height: 880px; border-radius: 76px; }
-        #f06-device { overflow: hidden; isolation: isolate; opacity: 0; }
-        #f06-device-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
+        /* Tier H liquid glass: the hero plate (lens over a duplicated world) */
+        #f06-plate, #f06-plate-shadow { position: absolute; left: 900px; top: 230px; width: 900px; height: 580px; border-radius: 56px; }
+        #f06-plate { overflow: hidden; isolation: isolate; opacity: 0; }
+        #f06-plate-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
         #f06-lens { position: absolute; inset: 0; filter: url(#f06-lens-f); }
-        #f06-lens > .f06-world { left: -1240px; top: -100px; }
-        #f06-screen { position: absolute; left: 40px; top: 40px; width: 400px; height: 800px; border-radius: 40px; overflow: hidden; background: #0e0d10; opacity: 0; }
-        #f06-screen img { position: absolute; left: 0; top: 0; width: 400px; display: block; }
+        #f06-lens > .f06-world { left: -900px; top: -230px; }
+        #f06-screen { position: absolute; left: 34px; top: 34px; width: 832px; height: 512px; border-radius: 24px; overflow: hidden; background: #0e0d10; opacity: 0; }
+        .f06-layer { position: absolute; inset: 0; }
+        .f06-layer img { position: absolute; left: 16px; top: 0; width: 800px; display: block; transform-origin: 50% 0; }
         .lg-tint { position: absolute; inset: 0; border-radius: inherit; background: rgba(180, 150, 255, 0.07); }
         .lg-shade { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
         .lg-rim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
@@ -65,20 +68,18 @@
             <div id="f06-vignette" data-layout-ignore></div>
 
             <div class="f06-card" id="f06-c0" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
-              <div class="f06-shot"><img src="assets/img/f06-iga-overview.png" alt="IGA overview" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
+              <div class="f06-shot"><img src="assets/img/f06-uem-discovery-d.card.jpg" alt="UEM data discovery dashboard" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
             <div class="f06-card" id="f06-c1" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
-              <div class="f06-shot"><img src="assets/img/f06-uem-discovery-d.lift.jpg" alt="UEM discovery" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
-            <div class="f06-card" id="f06-c2" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
-              <div class="f06-shot"><img src="assets/img/f06-ds-cover.png" alt="Design system cover" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
+              <div class="f06-shot"><img src="assets/img/f06-uem-screens.card.jpg" alt="UEM designed screens" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
 
-            <div id="f06-device-shadow" class="f06-skin"></div>
-            <div id="f06-device">
+            <div id="f06-plate-shadow" class="f06-skin"></div>
+            <div id="f06-plate">
               <div id="f06-lens">
                 <div class="f06-world" id="f06-world-lens" data-layout-allow-overflow></div>
                 <div id="f06-screen">
-                  <!-- exposure-only lift baked offline (frame.md, Asset treatment) -->
-                  <img id="f06-uem" src="assets/img/uem-mobile-m.lift.jpg" alt="UEM mobile" data-layout-allow-overflow />
-                  <img id="f06-mods" src="assets/img/f06-mods-docs-m.lift.jpg" alt="MODS docs" style="opacity: 0" data-layout-allow-overflow />
+                  <!-- exposure-only lift baked offline (frame.md, Asset treatment); full capture width, 800 px pushing in to 832 -->
+                  <div class="f06-layer"><img id="f06-uem" src="assets/img/f06-uem-mobile-d.hero.jpg" alt="UEM mobile dashboard" data-layout-allow-overflow /></div>
+                  <div class="f06-layer" id="f06-mods-l"><img id="f06-mods" src="assets/img/f06-mods-docs-d.hero.jpg" alt="MODS docs" data-layout-allow-overflow /><div class="f06-scan" id="f06-scan2"></div><div class="f06-flash" id="f06-flash2"></div></div>
                   <div class="f06-scan" id="f06-scan"></div>
                   <div class="f06-flash" id="f06-flash"></div>
                 </div>
@@ -88,25 +89,31 @@
               <div class="lg-rim f06-skin" id="f06-rim"></div>
             </div>
 
+            <div class="f06-card" id="f06-c2" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
+              <div class="f06-shot" style="background: #f5f5f7"><img src="assets/img/f06-ds-cover.card.jpg" alt="MODS design system cover" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
+
             <div class="f06-label" id="f06-marker"><span id="f06-m1"></span><svg viewBox="0 0 34 16" aria-hidden="true"><path d="M1 8 H31 M24 1.5 L31 8 L24 14.5" fill="none" stroke="#b4a8da" stroke-width="2.4" stroke-linecap="square" /></svg><span id="f06-m2"></span><span class="f06-caret" id="f06-caret1"></span></div>
             <div class="f06-line" id="f06-l1">Enterprise software for IT,</div>
             <div class="f06-line" id="f06-l2">identity &amp; security teams.</div>
             <div class="f06-label" id="f06-tag"><span id="f06-tag-text"></span></div>
-            <div class="f06-label" id="f06-spec"><span id="f06-spec-text"></span><span class="f06-caret" id="f06-caret2"></span></div>
+            <div class="f06-label" id="f06-spec1"><span id="f06-spec1-text"></span><span class="f06-caret" id="f06-caret2"></span></div>
+            <div class="f06-label" id="f06-spec2"><span id="f06-spec2-text"></span><span class="f06-caret" id="f06-caret3"></span></div>
           </div>
           <div id="f06-grain" data-layout-ignore></div>
 
           <svg width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs id="f06-defs">
               <!-- bloom regions hug the beam: frame copy (floor trace + the straight stroke) and the lens copy -->
-              <filter id="f06-bloom" x="-400" y="470" width="2720" height="600" filterUnits="userSpaceOnUse">
+              <filter id="f06-bloom" x="-400" y="390" width="2720" height="700" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
-              <filter id="f06-bloom-lens" x="1150" y="400" width="660" height="680" filterUnits="userSpaceOnUse">
+              <filter id="f06-bloom-lens" x="834" y="164" width="1032" height="712" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
                 <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
+              <!-- floor caustic under the plate (frame.md: beam @ 30%, rx 0.56 x width, ry 30, sigma 22, 20 px below) -->
+              <filter id="f06-caustic-f" x="780" y="740" width="1140" height="180" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="22" /></filter>
             </defs>
           </svg>
         </div>
@@ -117,11 +124,12 @@
           var K = window.ReelKit;
           var root = document.getElementById("f06-root");
           var defs = document.getElementById("f06-defs");
-          defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-lens-f", { w: 480, h: 880, r: 76, bezel: 84, dir: 1, power: 2, pad: 90 }));
+          // hero plate: 900 x 580, r 56, bezel 0.1 x 580 = 58, scale 1.33 x bezel = 77, pad 77 x 0.6 + 20 = 66
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-lens-f", { w: 900, h: 580, r: 56, bezel: 58, dir: 1, power: 2, pad: 66 }));
           var lensF = document.getElementById("f06-lens-f");
-          var HZ = 690, FH = 1560, NH = 44, YS = 520; // horizon, floor height, rows; YS = the straight stroke
+          var HZ = 690, FH = 1560, NH = 44, YS = 452; // horizon, floor height, rows; YS = the straight stroke
 
-          // world: haze, floor, scope-axis horizon, the device's floor caustic (cyan: a powered screen), beam.
+          // world: haze, floor, scope-axis horizon, the plate's floor caustic, beam.
           // Built twice (frame + inside the lens); setters target classes so both copies move together.
           var copies = 0;
           function world(bloom) {
@@ -130,15 +138,14 @@
             s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ") scale(1150 330) translate(-960 -" + HZ + ')">';
             s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
             s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
-            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="-600" y="0" width="3120" height="1600"><rect x="-600" y="' + HZ + '" width="3120" height="900" fill="url(#' + t + '-fade)"/></mask>';
-            s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#22e6ff" stop-opacity="0.3"/><stop offset="1" stop-color="#22e6ff" stop-opacity="0"/></radialGradient></defs>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="-600" y="0" width="3120" height="1600"><rect x="-600" y="' + HZ + '" width="3120" height="900" fill="url(#' + t + '-fade)"/></mask></defs>';
             s += '<rect class="f06-haze" x="-600" y="200" width="3120" height="1200" fill="url(#' + t + '-haze)"/>';
             s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
             for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
             for (var k = 0; k < NH; k++) s += '<line class="f06-hl" x1="-600" y1="1600" x2="2520" y2="1600"/>';
             s += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="-600" y1="' + HZ + '" x2="2520" y2="' + HZ + '"/>';
             for (var x = -480; x <= 2400; x += 48) { var tall = (x + 4800) % 240 === 0 ? 9 : 4; s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>'; }
-            s += '</g><ellipse class="f06-skin" cx="1480" cy="1000" rx="269" ry="30" fill="url(#' + t + '-caustic)"/>';
+            s += '</g><ellipse class="f06-skin" cx="1350" cy="830" rx="504" ry="30" fill="#ff2e97" fill-opacity="0.3" filter="url(#f06-caustic-f)"/>';
             s += '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
             s += '<path class="f06-b-old" d="M0 0" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.45"/>';
             s += '<path class="f06-b-core" d="M0 0" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
@@ -151,7 +158,7 @@
           function setGrid(phase) {
             for (var i = 0; i < rows.length; i++) { var y = K.gridRowY(i % NH, phase, HZ, FH); y = y > 1590 ? 1600 : y; rows[i].setAttribute("y1", y); rows[i].setAttribute("y2", y); }
           }
-          // floor phase (cells): x4 rush (8/s) through the fly-by, eases to x1 (one cell per beat) as the device lands
+          // floor phase (cells): x4 rush (8/s) through the fly-by, eases to x1 (one cell per beat) as the plate lands
           function phaseAt(t) {
             if (t <= 1.7) return 8 * t;
             if (t <= 2.1) { var u = t - 1.7; return 13.6 + 8 * u - 7.5 * u * u; }
@@ -182,27 +189,30 @@
             for (var i = 0; i < beams.length; i++) beams[i].setAttribute("d", d);
           }
 
-          // fly-by captures: flat Tier B frames at fixed world offsets; the camera's approach scales them by
-          // s = 1 / (1 + 2 (tPass - t)): ~0.4 when they power on, 1 as they pass (615, 630, 645), 4 as they leave.
+          // fly-by: the camera's approach drifts each frame outward from the vanishing point (s 0.84 -> 1 over its
+          // life), then it flies past in 8 f (power2.in). Power-on at `on`; clear from on + 21 f to `out`.
+          var VP = [960, 690];
           var CARDS = [
-            { pass: 0.5, px: -540, py: -250, rot: -4 },
-            { pass: 1.0, px: 540, py: -290, rot: 3 },
-            { pass: 1.5, px: -560, py: 70, rot: 4 },
+            { on: 0, out: 38 / 30, cx: 520, cy: 520, w: 760, h: 490, rot: -3 },
+            { on: 15 / 30, out: 53 / 30, cx: 1400, cy: 560.5, w: 680, h: 323, rot: 3 },
           ];
-          var CHIP = K.spring(0.45, 0.8, 0.7);
+          var CHIP = K.spring(0.45, 0.8, 0.7), EXIT = 8 / 30;
           CARDS.forEach(function (c, i) {
-            defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-c" + i + "-f", { w: 640, h: 420, r: 34, bezel: 30, dir: -1, power: 1.6 }));
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-c" + i + "-f", { w: c.w, h: c.h, r: 34, bezel: 30, dir: -1, power: 1.6 }));
             c.f = document.getElementById("f06-c" + i + "-f");
             c.el = document.getElementById("f06-c" + i);
-            c.on = Math.max(0.033, c.pass - 0.8);
           });
           function setCards(t) {
             CARDS.forEach(function (c) {
-              var s = 1 / (1 + 2 * (c.pass - t)), live = t >= c.on && t < c.pass + 0.375;
-              c.el.style.opacity = live ? Math.min(1, (t - c.on) / 0.1).toFixed(3) : "0";
+              var live = t >= c.on && t < c.out + EXIT;
+              c.el.style.opacity = "0";
               if (!live) return;
-              c.el.style.transform = "translate(" + (c.px * s).toFixed(1) + "px," + (c.py * s).toFixed(1) + "px) rotate(" + c.rot + "deg) scale(" + s.toFixed(4) + ")";
-              K.setRefraction(c.f, 48 * CHIP(Math.min(1, (t - c.on) / 0.7)));
+              var s = 0.84 + (0.16 * Math.min(1, (t - c.on) / (c.out - c.on))), u = Math.max(0, (t - c.out) / EXIT), u2 = u * u;
+              var sz = s * (1 + 1.3 * u2), sp = s * (1 + 2.2 * u2);
+              var x = VP[0] + (c.cx - VP[0]) * sp - c.cx, y = VP[1] + (c.cy - VP[1]) * sp - c.cy;
+              c.el.style.opacity = (Math.min(1, (t - c.on) / 0.1) * (u > 0.4 ? Math.max(0, 1 - (u - 0.4) / 0.6) : 1)).toFixed(3);
+              c.el.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) rotate(" + c.rot + "deg) scale(" + sz.toFixed(4) + ")";
+              K.setRefraction(c.f, 48 * CHIP(Math.min(1, (t - c.on) / 0.7)) * (1 - u2));
             });
           }
 
@@ -228,31 +238,31 @@
           // 600 dolly in: scale 0.8 -> 1 out of the vanishing point (12 f, expo.out), floor already at x4
           tl.fromTo(stage, { scale: 0.8, transformOrigin: "960px 690px" }, { scale: 1, duration: 0.4, ease: "expo.out" }, 0);
 
-          // each capture powers on like a tube as it appears: dot -> line -> frame, flash, scanlines fade off
+          // CRT power-on of a raster (frame.md): dot -> line -> frame, a white-hot flash, scanlines for 21 f only
+          function powerOn(box, flash, scan, t0) {
+            tl.fromTo(box, { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out", immediateRender: t0 < 0.01 }, t0);
+            tl.to(box, { scaleY: 1, duration: 0.24, ease: "expo.out" }, t0 + 0.12);
+            tl.fromTo(flash, { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out", immediateRender: false }, t0);
+            tl.fromTo(scan, { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false }, t0);
+          }
           CARDS.forEach(function (c) {
-            var shot = c.el.querySelector(".f06-shot");
-            tl.fromTo(shot, { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, c.on);
-            tl.to(shot, { scaleY: 1, duration: 0.24, ease: "expo.out" }, c.on + 0.12);
-            tl.fromTo(c.el.querySelector(".f06-flash"), { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out" }, c.on + 0.12);
-            tl.fromTo(c.el.querySelector(".f06-scan"), { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in" }, c.on + 0.12);
+            powerOn(c.el.querySelector(".f06-shot"), c.el.querySelector(".f06-flash"), c.el.querySelector(".f06-scan"), c.on);
             tl.fromTo(c.el.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, c.on);
           });
 
-          // 660 the hero device condenses (Tier H: refraction spring, skin up, rim light sweeps; no move, no scale)
+          // 660 the hero plate condenses (Tier H: refraction spring, skin up, rim light sweeps; no move, no scale)
           var GLASS = K.spring(0.55, 0.62, 1.2);
           var lens = { k: 0 };
-          tl.set("#f06-device", { opacity: 1 }, 2.0);
-          tl.to(lens, { k: 1, duration: 1.2, ease: GLASS, onUpdate: function () { K.setRefraction(lensF, 112 * lens.k); } }, 2.0);
+          tl.set("#f06-plate", { opacity: 1 }, 2.0);
+          tl.to(lens, { k: 1, duration: 1.2, ease: GLASS, onUpdate: function () { K.setRefraction(lensF, 77 * lens.k); } }, 2.0);
           tl.to(root.querySelectorAll(".f06-skin"), { opacity: 1, duration: 0.3, ease: "power2.out" }, 2.0);
           tl.fromTo("#f06-rim", { "--spec": "110deg" }, { "--spec": "210deg", duration: 1.6, ease: "power3.out" }, 2.0);
           tl.to("#f06-rim", { "--spec": "250deg", duration: 2.4, ease: "sine.inOut" }, 3.6);
-          // 663 the UEM capture powers on inside it, then scrolls at 75 px/s
+          // 663 the UEM dashboard powers on inside it at full width, then pushes in 1.00 -> 1.04 over the hold
           tl.set("#f06-screen", { opacity: 1 }, 2.1);
-          tl.fromTo("#f06-screen", { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, 2.1);
-          tl.to("#f06-screen", { scaleY: 1, duration: 0.24, ease: "expo.out" }, 2.22);
-          tl.fromTo("#f06-flash", { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out" }, 2.22);
-          tl.fromTo("#f06-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in" }, 2.22);
-          tl.fromTo("#f06-uem", { y: 0 }, { y: -142, duration: 1.9, ease: "none" }, 2.1);
+          tl.set("#f06-mods-l", { opacity: 0 }, 0);
+          powerOn("#f06-screen", "#f06-flash", "#f06-scan", 2.1);
+          tl.fromTo("#f06-uem", { scale: 1 }, { scale: 1.04, duration: 1.9, ease: "none" }, 2.1);
 
           // 662 marker types (the arrow is drawn, it counts as one character), caret blinks then goes dark
           var M1 = "2024", M2 = "NOW · PRODUCT DESIGNER, MINIORANGE · PUNE", NM = M1.length + 1 + M2.length;
@@ -265,32 +275,44 @@
             m2.textContent = M2.slice(0, Math.max(0, n - M1.length - 1));
           } }, 62 / 30);
           tl.set("#f06-caret1", { opacity: 1 }, 62 / 30);
-          tl.to("#f06-caret1", { opacity: 0, duration: 0.2, ease: "steps(1)", repeat: 5, yoyo: true }, 3.0);
-          tl.set("#f06-caret1", { opacity: 0 }, 4.22);
+          tl.to("#f06-caret1", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 3.0);
+          tl.set("#f06-caret1", { opacity: 0 }, 4.5);
 
           // 675 his statement wipes on (two lines, the second an eighth behind)
           tl.to("#f06-l1", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 2.5);
-          tl.to("#f06-l2", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 2.6);
+          tl.to("#f06-l2", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 2.75);
 
           // 720 the stab: the beam is pulled taut (setBeam), thins to one 2 px stroke and burns to its core;
-          // the device screen cuts to the MODS docs with a short re-power
+          // the plate re-powers onto the MODS docs over the UEM frame (never blank), then pushes in
           tl.to(root.querySelectorAll(".f06-b-old"), { attr: { "stroke-width": 2 }, duration: 0.4, ease: "expo.out" }, 4.0);
           tl.to(root.querySelectorAll(".f06-b-core"), { attr: { "stroke-width": 2 }, strokeOpacity: 1, duration: 0.4, ease: "expo.out" }, 4.0);
-          tl.set("#f06-uem", { opacity: 0 }, 4.0);
-          tl.set("#f06-mods", { opacity: 1 }, 4.0);
-          tl.fromTo("#f06-screen", { scaleY: 0.006 }, { scaleY: 1, duration: 0.2, ease: "expo.out", immediateRender: false }, 4.0);
-          tl.fromTo("#f06-flash", { opacity: 0.8 }, { opacity: 0, duration: 0.3, ease: "power2.out", immediateRender: false }, 4.0);
-          tl.fromTo("#f06-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false }, 4.0);
-          tl.fromTo("#f06-mods", { y: 0 }, { y: -150, duration: 2, ease: "none" }, 4.0);
+          tl.set("#f06-mods-l", { opacity: 1 }, 4.0);
+          powerOn("#f06-mods-l", "#f06-flash2", "#f06-scan2", 4.0);
+          tl.set("#f06-uem", { opacity: 0 }, 4.4);
+          tl.fromTo("#f06-mods", { scale: 1 }, { scale: 1.04, duration: 2, ease: "none" }, 4.0);
 
-          // 725 the tag types under the stroke, then the spec line (733-760); caret blinks out on the hold
-          var TAG = "MODS DESIGN SYSTEM", SPEC = "ONE STROKE WEIGHT · TWO CORNER RADII · THREE SPACING SCALES";
-          var tagEl = document.getElementById("f06-tag-text"), specEl = document.getElementById("f06-spec-text");
-          var tg = { n: 0 }, sp = { n: 0 };
-          tl.to(tg, { n: TAG.length, duration: 8 / 30, ease: "steps(" + TAG.length + ")", onUpdate: function () { tagEl.textContent = TAG.slice(0, Math.round(tg.n)); } }, 125 / 30);
-          tl.to(sp, { n: SPEC.length, duration: 27 / 30, ease: "steps(" + SPEC.length + ")", onUpdate: function () { specEl.textContent = SPEC.slice(0, Math.round(sp.n)); } }, 133 / 30);
+          // 725 the tag types under the stroke, then the spec (733-761, two lines); caret blinks out on the hold
+          var TAG = "MODS DESIGN SYSTEM", S1 = "ONE STROKE WEIGHT · TWO CORNER RADII", S2 = "THREE SPACING SCALES";
+          function typeOn(el, str, t0, frames) {
+            var o = { n: 0 };
+            tl.to(o, { n: str.length, duration: frames / 30, ease: "steps(" + str.length + ")", onUpdate: function () { el.textContent = str.slice(0, Math.round(o.n)); } }, t0);
+          }
+          typeOn(document.getElementById("f06-tag-text"), TAG, 125 / 30, 8);
+          typeOn(document.getElementById("f06-spec1-text"), S1, 133 / 30, 18);
+          typeOn(document.getElementById("f06-spec2-text"), S2, 151 / 30, 10);
           tl.set("#f06-caret2", { opacity: 1 }, 133 / 30);
-          tl.to("#f06-caret2", { opacity: 0, duration: 0.2, ease: "steps(1)", repeat: 2, yoyo: true }, 160 / 30);
+          tl.set("#f06-caret2", { opacity: 0 }, 151 / 30);
+          tl.set("#f06-caret3", { opacity: 1 }, 151 / 30);
+          tl.to("#f06-caret3", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 4, yoyo: true }, 161 / 30);
+          tl.set("#f06-caret3", { opacity: 0 }, 5.95);
+
+          // 735 the design-system cover condenses in a small Tier B frame (CHIP spring) and powers on inside it
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-c2-f", { w: 496, h: 340, r: 34, bezel: 30, dir: -1, power: 1.6 }));
+          var c2f = document.getElementById("f06-c2-f"), c2 = { v: 0 };
+          tl.fromTo("#f06-c2", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, 4.5);
+          tl.to(c2, { v: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(c2f, 48 * c2.v); } }, 4.5);
+          tl.fromTo("#f06-c2 .lg-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, 4.5);
+          powerOn("#f06-c2 .f06-shot", "#f06-c2 .f06-flash", "#f06-c2 .f06-scan", 4.5);
 
           window.__timelines["f06"] = tl;
         })();

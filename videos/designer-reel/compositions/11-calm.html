@@ -16,7 +16,8 @@
         #f11-tube { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
         #f11-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
         #f11-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
-        #f11-mask { position: absolute; left: 232px; top: 393px; height: 136px; overflow: hidden; padding: 0 8px; }
+        /* the statement's glyphs start on the film's 120 px left margin (mask left 112 + 8 px padding) */
+        #f11-mask { position: absolute; left: 112px; top: 393px; height: 136px; overflow: hidden; padding: 0 8px; }
         #f11-line {
           display: block;
           padding-top: 10px;
@@ -125,7 +126,7 @@
           // 1365-1377: CRT power-off. scaleY to a line (power3.in), then scaleX to a dot (power4.in); the image
           // goes white-hot as it collapses. 1377-1380: a beam-core dot alone in the void.
           tl.fromTo("#f11-tube", { scaleY: 1 }, { scaleY: 0.004, duration: 6 / 30, ease: "power3.in" }, F(1365));
-          tl.fromTo("#f11-flash", { opacity: 0 }, { opacity: 0.92, duration: 6 / 30, ease: "power3.in" }, F(1365));
+          tl.fromTo("#f11-flash", { opacity: 0 }, { opacity: 0.35, duration: 6 / 30, ease: "power3.in" }, F(1365)); // capped: F12's 1380 punch stays the brightest moment
           tl.fromTo("#f11-cline", { opacity: 0 }, { opacity: 1, duration: 2 / 30, ease: "none" }, F(1369));
           tl.fromTo("#f11-tube", { scaleX: 1 }, { scaleX: 0.004, duration: 6 / 30, ease: "power4.in" }, F(1371));
           tl.fromTo("#f11-cline", { scaleX: 1 }, { scaleX: 0.004, duration: 6 / 30, ease: "power4.in" }, F(1371));

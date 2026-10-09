@@ -3,18 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <!-- F10 "By the numbers" (film 1200-1320, 4 s). Hard cut in with a 3 f chroma split on the opening zero.
-         A Tier H plate stands on the vector floor left of centre; four Doto counters roll up in it like an arcade
-         score and land volt on the bed's stabs (1230, 1245, 1260, 1275). As each next count starts, the previous
-         number shrinks into a score ledger on the right (digits right-aligned, labels in a column). At 1290 the
-         plate glides one plate-width right along the beam and the fourth number rides it into the ledger, so the
-         glass ends holding all four. 1305-1320 tape-stop: one clock (warp) slows the floor, haze, grain and the
-         beam head to a freeze while the frame sags 4 px (power2.out). Hard cut at 1320.
-         All type lives in the world, which is built twice (frame + inside the lens) so the glass bends it.
-         Local time = film frame - 1200. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+         A Tier H plate stands on the vector floor on the left; four counters roll up in it like an arcade score
+         (Mona Sans display, 360 px) and land volt on the bed's stabs (1230, 1245, 1260, 1275). Six frames
+         after each of the first three lands, it drops into the score ledger on the right and is logged there in Doto
+         (128 px, right-aligned on one digit edge, label on the same baseline). The fourth, 12+ ENTERPRISE PRODUCTS
+         SHIPPED, stays in the glass as the hero, so the final hold is one lockup: hero plate + three-row ledger,
+         sharing the hero's cap line and label baseline. The plate never moves. 1290 the beam head runs in along the
+         rail; 1305-1320 tape-stop: one clock (warp) slows the floor, haze, grain and the beam head to a freeze while the
+         frame sags 4 px (power2.out). Hard cut at 1320. All type lives in the world, which is built twice (frame +
+         inside the lens) so the glass bends it. Local time = film frame - 1200. Needs window.ReelKit. -->
   </head>
   <body>
     <template id="f10-template">
       <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
         @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
         @font-face { font-family: "Doto"; src: url("assets/fonts/Doto-var.woff2") format("woff2"); font-weight: 100 900; }
         #f10-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
@@ -23,21 +25,24 @@
         .f10-world { background: #0b0716; }
         #f10-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
 
-        /* counters: Doto arcade score, origin on the left baseline so the ledger move is one translate + scale */
-        .f10-num { position: absolute; left: 200px; top: 335px; font: 900 300px/1 "Doto", monospace; font-variant-numeric: tabular-nums; color: #b4a8da; white-space: nowrap; transform-origin: 0% 85%; --glow: 0; text-shadow: 0 0 30px rgba(245, 255, 59, var(--glow)); opacity: 0; }
+        /* hero counter: Mona Sans display, proportional figures (the tabular zero is slashed), left-aligned so a count
+           grows to the right; origin on the left baseline (0.885 em down a 1.0 line box) */
+        .f10-num { position: absolute; font: 900 360px/1 "Mona Sans", sans-serif; font-variation-settings: "wdth" 125, "wght" 900; color: #b4a8da; white-space: nowrap; transform-origin: 0% 88.5%; --glow: 0; text-shadow: 0 0 34px rgba(245, 255, 59, var(--glow)); opacity: 0; }
         .f10-num > span { position: absolute; left: 0; top: 0; opacity: 0; }
         .f10-num > .f10-gr { color: #ff2e97; }
         .f10-num > .f10-gc { color: #22e6ff; }
         .f10-num > strong { position: relative; display: block; font-weight: inherit; }
-        .f10-lab { position: absolute; left: 204px; top: 630px; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        /* score ledger: Doto arcade digits, right-aligned on one digit edge */
+        .f10-led { position: absolute; width: 300px; text-align: right; font: 900 128px/1 "Doto", monospace; font-variant-numeric: tabular-nums; color: #f3eeff; white-space: nowrap; opacity: 0; }
+        .f10-lab { position: absolute; font: 500 28px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
         .f10-car { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; vertical-align: -0.14em; background: #ff2e97; opacity: 0; }
 
         /* Tier H plate: an outward lens over the duplicated world (floor, beam and all the type) */
-        #f10-plate, #f10-shadow { position: absolute; left: 120px; top: 250px; width: 840px; height: 540px; border-radius: 56px; }
+        #f10-plate, #f10-shadow { position: absolute; left: 215px; top: 216px; width: 800px; height: 574px; border-radius: 56px; }
         #f10-plate { overflow: hidden; isolation: isolate; }
         #f10-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
         #f10-lens { position: absolute; inset: 0; filter: url(#f10-lens-f); }
-        #f10-lens > .f10-world { left: -120px; top: -250px; }
+        #f10-lens > .f10-world { left: -215px; top: -216px; }
         .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
         .lg-tint { background: rgba(180, 150, 255, 0.07); }
         .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
@@ -80,21 +85,23 @@
           var defs = document.getElementById("f10-defs");
           var Q = function (s) { return root.querySelectorAll(s); };
           var F = function (n) { return n / 30; }; // local frame -> seconds
-          defs.insertAdjacentHTML("beforeend", K.lensFilter("f10-lens-f", { w: 840, h: 540, r: 56, bezel: 54, dir: 1, power: 2, pad: 64 }));
+          // plate 800 x 574 at (215, 216): bezel 0.1 x min = 57, scale 1.33 x bezel = 76, pad 76 x 0.6 + 20 = 66
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f10-lens-f", { w: 800, h: 574, r: 56, bezel: 57, dir: 1, power: 2, pad: 66 }));
           var lensF = document.getElementById("f10-lens-f");
 
-          // facts (FACTS.md): value, digit field, suffix, label
-          var VAL = [4, 58, 12, 3], DIG = [1, 2, 2, 1], SUF = ["", "", "+", ""];
-          var LABS = ["YEARS DESIGNING", "PROJECTS", "ENTERPRISE PRODUCTS SHIPPED", "COMPANIES, 2 CITIES"];
-          var S = [18, 33, 48, 63], L = [30, 45, 60, 75]; // count windows (arcade ticks) and landings on the stabs
-          var MOVE = [32, 47, 62, 90]; // each number leaves for the ledger as the next count starts; the 4th rides the glide
-          var TYPE = [4, 34, 49, 64]; // labels type at 60 cps
-          // geometry: plate 840 x 540 at x 120 -> 960 (one plate-width); ledger in the plate's final flat area
-          var HZ = 740, FH = 1560, NH = 44, RY = 818, GLIDE = 840;
-          var NB = 590, LB = 650.64, SC = 0.32, XD = 1150, LX = 1236; // big baselines, ledger scale, digit edge, label column
-          var ROW = function (i) { return 404 + 100 * i; };
-          // each counter's block (landed number over its label) is centred in the plate; both share its left edge
-          var BL = VAL.map(function (_, i) { return Math.round(540 - Math.max(180 * (DIG[i] + SUF[i].length), LABS[i].length * 17.76 - 3.4) / 2); });
+          // facts (FACTS.md), in story order: time, places, volume, then the enterprise number as the hero
+          var VAL = [4, 3, 58, 12], SUF = ["", "", "", "+"];
+          var LABS = ["YEARS DESIGNING", "COMPANIES, 2 CITIES", "PROJECTS", "ENTERPRISE PRODUCTS SHIPPED"];
+          var C = [18, 37, 52, 67], L = [30, 45, 60, 75]; // count windows (arcade ticks) and landings on the stabs
+          var MOVE = [36, 51, 66]; // the first three drop into the ledger 6 f after landing (volt holds in the glass)
+          var TYPE = [4, 38, 53, 68]; // labels type at 60 cps under the hero number
+          // geometry: hero cap line 296 = ledger row 1 cap line; hero label baseline 650 = ledger row 3 baseline
+          var HZ = 740, FH = 1560, NH = 44, RY = 818;
+          var PX = 295, NB = 558, LBX = 299, LB = 650, SC = 0.33, XD = 1275, LX = 1315; // lockup spans 215 -> 1705
+          var RB = [386, 518, 650]; // ledger baselines (Doto 128 px, cap 90: rows 132 apart)
+          // Mona Sans figure advances at wdth 125 / wght 900 (units per em), for the flight onto the digit edge
+          var ADV = { 0: 795, 1: 464, 2: 647, 3: 692, 4: 721, 5: 698, 6: 725, 7: 634, 8: 701, 9: 725 };
+          function monaW(str) { var w = 0; for (var c = 0; c < str.length; c++) w += ADV[str[c]]; return (w / 1000) * 360 * SC; }
 
           // world: haze, floor, scope-axis horizon, the plate's floor caustic, the rail beam, then all the type
           var copies = 0;
@@ -114,7 +121,7 @@
             for (var k = 0; k < NH; k++) s += '<line class="f10-hl" x1="0" y1="1200" x2="1920" y2="1200"/>';
             s += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="0" y1="' + HZ + '" x2="1920" y2="' + HZ + '"/>';
             for (var x = 0; x <= 1920; x += 48) { var tall = x % 240 === 0 ? 9 : 4; s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>'; }
-            s += '</g><ellipse class="f10-caustic" cx="540" cy="812" rx="470" ry="30" fill="url(#' + t + '-caustic)"/>';
+            s += '</g><ellipse cx="615" cy="810" rx="448" ry="30" fill="url(#' + t + '-caustic)"/>';
             s += '<g filter="url(#f10-bloom)" fill="none" stroke-linecap="round">';
             var B = "M -40 " + RY + " H 1960";
             s += '<path class="f10-b-old" d="' + B + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
@@ -122,8 +129,9 @@
             s += '<path class="f10-b-fresh" d="' + B + '" stroke="#ff2e97" stroke-width="6" stroke-opacity="0.85"/>';
             s += '<path class="f10-b-head" d="' + B + '" stroke="#ffffff" stroke-width="7"/></g></svg>';
             for (var n = 0; n < 4; n++) {
-              s += '<div class="f10-num f10-n' + n + '" data-layout-allow-occlusion style="left:' + BL[n] + "px" + (n === 0 ? ";opacity:1" : "") + '"><span class="f10-gr"' + LA + '></span><span class="f10-gc"' + LA + "></span><strong" + LA + "></strong></div>";
-              s += '<div class="f10-lab f10-l' + n + '" data-layout-allow-occlusion style="left:' + BL[n] + 'px"><span class="f10-lt"' + LA + '></span><span class="f10-car"></span></div>';
+              s += '<div class="f10-num f10-n' + n + '" data-layout-allow-occlusion style="left:' + PX + "px;top:" + (NB - 318.6).toFixed(1) + "px" + (n === 0 ? ";opacity:1" : "") + '"><span class="f10-gr"' + LA + '></span><span class="f10-gc"' + LA + "></span><strong" + LA + "></strong></div>";
+              if (n < 3) s += '<div class="f10-led f10-d' + n + '"' + LA + ' style="left:' + (XD - 300) + "px;top:" + (RB[n] - 108.8).toFixed(1) + 'px">' + VAL[n] + SUF[n] + "</div>";
+              s += '<div class="f10-lab f10-l' + n + '" data-layout-allow-occlusion style="left:' + LBX + "px;top:" + (LB - 24.1).toFixed(1) + 'px"><span class="f10-lt"' + LA + '></span><span class="f10-car"></span></div>';
             }
             return s;
           }
@@ -134,21 +142,17 @@
           function setGrid(phase) {
             for (var i = 0; i < rows.length; i++) { var y = K.gridRowY(i % NH, phase, HZ, FH); y = y > 1090 ? 1200 : y; rows[i].setAttribute("y1", y); rows[i].setAttribute("y2", y); }
           }
-          function pad(v, n) { var s = String(v); while (s.length < n) s = "0" + s; return s; }
           function setNum(i, str) { var els = Q(".f10-n" + i + " > *"); for (var e = 0; e < els.length; e++) els[e].textContent = str; }
           function setLab(i, str) { var els = Q(".f10-l" + i + " .f10-lt"); for (var e = 0; e < els.length; e++) els[e].textContent = str; }
-          for (var n0 = 0; n0 < 4; n0++) { setNum(n0, pad(0, DIG[n0])); setLab(n0, ""); }
+          for (var n0 = 0; n0 < 4; n0++) { setNum(n0, "0"); setLab(n0, ""); }
 
           function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-          function p3io(u) { u = c01(u); return u < 0.5 ? 8 * u * u * u * u : 1 - Math.pow(2 - 2 * u, 4) / 2; } // power3.inOut
           function p3o(u) { u = c01(u); return 1 - Math.pow(1 - u, 4); } // power3.out
           // the tape clock: real time until 1305, then it slows to a stop over 15 f (power2.out, velocity-matched)
           function warp(t) { if (t <= 3.5) return t; var u = c01((t - 3.5) / 0.5); return 3.5 + (0.5 / 3) * (1 - Math.pow(1 - u, 3)); }
 
           var BLEN = 2002, oldB = Q(".f10-b-old, .f10-b-core"), fresh = Q(".f10-b-fresh"), head = Q(".f10-b-head");
-          var plate = document.getElementById("f10-plate"), shadow = document.getElementById("f10-shadow");
-          var lensWorld = document.getElementById("f10-world-lens"), rim = document.getElementById("f10-rim");
-          var caustic = Q(".f10-caustic"), haze = Q(".f10-haze"), grain = document.getElementById("f10-grain");
+          var rim = document.getElementById("f10-rim"), haze = Q(".f10-haze"), grain = document.getElementById("f10-grain");
           grain.style.backgroundImage = K.grainURL(1337);
           var GLASS = K.spring(0.55, 0.62, 1.2);
           K.dash(oldB, BLEN, BLEN, null);
@@ -167,16 +171,10 @@
             setGrid(2 * tau);
             for (var h = 0; h < haze.length; h++) haze[h].style.opacity = (0.75 + 0.125 * (1 - Math.cos(Math.PI * tau))).toFixed(3);
             grain.style.backgroundPosition = K.grainPos(tau);
-            // 1290 the plate glides one plate-width right (power3.inOut, 12 f); the lens copy counter-translates
-            var g = p3io((t - 3) / 0.4), dx = GLIDE * g;
-            plate.style.transform = shadow.style.transform = "translateX(" + dx.toFixed(2) + "px)";
-            lensWorld.style.transform = "translateX(" + (-dx).toFixed(2) + "px)";
-            for (var c = 0; c < caustic.length; c++) caustic[c].setAttribute("cx", (540 + dx).toFixed(1));
-            // Tier H condense from the cut (one liquid wobble), rim light sweeps, then drifts; the glide catches light
-            K.setRefraction(lensF, 72 * GLASS(c01(t / 1.2)));
-            var spec = tau < 1.6 ? 110 + 100 * p3o(tau / 1.6) : 210 + 10 * (tau - 1.6);
-            rim.style.setProperty("--spec", (spec + 40 * g).toFixed(1) + "deg");
-            // the beam head enters at 1290 at pen speed (1350 px/s) and freezes with the tape
+            // Tier H condense from the cut (one liquid wobble), rim light sweeps once, then drifts 10 deg/s
+            K.setRefraction(lensF, 76 * GLASS(c01(t / 1.2)));
+            rim.style.setProperty("--spec", (tau < 1.6 ? 110 + 100 * p3o(tau / 1.6) : 210 + 10 * (tau - 1.6)).toFixed(1) + "deg");
+            // 1290 the beam head runs in along the rail at pen speed (1350 px/s) and freezes with the tape
             var s = tau < 3 ? 0 : 1350 * (tau - 3);
             K.dash(fresh, BLEN, s, 560);
             K.dash(head, BLEN, s, 70);
@@ -189,26 +187,29 @@
           tl.to(".f10-skin", { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
 
           VAL.forEach(function (v, i) {
-            var num = ".f10-n" + i, lab = ".f10-l" + i, txt = LABS[i], c = { v: 0 }, ty = { n: 0 };
-            // the label types under the number (caret on while typing)
-            tl.to(ty, { n: txt.length, duration: F(Math.ceil(txt.length / 2)), ease: "steps(" + txt.length + ")", onUpdate: function () { setLab(i, txt.slice(0, Math.round(ty.n))); } }, F(TYPE[i]));
+            var num = ".f10-n" + i, lab = ".f10-l" + i, txt = LABS[i], c = { v: 0 }, ty = { n: 0 }, tf = Math.ceil(txt.length / 2);
+            // the label types under the hero number (caret on while typing)
+            tl.to(ty, { n: txt.length, duration: F(tf), ease: "steps(" + txt.length + ")", onUpdate: function () { setLab(i, txt.slice(0, Math.round(ty.n))); } }, F(TYPE[i]));
             tl.set(lab + " .f10-car", { opacity: 1 }, F(TYPE[i]));
-            tl.set(lab + " .f10-car", { opacity: 0 }, F(TYPE[i] + Math.ceil(txt.length / 2) + 4));
-            // the count: arcade score in steps with leading zeros, growing 0.84 -> 1 in the same steps
-            if (i > 0) tl.set(num, { opacity: 1 }, F(S[i]));
-            var st = Math.min(v, 12);
-            tl.to(c, { v: v, duration: F(12), ease: "steps(" + st + ")", onUpdate: function () { var k = Math.round(c.v); setNum(i, pad(k, DIG[i]) + (k >= v ? SUF[i] : "")); } }, F(S[i]));
-            tl.fromTo(num, { scale: 0.84 }, { scale: 1, duration: F(12), ease: "steps(" + st + ")" }, F(S[i]));
-            // the landing on the stab: volt with a glow. The 4th holds it a full beat; the first three cool to ink as they
-            // fly to the ledger, so volt never sits on a numeral under 120 px (they are 96 px there)
+            tl.set(lab + " .f10-car", { opacity: 0 }, F(TYPE[i] + tf + 4));
+            // the count: arcade score in steps, growing 0.84 -> 1 in the same steps
+            if (i > 0) tl.set(num, { opacity: 1 }, F(C[i]));
+            var st = Math.min(v, L[i] - C[i]);
+            tl.to(c, { v: v, duration: F(L[i] - C[i]), ease: "steps(" + st + ")", onUpdate: function () { var k = Math.round(c.v); setNum(i, k + (k >= v ? SUF[i] : "")); } }, F(C[i]));
+            tl.fromTo(num, { scale: 0.84 }, { scale: 1, duration: F(L[i] - C[i]), ease: "steps(" + st + ")" }, F(C[i]));
+            // the landing on the stab: volt with a glow (360 px), held in the glass. The hero holds it a full beat; the
+            // first three cool to ink as they drop into the ledger
             tl.set(num, { color: "#f5ff3b", "--glow": 0.55 }, F(L[i]));
             var cool = i < 3 ? [MOVE[i], 4] : [L[i] + 6, 9];
             tl.fromTo(num, { color: "#f5ff3b", "--glow": 0.55 }, { color: "#f3eeff", "--glow": 0, duration: F(cool[1]), ease: "power2.out", immediateRender: false }, F(cool[0]));
-            // into the ledger: number scales to 96 px with its digits right-aligned on XD, label joins the column
-            var mv = i < 3 ? { duration: 0.35, ease: "expo.out" } : { duration: F(12), ease: "power3.inOut" };
-            var nx = XD - 57.6 * DIG[i] - BL[i], ny = ROW(i) - NB;
-            tl.fromTo(num, { x: 0, y: 0, scale: 1 }, Object.assign({ x: nx, y: ny, scale: SC, immediateRender: false }, mv), F(MOVE[i]));
-            tl.fromTo(lab, { x: 0, y: 0 }, Object.assign({ x: LX - BL[i], y: ROW(i) - 24.75 - LB, immediateRender: false }, mv), F(MOVE[i]));
+            if (i === 3) return;
+            // into the ledger: the number shrinks onto the digit edge XD and row baseline, then is logged in Doto
+            // (3 f crossfade once the flight is 98% home); the label joins the column on the same baseline
+            var mv = { duration: F(9), ease: "expo.out", immediateRender: false };
+            tl.fromTo(num, { x: 0, y: 0, scale: 1 }, Object.assign({ x: XD - monaW(String(v)) - PX, y: RB[i] - NB, scale: SC }, mv), F(MOVE[i]));
+            tl.fromTo(lab, { x: 0, y: 0 }, Object.assign({ x: LX - LBX, y: RB[i] - LB }, mv), F(MOVE[i]));
+            tl.fromTo(num, { opacity: 1 }, { opacity: 0, duration: F(3), ease: "none", immediateRender: false }, F(MOVE[i] + 5));
+            tl.fromTo(".f10-d" + i, { opacity: 0 }, { opacity: 1, duration: F(3), ease: "none" }, F(MOVE[i] + 5));
           });
 
           // 1305-1320 tape-stop: the frame sags 4 px with the slowing clock (power2.out); render() freezes the rest
