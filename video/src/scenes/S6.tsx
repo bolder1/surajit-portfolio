@@ -291,6 +291,11 @@ const FragBody: React.FC<{ fr: Frag; hot: boolean }> = ({ fr, hot }) => {
 /* ---------- headline ---------- */
 const LINE = "Security is complex.";
 const COMPLEX_FROM = 12;
+// calm lockup, flush-left on column 1: line one 75 px Mona, line two 156 px serif italic
+const HEAD_S = 0.5;
+const HEAD_Y = 440; // line-one centre
+const SERIF_TOP = 490;
+const SERIF_DX = -2; // optical: the italic U's stem sits on the grid edge
 
 const CALM_WG = 380;
 /** Each letter calms on its own spring, swept left→right with the grid snap (≈ 9 f across the line). */
@@ -427,32 +432,46 @@ export const Scene: React.FC = () => {
     <AbsoluteFill style={{ transform: `scale(${cam})` }}>
       {wires}
       {back}
-      {/* headline: chaos centred at y 540 → calm line one, smaller and lighter */}
-      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div
-          style={{
-            transform: `translateY(${lerp(0, -118, pT)}px) scale(${lerp(1, 0.4, pT)})`,
-            opacity: lerp(1, 0.72, pT) * (1 - inhale * 0.3),
-          }}
-        >
-          <Headline f={f} fc={fc} pT={pT} />
-        </div>
-      </AbsoluteFill>
+      {/* headline: centred chaos at y 540 → lands flush-left on the grid's first column (the words snap
+          to the same grid as the messages), scaled about its left edge */}
+      <div
+        style={{
+          position: "absolute",
+          left: lerp(960, GX, pT),
+          top: lerp(540, HEAD_Y, pT),
+          width: "max-content",
+          transformOrigin: "0 50%",
+          transform: `translate(${(-50 * (1 - pT)).toFixed(2)}%, -50%) scale(${lerp(1, HEAD_S, pT)})`,
+          opacity: lerp(1, 0.9, pT) * (1 - inhale * 0.3),
+        }}
+      >
+        <Headline f={f} fc={fc} fps={fps} />
+      </div>
       {front}
       {f >= 66 ? (
-        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-          <Glow x={1150} y={590} r={420} opacity={0.22 * lineB * (1 - inhale * 0.5)} />
-          <div style={{ display: "flex", gap: "0.24em", fontFamily: serif, fontStyle: "italic", fontSize: 156, lineHeight: 1.1, marginTop: 130, opacity: 1 - inhale * 0.25 }}>
-            <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
-              <div style={{ color: C.paper, transform: `translateY(${(1 - lineA) * 105}%)`, filter: `blur(${(1 - lineA) * 7}px)` }}>Using it</div>
-            </div>
-            <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
-              <div style={{ color: C.acc, transform: `translateY(${(1 - lineB) * 105}%)`, filter: `blur(${(1 - lineB) * 7}px)`, textShadow: `0 0 34px rgba(255,59,31,${0.35 * lineB})` }}>
-                shouldn’t be.
-              </div>
-            </div>
+        <div
+          style={{
+            position: "absolute",
+            left: GX + SERIF_DX,
+            top: SERIF_TOP,
+            display: "flex",
+            gap: "0.24em",
+            fontFamily: serif,
+            fontStyle: "italic",
+            fontSize: 156,
+            lineHeight: 1.1,
+            whiteSpace: "nowrap",
+            color: C.paper,
+            opacity: 1 - inhale * 0.25,
+          }}
+        >
+          <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
+            <div style={{ transform: `translateY(${(1 - lineA) * 105}%)`, filter: `blur(${(1 - lineA) * 7}px)` }}>Using it</div>
           </div>
-        </AbsoluteFill>
+          <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
+            <div style={{ transform: `translateY(${(1 - lineB) * 105}%)`, filter: `blur(${(1 - lineB) * 7}px)` }}>shouldn’t be.</div>
+          </div>
+        </div>
       ) : null}
     </AbsoluteFill>
   );
