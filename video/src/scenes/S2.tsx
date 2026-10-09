@@ -113,7 +113,8 @@ const Portrait: React.FC<{ f: number }> = ({ f }) => {
   const halfIn = interpolate(f, [0, 12], [0.45, 0.72], { ...clamp, easing: EO });
   const t = tension(f);
   const verifyFlare = interpolate(f, [VERIFY, VERIFY + 2, VERIFY + 16], [0, 1, 0], clamp);
-  const rimO = interpolate(f, [BEAM_A, BEAM_B], [0.35, 0.75], clamp) + verifyFlare * 0.4 + t * 0.3;
+  // vermilion rim = portrait lighting, held steady once the photo has resolved (no verify flare, no riser ramp)
+  const rimO = interpolate(f, [BEAM_A, BEAM_B], [0.35, 0.62], clamp);
   const exposure = 1 + verifyFlare * 0.12 + t * 0.05;
   const mask = "radial-gradient(ellipse 50% 58% at 50% 44%, #000 62%, transparent 100%)";
   return (
