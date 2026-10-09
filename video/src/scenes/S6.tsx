@@ -31,8 +31,8 @@ const colX = (c: number) => GX + c * (COLW + GUT);
 const spanW = (n: number) => n * COLW + (n - 1) * GUT;
 const GUIDE_X = [GX, ...Array.from({ length: 11 }, (_, k) => colX(k + 1) - GUT / 2), GX + GW];
 const BANDS = [
-  { y0: 178, y1: 314 },
-  { y0: 778, y1: 904 },
+  { y0: 200, y1: 330 },
+  { y0: 760, y1: 876 },
 ];
 
 /* ---------- fragments ---------- */
@@ -54,16 +54,17 @@ type Frag = {
   lines?: Tok[][];
   alert?: boolean;
   ghost?: boolean;
+  blur?: number; // foreground plane: out of focus, close to camera
 };
 
-const toast = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, detail: string, ghost = false): Frag => ({
-  kind: "toast", at, cx, cy, rot, sc, col, span: 3, y: 194, h: 58, title, detail, alert: true, ghost,
+const toast = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, detail: string, ghost = false, blur = 0): Frag => ({
+  kind: "toast", at, cx, cy, rot, sc, col, span: 3, y: 212, h: 58, title, detail, alert: true, ghost, blur,
 });
 const chip = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, alert = false): Frag => ({
-  kind: "chip", at, cx, cy, rot, sc, col, span: 2, y: 270, h: 36, title, alert,
+  kind: "chip", at, cx, cy, rot, sc, col, span: 2, y: 286, h: 36, title, alert,
 });
 const code = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, lines: Tok[][]): Frag => ({
-  kind: "code", at, cx, cy, rot, sc, col, span: 3, y: 792, h: 98, lines,
+  kind: "code", at, cx, cy, rot, sc, col, span: 3, y: 772, h: 98, lines,
 });
 
 const T = (t: string, hi?: 1 | 2): Tok => ({ t, hi });
@@ -78,9 +79,9 @@ const FRAGS: Frag[] = [
   toast(15, 1420, 300, 2.5, 1.18, 3, "403 FORBIDDEN", "GET /admin/users"),
   chip(15, 1010, 226, -2, 1.12, 0, "CLOCK SKEW 312s"),
   code(19, 1540, 772, -3, 1.0, 3, [
-    [T('{"alg":"RS256","kid":"k1"}', 1)],
-    [T('{"sub":'), T("null", 2), T(',"exp":1718049600}')],
-    [T('{"aud":"portfolio","nbf":0}')],
+    [T("× ", 2), T("12+ characters, 1 symbol", 1)],
+    [T("× ", 2), T("not one of your last 24")],
+    [T("× ", 2), T("expires every 30 days")],
   ]),
   chip(22, 262, 612, 4, 1.04, 2, "BAD SIGNATURE", true),
   chip(26, 1690, 424, -3, 1.08, 4, "SESSION TIMEOUT"),
@@ -101,8 +102,9 @@ const FRAGS: Frag[] = [
   // alarm fatigue: the same errors fire again (they merge back into one on the snap)
   toast(48, 600, 346, 1, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3", true),
   chip(49, 1290, 418, -6, 1.15, 10, "RETRY LIMIT", true),
-  toast(51, 1384, 338, 6, 1.18, 3, "403 FORBIDDEN", "GET /admin/users", true),
-  toast(54, 770, 728, -2, 1.2, 9, "POLICY CONFLICT", "ALLOW · DENY", true),
+  // two repeats arrive right at the lens: huge, out of focus, cropped by the frame
+  toast(51, 1520, 250, 7, 2.5, 3, "403 FORBIDDEN", "GET /admin/users", true, 7),
+  toast(54, 420, 860, -5, 2.8, 9, "POLICY CONFLICT", "ALLOW · DENY", true, 9),
   toast(56, 1222, 756, 3, 1.08, 6, "TOKEN EXPIRED", "exp < now", true),
 ];
 
@@ -114,28 +116,56 @@ const fragDelay = (fr: Frag) => {
 
 /* ---------- tangled connectors → column guides ---------- */
 type Pt = { x: number; y: number };
-type Wire = { at: number; c: Pt[]; g: Pt[]; o: number; delay: number };
+/**
+ * Orthogonal flow-diagram connectors (H-V-H-V-H), routed across each other into a knot.
+ * Chaos: xs = the three vertical runs, ys = the two horizontal runs. Calm: every vertex lands on one
+ * column guide, so the corners vanish and the wire becomes a straight hairline.
+ */
+type Wire = { at: number; x0: number; x3: number; xs: number[]; ys: number[]; y0: number; g: { x: number; y0: number; y1: number }; o: number; delay: number };
 const WIRES: Wire[] = GUIDE_X.flatMap((gx, k) =>
   BANDS.map((b, bi) => {
     const i = k * 2 + bi;
     const r = (n: number) => rand(i * 17.3 + n * 5.1);
-    const p0 = { x: 60 + r(1) * 1800, y: 160 + r(2) * 760 };
-    const p3 = { x: 60 + r(3) * 1800, y: 160 + r(4) * 760 };
-    const p1 = { x: p0.x + (r(5) - 0.5) * 1400, y: p0.y + (r(6) - 0.5) * 900 };
-    const p2 = { x: p3.x + (r(7) - 0.5) * 1400, y: p3.y + (r(8) - 0.5) * 900 };
-    const g0 = { x: gx, y: b.y0 };
-    const g3 = { x: gx, y: b.y1 };
-    const at = i % 3 === 0 ? 0 : i % 3 === 1 ? 22 : 45;
-    const o = r(9) < 0.2 ? 0.7 : r(9) < 0.6 ? 0.45 : 0.22;
+    const left = r(1) < 0.5;
+    const x0 = left ? -40 + r(2) * 500 : 1460 + r(2) * 500;
+    const x3 = left ? 1100 + r(3) * 860 : -40 + r(3) * 860;
+    const at = i % 3 === 0 ? 0 : i % 3 === 1 ? 20 : 42;
+    const o = r(9) < 0.2 ? 0.7 : r(9) < 0.6 ? 0.42 : 0.22;
     return {
       at: at + Math.floor(r(10) * 6),
-      c: [p0, p1, p2, p3],
-      g: [g0, { x: gx, y: lerp(b.y0, b.y1, 1 / 3) }, { x: gx, y: lerp(b.y0, b.y1, 2 / 3) }, g3],
+      x0,
+      x3,
+      xs: [lerp(x0, x3, 0.2 + r(4) * 0.2), lerp(x0, x3, 0.45 + r(5) * 0.15), lerp(x0, x3, 0.65 + r(6) * 0.25)],
+      y0: 150 + r(7) * 780,
+      ys: [150 + r(8) * 780, 150 + r(11) * 780, 150 + r(12) * 780],
+      g: { x: gx, y0: b.y0, y1: b.y1 },
       o,
-      delay: Math.round(((gx - GX) / GW) * 7) + bi,
+      delay: Math.round(((gx - GX) / GW) * 6) + bi,
     };
   }),
 );
+
+/** Polyline with rounded corners (radius shrinks on short legs, so straight lines stay straight). */
+const roundedPath = (pts: Pt[], r: number) => {
+  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const a = pts[i - 1];
+    const v = pts[i];
+    const b = pts[i + 1];
+    const la = Math.hypot(v.x - a.x, v.y - a.y);
+    const lb = Math.hypot(b.x - v.x, b.y - v.y);
+    const rr = Math.min(r, la / 2, lb / 2);
+    if (rr < 0.5) {
+      d += ` L ${v.x.toFixed(1)} ${v.y.toFixed(1)}`;
+      continue;
+    }
+    const p1 = { x: v.x + ((a.x - v.x) / la) * rr, y: v.y + ((a.y - v.y) / la) * rr };
+    const p2 = { x: v.x + ((b.x - v.x) / lb) * rr, y: v.y + ((b.y - v.y) / lb) * rr };
+    d += ` L ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q ${v.x.toFixed(1)} ${v.y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  const z = pts[pts.length - 1];
+  return `${d} L ${z.x.toFixed(1)} ${z.y.toFixed(1)}`;
+};
 
 /* ---------- chaos helpers ---------- */
 const amp = (fc: number) => interpolate(fc, [0, 20, 45, 56], [0.25, 0.45, 0.8, 1], clamp);
@@ -148,7 +178,7 @@ const jitter = (i: number, fc: number, a: number) => {
   };
 };
 const snapP = (f: number, delay: number, fps: number) =>
-  f < SNAP + delay ? 0 : spring({ frame: f - SNAP - delay, fps, config: { stiffness: 420, damping: 30, mass: 0.7 } });
+  f < SNAP + delay ? 0 : spring({ frame: f - SNAP - delay, fps, config: { stiffness: 620, damping: 34, mass: 0.55 } });
 
 /* ---------- fragment visuals ---------- */
 const Dot: React.FC<{ hot: boolean; size?: number }> = ({ hot, size = 10 }) => (
@@ -254,7 +284,7 @@ const Headline: React.FC<{ f: number; fc: number; pT: number }> = ({ f, fc, pT }
   const ampC = interpolate(fc, [8, 30, 56], [0.55, 0.75, 1], clamp) * (1 - pT);
   const ampS = interpolate(fc, [30, 56], [0, 0.45], clamp) * (1 - pT);
   const st = Math.floor(fc / 3);
-  const rise = interpolate(f, [0, 9], [1.1, 0], { ...clamp, easing: EO });
+  const rise = interpolate(f, [0, 8], [0.55, 0], { ...clamp, easing: EO });
   const calmW = lerp(720, 430, pT);
   return (
     <div style={{ display: "flex", alignItems: "baseline", fontSize: 150, lineHeight: 1, color: C.paper, whiteSpace: "pre" }}>
@@ -312,24 +342,38 @@ export const Scene: React.FC = () => {
         if (f < w.at) return null;
         const draw = interpolate(f, [w.at, w.at + 10], [0, 1], { ...clamp, easing: EO });
         const p = snapP(f, w.delay, fps);
-        const wob = (n: number) => ({
-          x: noise2D(`wx${i}-${n}`, fc * 0.03, 0) * 90 * a,
-          y: noise2D(`wy${i}-${n}`, fc * 0.03, 0) * 70 * a,
+        // the routing itself keeps re-negotiating: runs slide, stepped like a solver that never converges
+        const st = Math.floor(fc / 2);
+        const wx = (n: number) => (noise2D(`wx${i}-${n}`, fc * 0.035, 0) * 70 + (rand(i * 3.7 + n + st * 1.3) - 0.5) * 16) * a;
+        const wy = (n: number) => (noise2D(`wy${i}-${n}`, fc * 0.035, 0) * 55 + (rand(i * 8.3 + n + st * 2.1) - 0.5) * 12) * a;
+        const xs = w.xs.map((x, n) => x + wx(n));
+        const ys = w.ys.map((y, n) => y + wy(n));
+        const y0 = w.y0 + wy(5);
+        const chaos: Pt[] = [
+          { x: w.x0, y: y0 },
+          { x: xs[0], y: y0 },
+          { x: xs[0], y: ys[0] },
+          { x: xs[1], y: ys[0] },
+          { x: xs[1], y: ys[1] },
+          { x: xs[2], y: ys[1] },
+          { x: xs[2], y: ys[2] },
+          { x: w.x3, y: ys[2] },
+        ];
+        const pts = chaos.map((c, n) => {
+          const gy = lerp(w.g.y0, w.g.y1, n / (chaos.length - 1));
+          return { x: lerp(c.x, w.g.x, p), y: lerp(c.y, gy, p) };
         });
-        const pts = w.c.map((c, n) => {
-          const wb = n === 1 || n === 2 ? wob(n) : jitter(i * 7 + n, fc, a);
-          return { x: lerp(c.x + wb.x, w.g[n].x, p), y: lerp(c.y + wb.y, w.g[n].y, p) };
-        });
-        const d = `M ${pts[0].x} ${pts[0].y} C ${pts[1].x} ${pts[1].y} ${pts[2].x} ${pts[2].y} ${pts[3].x} ${pts[3].y}`;
+        const d = roundedPath(pts, 16);
         const op = lerp(w.o, 0.16, p) * (calm ? recede : 1);
         const port = (1 - p) * 0.7;
+        const last = pts[pts.length - 1];
         return (
           <g key={i}>
             <path d={d} pathLength={1} strokeDasharray={`${p > 0 ? 1 : draw} 1`} stroke={C.paper} strokeOpacity={op} strokeWidth={1.25} fill="none" />
             {port > 0.02 ? (
               <>
                 <rect x={pts[0].x - 3} y={pts[0].y - 3} width={6} height={6} fill={C.paper} opacity={port * draw} />
-                <rect x={pts[3].x - 3} y={pts[3].y - 3} width={6} height={6} fill={C.paper} opacity={port * (draw > 0.98 ? 1 : 0)} />
+                <rect x={last.x - 3} y={last.y - 3} width={6} height={6} fill={C.paper} opacity={port * (draw > 0.98 ? 1 : 0)} />
               </>
             ) : null}
           </g>
@@ -338,7 +382,7 @@ export const Scene: React.FC = () => {
     </svg>
   );
 
-  const frags = FRAGS.map((fr, i) => {
+  const frag = (fr: Frag, i: number) => {
     if (f < fr.at) return null;
     const w = spanW(fr.span);
     const age = f - fr.at;
@@ -357,7 +401,8 @@ export const Scene: React.FC = () => {
     const sc = lerp(fr.sc * pop, 1, p);
     const hot = p < 0.5;
     const ghostFade = fr.ghost ? 1 - p : 1;
-    const op = flick * ghostFade * (calm ? lerp(1, 0.62, Math.min(1, p)) * recede : fr.ghost ? 0.8 : 1);
+    const op = flick * ghostFade * (calm ? lerp(1, 0.62, Math.min(1, p)) * recede : fr.ghost ? (fr.blur ? 0.7 : 0.8) : 1);
+    const blur = (fr.blur ?? 0) * (1 - Math.min(1, p));
     return (
       <div
         key={i}
@@ -367,6 +412,7 @@ export const Scene: React.FC = () => {
           top: y - fr.h / 2,
           transform: `rotate(${rot}deg) scale(${sc})`,
           opacity: op,
+          filter: blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : undefined,
         }}
       >
         <FragBody fr={fr} hot={hot} />

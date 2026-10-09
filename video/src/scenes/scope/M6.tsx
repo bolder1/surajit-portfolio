@@ -161,7 +161,7 @@ export const Scene: React.FC = () => {
 
   // reticle converging on the origin before launch
   const ret = interpolate(f, [2, LAUNCH], [0, 1], { ...clamp, easing: EIO });
-  const retR = interpolate(ret, [0, 1], [118, 27]);
+  const retR = interpolate(ret, [0, 1], [P * 2.5, 27]); // starts in the gutters between devices
   const retO = interpolate(f, [0, 4, LAUNCH, LAUNCH + 4], [0, 0.8, 1, 0], clamp);
 
   const headIn = interpolate(f, [0, 10], [0.35, 1], { ...clamp, easing: EO });

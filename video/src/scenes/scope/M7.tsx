@@ -42,6 +42,8 @@ const FOCUS = 30;
 const LAYERS = ["grid", "surface", "primary", "input", "divider", "passkey", "sso", "header"] as const;
 type LayerId = (typeof LAYERS)[number];
 const MID = (LAYERS.length - 1) / 2;
+/** reading order: the card builds top to bottom, one component per frame */
+const BUILD: LayerId[] = ["grid", "surface", "header", "sso", "passkey", "divider", "input", "primary"];
 const SPREAD = 46; // card-native px per layer at full explode
 const zIndexOf = (id: LayerId) => LAYERS.indexOf(id);
 
@@ -257,11 +259,11 @@ const Layer: React.FC<{ id: LayerId } & LayerProps> = ({ id, wire, f, focus, err
 // ── spec annotations ───────────────────────────────────────────────────────
 type Note = { key: string; val: string; layer: LayerId; u: number; v: number; side: "L" | "R"; lx: number; ly: number; at: number };
 const NOTES: Note[] = [
-  { key: "token", val: "ink-900", layer: "header", u: PAD + 23, v: 61, side: "L", lx: 900, ly: 300, at: 18 },
-  { key: "radius", val: "12", layer: "surface", u: CW - 5.3, v: CH - 5.3, side: "R", lx: 1636, ly: 716, at: 21 },
-  { key: "spacing", val: "8pt", layer: "grid", u: 16, v: 64, side: "L", lx: 880, ly: 590, at: 24 },
-  { key: "state", val: "error", layer: "input", u: PAD + 186, v: 466, side: "R", lx: 1636, ly: 626, at: 27 },
-  { key: "focus", val: "2px", layer: "input", u: CW - PAD + 5, v: 420, side: "R", lx: 1636, ly: 536, at: FOCUS },
+  { key: "token", val: "ink-900", layer: "header", u: PAD + 23, v: 61, side: "L", lx: 930, ly: 300, at: 18 },
+  { key: "radius", val: "12", layer: "surface", u: CW - 5.3, v: CH - 5.3, side: "R", lx: 1648, ly: 590, at: 21 },
+  { key: "spacing", val: "8pt", layer: "grid", u: 16, v: 64, side: "L", lx: 906, ly: 560, at: 24 },
+  { key: "state", val: "error", layer: "input", u: PAD + 186, v: 466, side: "R", lx: 1590, ly: 700, at: 27 },
+  { key: "focus", val: "2px", layer: "input", u: CW - PAD + 5, v: 420, side: "R", lx: 1590, ly: 430, at: FOCUS },
 ];
 const NOTE_OUT_A = 39;
 const NOTE_OUT_B = 43;
@@ -276,9 +278,9 @@ export const Scene: React.FC = () => {
   const view: View = {
     ax: 58 * tilt,
     az: -34 * tilt - 4 * drift,
-    s: interpolate(tilt, [0, 1], [0.76, 0.98]) + 0.02 * drift,
-    cx: interpolate(tilt, [0, 1], [1420, 1268]),
-    cy: interpolate(tilt, [0, 1], [410, 512]),
+    s: interpolate(tilt, [0, 1], [0.76, 0.9]) + 0.02 * drift,
+    cx: interpolate(tilt, [0, 1], [1420, 1300]),
+    cy: interpolate(tilt, [0, 1], [410, 476]),
   };
 
   // explode → collapse
@@ -295,7 +297,7 @@ export const Scene: React.FC = () => {
   const settle = f >= SNAP ? spring({ frame: f - SNAP, fps, config: { stiffness: 420, damping: 18 } }) : 1;
 
   // build: one component per frame
-  const built = (i: number) => (i <= 1 ? true : f >= i - 2);
+  const built = (id: LayerId) => f >= BUILD.indexOf(id) - 2;
 
   const push = interpolate(f, [0, 60], [1, 1.05], clamp);
   const exit = interpolate(f, [52, 57], [0, 1], { ...clamp, easing: EI });
@@ -316,19 +318,19 @@ export const Scene: React.FC = () => {
     <ModuleShell index={7} title="DESIGN SYSTEMS" line={<>Systems, <Em>then surfaces.</Em></>}>
       <AbsoluteFill style={{ opacity: 1 - exit, transform: `scale(${push + exit * 0.04})`, transformOrigin: "1262px 520px" }}>
         <Glow x={centre.x} y={centre.y + 30} r={520} color="rgba(243,236,222,0.10)" opacity={1 - wire * 0.5} />
-        <Glow x={centre.x} y={centre.y} r={460} color="rgba(255,244,228,0.35)" opacity={snapFlash} />
+        <Glow x={centre.x} y={centre.y} r={400} color="rgba(255,244,228,0.16)" opacity={snapFlash} />
 
         {/* corner posts */}
         <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
           {posts.map((p, i) => (
-            <line key={i} x1={p.a.x} y1={p.a.y} x2={p.b.x} y2={p.b.y} stroke={paperA(0.28 * wire * spread)} strokeWidth={1} strokeDasharray="3 5" />
+            <line key={i} x1={p.a.x} y1={p.a.y} x2={p.b.x} y2={p.b.y} stroke={paperA(0.2 * wire * spread)} strokeWidth={1} strokeDasharray="3 5" />
           ))}
         </svg>
 
         {/* the layers */}
         <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.035 * (1 - settle)})`, transformOrigin: `${centre.x}px ${centre.y}px` }}>
           {LAYERS.map((id, i) =>
-            built(i) ? (
+            built(id) ? (
               <div
                 key={id}
                 style={{
@@ -358,7 +360,7 @@ export const Scene: React.FC = () => {
                 transformOrigin: "0 0",
                 transform: layerMatrix(view, 0),
                 background: "#fffaf0",
-                opacity: 0.55 * snapFlash,
+                opacity: 0.4 * snapFlash,
                 mixBlendMode: "screen",
               }}
             />
@@ -397,9 +399,9 @@ export const Scene: React.FC = () => {
         </svg>
         {NOTES.map((n, i) => {
           const txt = `${n.key} / ${n.val}`;
-          const typed = Math.floor(interpolate(f, [n.at + 2, n.at + 2 + txt.length / 2.2], [0, txt.length], clamp));
+          const typed = Math.floor(interpolate(f, [n.at + 1, n.at + 1 + txt.length / 3.4], [0, txt.length], clamp));
           const out = prog(f, NOTE_OUT_A + i * 0.5, NOTE_OUT_B, EO);
-          if (f < n.at + 2 || out >= 1) return null;
+          if (f < n.at + 1 || out >= 1) return null;
           const k = txt.slice(0, Math.min(typed, n.key.length + 3));
           const v = typed > n.key.length + 3 ? txt.slice(n.key.length + 3, typed) : "";
           return (
@@ -410,9 +412,9 @@ export const Scene: React.FC = () => {
                 top: n.ly - 14,
                 ...(n.side === "R" ? { left: n.lx } : { right: 1920 - n.lx }),
                 fontFamily: mono,
-                fontSize: 22,
+                fontSize: 21,
                 lineHeight: "28px",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.04em",
                 whiteSpace: "nowrap",
                 opacity: 1 - out,
                 clipPath: `inset(0 ${n.side === "R" ? out * 100 : 0}% 0 ${n.side === "L" ? out * 100 : 0}%)`,

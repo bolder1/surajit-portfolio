@@ -53,8 +53,8 @@ const DOT_Y = BASE - DOT_H + 1.4;
 const track = (f: number) => lerp(TRACK_A, TRACK_B, prog(f, 0, SETTLE, Easing.bezier(0.3, 0, 0.1, 1)));
 
 // ---------- specular sweep ----------
-const SW_A = 38;
-const SW_B = 66;
+const SW_A = 43;
+const SW_B = 71;
 const SW_EASE = Easing.bezier(0.45, 0, 0.25, 1);
 const bandX = (f: number) => interpolate(f, [SW_A, SW_B], [X0 - 280, DOT_X + 300], { ...clamp, easing: SW_EASE });
 const GLINT = (() => {
@@ -63,9 +63,9 @@ const GLINT = (() => {
 })();
 
 // ---------- portrait + face mesh geometry ----------
-const PSC = 0.82; // display scale vs the 1500×1800 original (baked at 0.9)
+const PSC = 0.78; // display scale vs the 1500×1800 original (baked at 0.9)
 const FACE_C = { x: 809, y: 848 }; // face centre in original px
-const STAGE_C = { x: 1606, y: 452 };
+const STAGE_C = { x: 1676, y: 448 };
 const IMG_L = STAGE_C.x - FACE_C.x * PSC;
 const IMG_T = STAGE_C.y - FACE_C.y * PSC;
 const P = (face.pts as number[][]).map((p) => [IMG_L + p[0] * PSC, IMG_T + p[1] * PSC] as const);
@@ -91,13 +91,14 @@ const TYPE_END = charFrame(TYPE_B, LINKEDIN.length - 1);
 const FaceField: React.FC<{ f: number }> = ({ f }) => {
   const resolve = prog(f, BOOM, BOOM + 24, EO);
   const flare = interpolate(f, [BOOM, BOOM + 2, BOOM + 30], [0, 1, 0], { ...clamp, easing: EO });
-  const photoO = lerp(0.07, 0.3, resolve);
-  const rimO = Math.min(1, lerp(0, 0.7, resolve) + flare * 0.45);
-  const tessO = interpolate(f, [12, 70], [0, 0.07], clamp) * lerp(1, 0.55, resolve);
-  const contO = lerp(0.42, 0.22, resolve);
+  const photoO = lerp(0.06, 0.22, resolve);
+  const rimO = Math.min(1, lerp(0, 0.62, resolve) + flare * 0.5);
+  const tessO = interpolate(f, [10, 60], [0, 0.085], clamp) * lerp(1, 0.4, resolve);
+  const contO = lerp(0.3, 0.07, resolve);
+  const wipe = interpolate(f, [4, 56], [CX_MIN - 60, CX_MAX + 60], { ...clamp, easing: EIO });
   const drift = interpolate(f, [0, DUR], [14, -14], clamp);
   return (
-    <AbsoluteFill style={{ transform: `translateX(${drift}px) scale(${interpolate(f, [0, DUR], [1.0, 1.035], clamp)})`, transformOrigin: "1600px 450px" }}>
+    <AbsoluteFill style={{ transform: `translateX(${drift}px) scale(${interpolate(f, [0, DUR], [1.0, 1.035], clamp)})`, transformOrigin: "1680px 450px" }}>
       <Glow x={STAGE_C.x - 230} y={STAGE_C.y - 160} r={520} opacity={0.16 * resolve + 0.12 * flare} />
       <AbsoluteFill
         style={{
@@ -109,8 +110,13 @@ const FaceField: React.FC<{ f: number }> = ({ f }) => {
         <Img src={rimSrc} style={{ position: "absolute", left: IMG_L, top: IMG_T, width: 1500 * PSC, height: 1800 * PSC, opacity: rimO }} />
       </AbsoluteFill>
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-        <path d={TESS_D} stroke={C.paper} strokeWidth={0.6} fill="none" opacity={tessO} />
-        <g stroke={C.paper} strokeWidth={1.1} strokeLinecap="round" opacity={contO}>
+        <defs>
+          <clipPath id="s8wipe">
+            <rect x={0} y={0} width={wipe} height={1080} />
+          </clipPath>
+        </defs>
+        <path d={TESS_D} stroke={C.paper} strokeWidth={0.6} fill="none" opacity={tessO} clipPath="url(#s8wipe)" />
+        <g stroke={C.paper} strokeWidth={0.9} strokeLinecap="round" opacity={contO}>
           {CONT.map((c, i) => {
             const a = 4 + ((c.mx - CX_MIN) / (CX_MAX - CX_MIN)) * 40;
             const p = prog(f, a, a + 16, EO);
@@ -124,9 +130,7 @@ const FaceField: React.FC<{ f: number }> = ({ f }) => {
 };
 
 const Chip: React.FC<{ f: number }> = ({ f }) => {
-  const on = f >= 1;
-  const sx = interpolate(f, [1, 4], [0.7, 1], { ...clamp, easing: EO });
-  if (!on) return null;
+  const sx = interpolate(f, [0, 3], [0.8, 1], { ...clamp, easing: EO });
   return (
     <div
       style={{
@@ -172,7 +176,7 @@ const Name: React.FC<{ f: number }> = ({ f }) => {
   const sweepO = interpolate(f, [SW_A, SW_A + 4, SW_B - 4, SW_B], [0, 1, 1, 0], clamp);
   const BW = 900;
   const band =
-    "linear-gradient(100deg, rgba(13,10,7,0) 0%, rgba(40,32,24,0.5) 30%, rgba(90,80,66,0.35) 40%, rgba(255,252,246,0.95) 47%, #ffffff 50%, rgba(255,252,246,0.95) 53%, rgba(90,80,66,0.35) 60%, rgba(40,32,24,0.5) 70%, rgba(13,10,7,0) 100%)";
+    "linear-gradient(100deg, rgba(13,10,7,0) 12%, rgba(52,44,34,0.42) 30%, rgba(110,100,86,0.3) 41%, rgba(255,252,246,0.95) 47.5%, #ffffff 50%, rgba(255,252,246,0.95) 52.5%, rgba(110,100,86,0.3) 59%, rgba(52,44,34,0.42) 70%, rgba(13,10,7,0) 88%)";
   const core = "linear-gradient(100deg, rgba(255,255,255,0) 40%, rgba(255,246,232,0.9) 50%, rgba(255,255,255,0) 60%)";
 
   return (
@@ -243,7 +247,7 @@ const Name: React.FC<{ f: number }> = ({ f }) => {
 /** The field underline: draws on, follows the tracking, then collapses into the full stop. */
 const Underline: React.FC<{ f: number }> = ({ f }) => {
   const right = X0 + nameW(track(f)) + 0.0197 * FS + DOT_W;
-  const draw = prog(f, 0, 14, EO);
+  const draw = interpolate(f, [0, 14], [0.22, 1], { ...clamp, easing: EO });
   const collapse = prog(f, 20, SETTLE, Easing.bezier(0.6, 0, 0.2, 1));
   const grow = prog(f, SETTLE - 2, SETTLE + 3, Easing.bezier(0.3, 1.6, 0.5, 1));
   const left = lerp(X0, DOT_X, collapse);
@@ -311,7 +315,7 @@ const Contact: React.FC<{ f: number }> = ({ f }) => {
   const b = linkN(f);
   const sepOn = f >= SEP_F;
   const typing = f < TYPE_END + 1;
-  const caretOn = typing || Math.floor((f - TYPE_END) / 15) % 2 === 0;
+  const caretOn = typing || f < BOOM || f % 30 < 15; // blinks on the beat once the line is complete
   return (
     <div
       style={{
@@ -328,7 +332,7 @@ const Contact: React.FC<{ f: number }> = ({ f }) => {
       }}
     >
       <span>{EMAIL.slice(0, a)}</span>
-      {sepOn ? <span style={{ color: C.faint }}>{"   ·   "}</span> : null}
+      {sepOn ? <span style={{ color: C.dim }}>{"   ·   "}</span> : null}
       <span>{LINKEDIN.slice(0, b)}</span>
       <span style={{ display: "inline-block", width: 14, height: 30, marginLeft: 4, background: C.acc, opacity: caretOn ? 1 : 0 }} />
     </div>
@@ -342,7 +346,7 @@ export const Scene: React.FC = () => {
   const tail = interpolate(f, [BOOM, BOOM + 4, BOOM + 26], [0, 1, 0], { ...clamp, easing: EO });
   return (
     <AbsoluteFill style={{ background: C.ink, overflow: "hidden" }}>
-      <AbsoluteFill style={{ transform: `scale(${push + tail * 0.006})`, transformOrigin: "38% 56%" }}>
+      <AbsoluteFill style={{ transform: `scale(${push + tail * 0.006})`, transformOrigin: "7.8% 56%" }}>
         <FaceField f={f} />
         <Chip f={f} />
         <Name f={f} />
@@ -368,7 +372,7 @@ export const cues: Cue[] = [
   { f: 0, sfx: "whoosh-long", vol: 0.42 },
   { f: 1, sfx: "snap", vol: 0.18 },
   { f: SETTLE, sfx: "click", vol: 0.28 },
-  { f: GLINT - 28, sfx: "shimmer", vol: 0.38 },
+  { f: GLINT - 24, sfx: "shimmer", vol: 0.38 },
   { f: LINE_IN, sfx: "swish", vol: 0.28 },
   ...typeCues(EMAIL, TYPE_A, 0),
   { f: SEP_F, sfx: "click-lo", vol: 0.16 },
@@ -376,4 +380,3 @@ export const cues: Cue[] = [
   { f: BOOM, sfx: "boom", vol: 0.5 },
 ];
 
-export const __debug = { TYPE_END, GLINT, DOT_X };
