@@ -12,13 +12,15 @@ import { keySfx } from "../lib/cues";
  * f0      field takes focus (ring contracts), caret blinks.
  * f4–43   22 masked dots on 32nd notes (a key on every 16th).
  * f45     eye toggles (beat): slash retracts, pupil turns vermilion = revealed.
- * f46–60  dots flip to vermilion symbols, then lock L→R; each lock pulls its slot tight (tracking compresses).
- *         Last letter locks on f60 (downbeat).
+ * f46–50  every masked dot stands up into a vermilion cap-height bar (exposed, not yet read).
+ * f48–53  L→R each bar opens sideways into its letter (no random glyphs: the real text is behind the mask);
+ *         each opening pulls its slot tight (tracking compresses).
+ * f54–59  the phrase sits readable in the field; near-silence before the downbeat.
  * f60–75  the input folds shut; letters reflow out of it into EVERY LOGIN / IS A DOOR. at 200 px,
  *         weight 600 → 820 on the way (EIO, line by line, lands on beat f75).
- * f75–89  "Someone has to design it." rises from a baseline mask, hung off the D of DOOR.
- * f90     "design" turns vermilion (beat). Hold.
- * f104–117 everything exits up through its line masks; whoosh.
+ * f75–87  "Someone has to design it." rises from a baseline mask, hung off the D of DOOR.
+ * f90     "design" turns vermilion (beat). Hold a full beat.
+ * f105–118 everything exits up through its line masks (no exit sound: the cut carries it).
  */
 
 const TEXT = "EVERY LOGIN IS A DOOR.";
@@ -32,8 +34,9 @@ const lineOf = (i: number) => (i < BREAK ? 0 : 1);
 
 const dotAt = (i: number) => Math.round(3.75 + i * 1.875); // 32nd notes
 const EYE = 45;
-const flipAt = (i: number) => 46 + i * 0.22;
-const lockAt = (i: number) => 49 + (i * 11) / (N - 1); // last lock lands on f60
+const flipAt = (i: number) => 46 + i * 0.1; // dot → bar, f46–48
+const lockAt = (i: number) => 48 + (i * 5) / (N - 1); // bar → letter, f48–53
+const OPEN = 3; // frames for a bar to open into its letter
 const DONE = 60;
 // reflow: each line moves as one rigid group (no per-glyph stagger, so spacing never collides).
 // Line 1 lifts off first (f60–69), then both lines grow together (f62–75) and land on the beat.
@@ -42,7 +45,7 @@ const GROW_AT = DONE + 2;
 const FLY = 13;
 const LINE2 = 75;
 const ACC = 90;
-const OUT = 104;
+const OUT = 105;
 
 // ---- layout (pre-camera)
 const XL = 170; // the one left edge everything hangs from (≥150 after the camera push)
@@ -64,8 +67,7 @@ const L2_FS = 84;
 const L2_H = 116;
 const L2_BASE = 712;
 
-const POOL = "#$%&*+=/<>?!@{}[]0123456789ABCDEFXK";
-const isSym = (c: string) => !/[A-Z]/.test(c);
+const CAP_A = 0.729 * FS_A; // cap height inside the field: the bar the letter opens out of
 
 const advB = (i: number) => ((ADV[i] + KERN[i]) / 1000 + TRACK) * FS_B;
 const advA = (i: number) => ((ADV[i] + KERN[i]) / 1000 + TRACK) * FS_A;
@@ -113,7 +115,7 @@ export const Scene: React.FC = () => {
 
   // ---- field
   const focus = prog(f, 0, 12, EO);
-  const chromeOut = prog(f, DONE - 6, DONE + 2, EI);
+  const chromeOut = prog(f, DONE - 2, DONE + 4, EI); // chrome holds while the phrase reads in the field
   const fold = prog(f, DONE, DONE + 10, EIO);
   const typedN = Array.from({ length: N }, (_, i) => i).filter((i) => f >= dotAt(i)).length;
   const typing = f >= dotAt(0) && f <= dotAt(N - 1) + 1;
@@ -136,61 +138,39 @@ export const Scene: React.FC = () => {
     const ln = lineOf(i);
     const x = slotX[i];
     const w = slotW[i];
-    // 1) masked dot (snaps in)
-    if (f < flipAt(i)) {
+    // 1) masked dot (snaps in), standing up into a vermilion cap-height bar once the eye is open
+    const barEnd = lockAt(i) + OPEN - 1;
+    if (f < barEnd) {
       const sp = spring({ frame: f - dotAt(i), fps, config: { stiffness: 420, damping: 16, mass: 0.6 } });
+      const up = prog(f, flipAt(i), flipAt(i) + 2, EO);
+      const close = prog(f, lockAt(i), barEnd, EI); // the bar collapses as the letter opens out of it
+      const bw = lerp(16, 5, up);
+      const bh = lerp(16, CAP_A, up) * (1 - close);
       lines[ln].push(
         <div
-          key={i}
+          key={`b${i}`}
           style={{
             position: "absolute",
-            left: x + w / 2 - 8,
-            top: 540 - 8 - wrapTop(ln),
-            width: 16,
-            height: 16,
-            borderRadius: 8,
-            background: C.paper,
-            transform: `scale(${sp})`,
+            left: x + w / 2 - bw / 2,
+            top: 540 - bh / 2 - wrapTop(ln),
+            width: bw,
+            height: bh,
+            borderRadius: lerp(8, 1.5, up),
+            background: f >= flipAt(i) ? C.acc : C.paper,
+            transform: `scale(${up > 0 ? 1 : sp})`,
           }}
         />,
       );
-      return;
+      if (f < lockAt(i)) return;
     }
-    // 2) unresolved symbol
-    if (f < lockAt(i)) {
-      const g = POOL[Math.floor(rand(i * 7.1 + Math.floor(f / 2) * 3.3) * POOL.length)];
-      const sym = isSym(g);
-      lines[ln].push(
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            left: x,
-            width: w,
-            top: 540 - 30 - wrapTop(ln),
-            height: 60,
-            lineHeight: "60px",
-            textAlign: "center",
-            fontFamily: mono,
-            fontWeight: 500,
-            fontSize: 44,
-            color: sym ? C.acc : "rgba(243,236,222,0.5)",
-            transform: `scaleY(${prog(f, flipAt(i), flipAt(i) + 2, EO)})`,
-          }}
-        >
-          {g}
-        </div>,
-      );
-      return;
-    }
-    if (ch === " ") return;
     // 3) locked glyph: sits centred in its slot inside the field, then reflows to its line
     const fp = prog(f, GROW_AT, GROW_AT + FLY, EIO);
     const s = lerp(FS_A, FS_B, fp);
     const gx = lerp(x + (w - advA(i)) / 2, XB[i], fp);
     // line 1 lifts out of the field before it grows, so it never rides over line 2
     const base = lerp(BASE_A, BASE_B[ln], ln === 0 ? prog(f, LIFT_AT, LIFT_AT + 9, EIO) : fp);
-    const fresh = f - lockAt(i) < 2;
+    // opens sideways out of its bar (centre → edges), then stays put
+    const open = prog(f, lockAt(i), lockAt(i) + OPEN, EO);
     const out = prog(f, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35, OUT + (i - (ln ? BREAK + 1 : 0)) * 0.35 + 8, EI);
     lines[ln].push(
       <div
@@ -202,8 +182,8 @@ export const Scene: React.FC = () => {
           fontSize: s,
           lineHeight: `${s}px`,
           ...mona(lerp(104, 112, fp), lerp(600, 820, fp)),
-          color: fresh ? "#fffaf2" : C.paper,
-          textShadow: fresh ? "0 0 22px rgba(255,236,210,0.75)" : undefined,
+          color: C.paper,
+          clipPath: open < 1 ? `inset(-20% ${((1 - open) * 50).toFixed(1)}% -20% ${((1 - open) * 50).toFixed(1)}%)` : undefined,
           transform: `translateY(${-out * 125}%)`,
           whiteSpace: "pre",
         }}
@@ -220,8 +200,6 @@ export const Scene: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.ink, overflow: "hidden" }}>
       <Glow x={700} y={500} r={900} color="rgba(243,236,222,0.045)" />
-      {/* alert light while the field shows unresolved symbols */}
-      <Glow x={700} y={540} r={520} opacity={0.24 * prog(f, EYE, EYE + 6, EO) * (1 - prog(f, DONE - 2, DONE + 10, EO))} />
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: "760px 500px" }}>
         {/* ------------------------------------------------ field */}
         <div
@@ -284,7 +262,7 @@ export const Scene: React.FC = () => {
             }}
           >
             {WORDS.map((w, k) => {
-              const p = prog(f, LINE2 + k * 2.5, LINE2 + k * 2.5 + 14, EO);
+              const p = prog(f, LINE2 + k * 2, LINE2 + k * 2 + 11, EO);
               const ep = prog(f, OUT + k, OUT + k + 9, EI);
               const lit = w.acc && f >= ACC;
               return (
@@ -295,7 +273,6 @@ export const Scene: React.FC = () => {
                     color: lit ? C.acc : C.paper,
                     textShadow: lit ? `0 0 ${(26 * Math.exp(-(f - ACC) / 6) + 10).toFixed(1)}px rgba(255,59,31,0.5)` : undefined,
                     transform: `translateY(${(1 - p) * 105 - ep * 110}%) rotate(${w.acc ? lerp(-4, 0, p) : 0}deg)`,
-                    filter: p < 0.99 ? `blur(${((1 - Math.min(1, p * 1.5)) * 6).toFixed(2)}px)` : undefined,
                   }}
                 >
                   {w.t}
@@ -317,13 +294,12 @@ export const cues: Cue[] = [
     .filter((i) => i % 2 === 0)
     .map((i, k) => ({ f: dotAt(i), sfx: keySfx(k * 5 + 1), vol: 0.14 + rand(i * 3.3) * 0.06 }) as Cue),
   { f: EYE, sfx: "click", vol: 0.32 },
-  { f: EYE + 1, sfx: "chatter", vol: 0.28 },
-  // lock ticks, thinned to every other frame of the decode
-  ...[50, 52, 54, 56, 58].map((fr, k) => ({ f: fr, sfx: keySfx(k + 2), vol: 0.13 }) as Cue),
+  { f: EYE + 2, sfx: "blip-hi", vol: 0.14 }, // the dots stand up
+  // three ticks across the L→R opening, then near-silence f54–59 before the downbeat
+  ...[48, 50, 53].map((fr, k) => ({ f: fr, sfx: keySfx(k + 2), vol: 0.13 }) as Cue),
   { f: DONE, sfx: "snap", vol: 0.3 },
   { f: DONE, sfx: "impact-soft", vol: 0.5 },
   { f: DONE + 3, sfx: "swish", vol: 0.34 }, // peaks at the reflow's fastest frame
   { f: LINE2, sfx: "click-lo", vol: 0.2 }, // headline lands; the serif line starts to rise
   { f: ACC, sfx: "blip-up", vol: 0.24 }, // "design" turns vermilion
-  { f: OUT - 1, sfx: "whoosh", vol: 0.4 },
 ];
