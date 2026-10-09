@@ -418,12 +418,14 @@ export const Scene: React.FC = () => {
         <FragBody fr={fr} hot={hot} />
       </div>
     );
-  });
+  };
+  const back = FRAGS.map((fr, i) => (fr.blur ? null : frag(fr, i)));
+  const front = FRAGS.map((fr, i) => (fr.blur ? frag(fr, i) : null));
 
   const scene = (
     <AbsoluteFill style={{ transform: `scale(${cam})` }}>
       {wires}
-      {frags}
+      {back}
       {/* headline: chaos centred at y 540 → calm line one, smaller and lighter */}
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
         <div
@@ -435,6 +437,7 @@ export const Scene: React.FC = () => {
           <Headline f={f} fc={fc} pT={pT} />
         </div>
       </AbsoluteFill>
+      {front}
       {f >= 66 ? (
         <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
           <Glow x={1150} y={590} r={420} opacity={0.22 * lineB * (1 - inhale * 0.5)} />
