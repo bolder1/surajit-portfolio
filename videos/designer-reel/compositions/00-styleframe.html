@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <!-- Style frame (4 s, 2 bars at 120 BPM). Proves frame.md: violet-black void + vector floor,
          one magenta phosphor beam, a Tier H liquid-glass device holding a real capture,
          a Tier B glass chip, and the title type. Needs window.ReelKit (assets/lib/reel-kit.js). -->
@@ -248,47 +248,48 @@
         }
       </style>
 
-      <div data-hf-id="hf-fbtd" id="sf-root" data-composition-id="styleframe" data-width="1920" data-height="1080" data-duration="4">
-        <div data-hf-id="hf-xvto" id="sf-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
-          <div data-hf-id="hf-zbhw" class="sf-world" id="sf-world-main"></div>
-          <div data-hf-id="hf-pzou" id="sf-vignette" data-layout-ignore=""></div>
+      <div id="sf-root" data-composition-id="styleframe" data-width="1920" data-height="1080" data-duration="4">
+        <div id="sf-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div class="sf-world" id="sf-world-main"></div>
+          <div id="sf-vignette" data-layout-ignore></div>
 
-          <div data-hf-id="hf-lg22" class="sf-label"><span data-hf-id="hf-lfzo" id="sf-label-text"></span><span data-hf-id="hf-fal7" id="sf-caret"></span></div>
-          <div data-hf-id="hf-1vit" class="sf-line-mask" id="sf-m1"><span data-hf-id="hf-sl00" class="sf-name" id="sf-n1" data-layout-allow-overflow="" data-layout-allow-occlusion>SURAJIT</span><div data-hf-id="hf-bkzf" class="sf-sheen" data-layout-ignore></div></div>
-          <div data-hf-id="hf-5tmu" class="sf-line-mask" id="sf-m2"><span data-hf-id="hf-djqv" class="sf-name" id="sf-n2" data-layout-allow-overflow="" data-layout-allow-occlusion>DUTTA</span><div data-hf-id="hf-joor" class="sf-sheen" data-layout-ignore></div></div>
-          <div data-hf-id="hf-fabx" id="sf-quote">I make complex software feel simple.</div>
+          <div class="sf-label"><span id="sf-label-text"></span><span id="sf-caret"></span></div>
+          <div class="sf-line-mask" id="sf-m1"><span class="sf-name" id="sf-n1" data-layout-allow-overflow data-layout-allow-occlusion>SURAJIT</span><div class="sf-sheen" data-layout-ignore></div></div>
+          <div class="sf-line-mask" id="sf-m2"><span class="sf-name" id="sf-n2" data-layout-allow-overflow data-layout-allow-occlusion>DUTTA</span><div class="sf-sheen" data-layout-ignore></div></div>
+          <div id="sf-quote">I make complex software feel simple.</div>
 
-          <div data-hf-id="hf-1m0i" id="sf-device-shadow" class="sf-skin"></div>
-          <div data-hf-id="hf-1blx" id="sf-device">
-            <div data-hf-id="hf-2g3f" id="sf-lens">
-              <div data-hf-id="hf-9qog" class="sf-world" id="sf-world-lens" data-layout-allow-overflow=""></div>
-              <div data-hf-id="hf-axof" id="sf-screen">
-                <img data-hf-id="hf-7qxo" id="sf-shot" src="assets/img/uem-mobile-m.lift.jpg" alt="" data-layout-allow-overflow="">
-                <div data-hf-id="hf-ws78" id="sf-scan"></div>
-                <div data-hf-id="hf-n3x3" id="sf-flash"></div>
+          <div id="sf-device-shadow" class="sf-skin"></div>
+          <div id="sf-device">
+            <div id="sf-lens">
+              <div class="sf-world" id="sf-world-lens" data-layout-allow-overflow></div>
+              <div id="sf-screen">
+                <!-- exposure-only lift baked offline (frame.md, Asset treatment): runtime WebGL grading costs ~6.6 s/frame here -->
+                <img id="sf-shot" src="assets/img/uem-mobile-m.lift.jpg" alt="" data-layout-allow-overflow />
+                <div id="sf-scan"></div>
+                <div id="sf-flash"></div>
               </div>
             </div>
-            <div data-hf-id="hf-ix7c" class="lg-tint sf-skin"></div>
-            <div data-hf-id="hf-r2ro" class="lg-shade sf-skin"></div>
-            <div data-hf-id="hf-x7bt" class="lg-rim sf-skin" id="sf-rim"></div>
+            <div class="lg-tint sf-skin"></div>
+            <div class="lg-shade sf-skin"></div>
+            <div class="lg-rim sf-skin" id="sf-rim"></div>
           </div>
 
-          <div data-hf-id="hf-hxhd" id="sf-chip">
-            <div data-hf-id="hf-9hg3" class="lg-tint"></div>
-            <div data-hf-id="hf-ia13" class="lg-shade"></div>
-            <div data-hf-id="hf-6fmn" class="lg-rim" id="sf-chip-rim"></div>
-            <div data-hf-id="hf-1z1v" id="sf-chip-text">
-              <span data-hf-id="hf-z11v">MINIORANGE · 2024</span>
-              <svg data-hf-id="hf-9fdy" viewBox="0 0 34 16" aria-hidden="true"><path data-hf-id="hf-t1hz" d="M1 8 H31 M24 1.5 L31 8 L24 14.5" fill="none" stroke="#f3eeff" stroke-width="2.4" stroke-linecap="square" /></svg>
-              <span data-hf-id="hf-o3n7">NOW</span>
+          <div id="sf-chip">
+            <div class="lg-tint"></div>
+            <div class="lg-shade"></div>
+            <div class="lg-rim" id="sf-chip-rim"></div>
+            <div id="sf-chip-text">
+              <span>MINIORANGE · 2024</span>
+              <svg viewBox="0 0 34 16" aria-hidden="true"><path d="M1 8 H31 M24 1.5 L31 8 L24 14.5" fill="none" stroke="#f3eeff" stroke-width="2.4" stroke-linecap="square" /></svg>
+              <span>NOW</span>
             </div>
           </div>
 
-          <div data-hf-id="hf-fu01" id="sf-grain" data-layout-ignore=""></div>
+          <div id="sf-grain" data-layout-ignore></div>
 
-          <svg data-hf-id="hf-p3r6" width="0" height="0" style="position: absolute" aria-hidden="true">
-            <defs data-hf-id="hf-1mne" id="sf-defs">
-              <!-- bloom regions hug the beam: full-frame blur regions roughly double render time on SwiftShader -->
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="sf-defs">
+              <!-- bloom regions hug the beam (frame copy) and the device (lens copy) -->
               <filter id="sf-bloom" x="-100" y="-110" width="1860" height="782" filterUnits="userSpaceOnUse">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" />
                 <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
