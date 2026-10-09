@@ -122,10 +122,16 @@ const DeviceView: React.FC<{ v: Dev; f: number }> = ({ v, f }) => {
         on = true;
         const since = v.nc ? f - (v.res + FLIP / 2) : t - FLIP / 2;
         if (v.nc && f < v.res + FLIP) sx = Math.abs(Math.cos((Math.PI * (f - v.res)) / FLIP));
-        color = since < 4 ? C.acc : C.paper;
-        op = since < 4 ? 1 : 0.88;
+        // fresh devices flash vermilion as they take the policy; remediated ones settle straight to cream
+        const hot = !v.nc && since < 4;
+        color = hot ? C.acc : C.paper;
+        op = hot ? 1 : 0.88;
       }
     }
+  }
+  if (v.d < 1 && t < 0) {
+    // the origin device is selected while the reticle closes in
+    op = interpolate(f, [4, 10], [0.2, 1], clamp);
   }
   const cx = v.x + S / 2;
   const cy = v.y + S / 2;
@@ -155,7 +161,7 @@ export const Scene: React.FC = () => {
 
   // reticle converging on the origin before launch
   const ret = interpolate(f, [2, LAUNCH], [0, 1], { ...clamp, easing: EIO });
-  const retR = interpolate(ret, [0, 1], [70, 26]);
+  const retR = interpolate(ret, [0, 1], [118, 27]);
   const retO = interpolate(f, [0, 4, LAUNCH, LAUNCH + 4], [0, 0.8, 1, 0], clamp);
 
   const headIn = interpolate(f, [0, 10], [0.35, 1], { ...clamp, easing: EO });
@@ -189,7 +195,7 @@ export const Scene: React.FC = () => {
             {[0, 90, 180, 270].map((a) => (
               <path
                 key={a}
-                d={`M ${OX - retR} ${OY - retR + 12} V ${OY - retR} H ${OX - retR + 12}`}
+                d={`M ${OX - retR} ${OY - retR + 16} V ${OY - retR} H ${OX - retR + 16}`}
                 fill="none"
                 stroke={f >= LAUNCH - 2 ? C.acc : C.paper}
                 strokeWidth={1.5}
