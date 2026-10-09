@@ -268,9 +268,9 @@ const FragBody: React.FC<{ fr: Frag; hot: boolean }> = ({ fr, hot }) => {
         padding: "12px 16px",
         boxSizing: "border-box",
         fontFamily: mono,
-        fontSize: 15,
+        fontSize: 16,
         lineHeight: 1.6,
-        color: C.dim,
+        color: TXT_DIM,
         whiteSpace: "pre",
         overflow: "hidden",
       }}
@@ -292,17 +292,25 @@ const FragBody: React.FC<{ fr: Frag; hot: boolean }> = ({ fr, hot }) => {
 const LINE = "Security is complex.";
 const COMPLEX_FROM = 12;
 
-const Headline: React.FC<{ f: number; fc: number; pT: number }> = ({ f, fc, pT }) => {
-  const ampC = interpolate(fc, [8, 30, 56], [0.55, 0.75, 1], clamp) * (1 - pT);
-  const ampS = interpolate(fc, [30, 56], [0, 0.45], clamp) * (1 - pT);
+const CALM_WG = 380;
+/** Each letter calms on its own spring, swept left→right with the grid snap (≈ 9 f across the line). */
+const settleOf = (i: number, f: number, fps: number) => {
+  const at = SNAP + i * 0.45;
+  return f < at ? 0 : spring({ frame: f - at + 1, fps, config: { stiffness: 340, damping: 30, mass: 0.6 } });
+};
+
+const Headline: React.FC<{ f: number; fc: number; fps: number }> = ({ f, fc, fps }) => {
+  const ampC0 = interpolate(fc, [8, 30, 56], [0.55, 0.75, 1], clamp);
+  const ampS0 = interpolate(fc, [30, 56], [0, 0.45], clamp);
   const st = Math.floor(fc / 3);
   const rise = interpolate(f, [0, 8], [0.55, 0], { ...clamp, easing: EO });
-  const calmW = lerp(720, 430, pT);
   return (
     <div style={{ display: "flex", alignItems: "baseline", fontSize: 150, lineHeight: 1, color: C.paper, whiteSpace: "pre" }}>
       {LINE.split("").map((ch, i) => {
         const isC = i >= COMPLEX_FROM;
-        const a = isC ? ampC : ampS;
+        const s = settleOf(i, f, fps);
+        const a = (isC ? ampC0 : ampS0) * (1 - s);
+        const calmW = lerp(720, CALM_WG, s);
         const wd = Math.min(125, Math.max(75, 100 + (rand(i * 9.1 + st * 3.7) - 0.5) * 2 * 60 * a));
         const wg = Math.min(900, Math.max(200, calmW + (rand(i * 4.3 + st * 5.9) - 0.5) * 2 * 520 * a));
         const dy = (rand(i * 2.2 + st * 8.1) - 0.5) * 2 * 20 * a;
