@@ -275,7 +275,7 @@ const Headline: React.FC<{ f: number; fc: number; pT: number }> = ({ f, fc, pT }
                 display: "inline-block",
                 ...mona(wd, wg),
                 opacity: flick,
-                transform: `translateY(${isC ? dy : dy + rise * 100}%)`.replace("%", "px").replace(/translateY\((.*)px\)/, (_m, v) => `translateY(${isC ? dy : dy + rise * 150}px)`),
+                transform: `translateY(${isC ? dy : dy + rise * 150}px)`,
               }}
             >
               {ch === " " ? " " : ch}

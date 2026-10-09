@@ -323,6 +323,7 @@ export const cues: Cue[] = [
   { f: DONE, sfx: "snap", vol: 0.3 },
   { f: DONE, sfx: "impact-soft", vol: 0.5 },
   { f: DONE + 3, sfx: "swish", vol: 0.34 }, // peaks at the reflow's fastest frame
+  { f: LINE2, sfx: "click-lo", vol: 0.2 }, // headline lands; the serif line starts to rise
   { f: ACC, sfx: "blip-up", vol: 0.24 }, // "design" turns vermilion
   { f: OUT - 1, sfx: "whoosh", vol: 0.4 },
 ];
