@@ -26,7 +26,7 @@ export const ModuleShell: React.FC<{
       {/* left scrim so the title always reads */}
       <AbsoluteFill style={{ background: "linear-gradient(90deg, rgba(13,10,7,0.92) 0%, rgba(13,10,7,0.55) 34%, rgba(13,10,7,0) 52%)" }} />
       <div style={{ position: "absolute", left: 140, top: 190, fontFamily: mono, fontSize: 18, letterSpacing: "0.24em", color: C.dim, opacity: inP }}>
-        SCOPE / WHAT I DESIGN <span style={{ color: C.acc, marginLeft: 18 }}>{String(index).padStart(2, "0")}</span>
+        WHAT I DESIGN <span style={{ color: C.acc, marginLeft: 18 }}>{String(index).padStart(2, "0")}</span>
         <span style={{ color: C.faint }}> / 07</span>
       </div>
       <div style={{ position: "absolute", left: 132, bottom: 300, overflow: "hidden", paddingTop: 10 }}>

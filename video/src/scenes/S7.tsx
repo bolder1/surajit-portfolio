@@ -131,7 +131,13 @@ TSORT.forEach((t, j) => {
   const src = ORDER[Math.floor((j * ORDER.length) / TSORT.length)].i;
   ASSIGN.set(src, t.k);
 });
-const startOf = (k: number) => 46 + TARGETS[k].ang / (2 * Math.PI) * 21 + rand(k * 2.3) * 2;
+const LX0 = Math.min(...TARGETS.filter((t) => !t.ring).map((t) => t.x));
+const LX1 = Math.max(...TARGETS.filter((t) => !t.ring).map((t) => t.x));
+/** Ring fills clockwise from 12 o'clock (the verification ring from 02); letters lock in reading order. */
+const startOf = (k: number) => {
+  const t = TARGETS[k];
+  return t.ring ? 47 + (t.ang / (2 * Math.PI)) * 21 + rand(k * 2.3) * 1.5 : 44 + ((t.x - LX0) / (LX1 - LX0)) * 20 + rand(k * 2.3) * 3;
+};
 const FLIGHT = 20;
 const flyEase = Easing.bezier(0.7, 0, 0.3, 1);
 
@@ -440,7 +446,18 @@ export const Scene: React.FC = () => {
       </AbsoluteFill>
 
       <Flash at={0} len={7} color={C.acc} max={0.2} />
-      <Flash at={HIT} len={4} color="#fff4e6" max={0.36} />
+      {/* the seam bursts: light spreads from the line, not a flat white frame */}
+      {f >= HIT && f < HIT + 6 ? (
+        <AbsoluteFill
+          style={{
+            background: "radial-gradient(ellipse 58% 22% at 50% 50%, rgba(255,244,230,0.95) 0%, rgba(255,120,80,0.35) 45%, transparent 75%)",
+            opacity: interpolate(f, [HIT, HIT + 5], [1, 0], { ...clamp, easing: EO }),
+            transform: `scaleY(${interpolate(f, [HIT, HIT + 5], [0.35, 1.6], clamp)})`,
+            mixBlendMode: "screen",
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
       {/* one warm leak on the burst; hue pulled back to vermilion/amber (no magenta) */}
       <Sequence from={HIT} durationInFrames={LEAK_DUR} layout="none">
         <AbsoluteFill style={{ opacity: LEAK_O, mixBlendMode: "screen", pointerEvents: "none" }}>

@@ -3,7 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { C, mono } from "./theme";
 import { clamp, EIO } from "./anim";
 import { Grain, Scanlines, Vignette } from "./FX";
-import { LETTERBOX_OPEN, SECTIONS } from "../timeline";
+import { LETTERBOX_OPEN, SECTIONS, TOTAL } from "../timeline";
 
 const BAR_H = 138; // 2.39:1 inside 1920×1080
 
@@ -17,6 +17,8 @@ export const Finish: React.FC<{ offset?: number }> = ({ offset = 0 }) => {
   const s = Math.floor(g / 30);
   const tc = `00:${String(s).padStart(2, "0")}:${String(g % 30).padStart(2, "0")}`;
   const hudO = interpolate(g, [10, 30], [0, 1], clamp);
+  // the end card fades to black: take the whole finishing layer down with it
+  const endO = interpolate(g, [TOTAL - 16, TOTAL - 4], [1, 0], clamp);
   const txt: React.CSSProperties = { position: "absolute", fontFamily: mono, fontSize: 15, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase" };
   const inset = 44;
   const top = Math.max(inset, barH + 26);
@@ -28,7 +30,7 @@ export const Finish: React.FC<{ offset?: number }> = ({ offset = 0 }) => {
   );
   const granted = g >= LETTERBOX_OPEN;
   return (
-    <AbsoluteFill style={{ pointerEvents: "none" }}>
+    <AbsoluteFill style={{ pointerEvents: "none", opacity: endO }}>
       <Scanlines opacity={0.035} />
       <Vignette strength={0.7} />
       <Grain opacity={0.11} />

@@ -13,7 +13,8 @@ import type { Cue } from "./lib/cues";
 export const ALL_CUES: (Cue & { g: number })[] = SECTIONS.flatMap((s) =>
   SCENES[s.id].cues.map((c) => ({ ...c, g: s.from + c.f })),
 );
-const HITS = ALL_CUES.filter((c) => c.sfx === "impact" || c.sfx === "boom").map((c) => ({ g: c.g, a: (c.vol ?? 0.7) }));
+// Only the big hits shake the camera (the end card's soft boom stays still).
+const HITS = ALL_CUES.filter((c) => (c.sfx === "impact" || c.sfx === "boom") && (c.vol ?? 0.7) >= 0.7).map((c) => ({ g: c.g, a: (c.vol ?? 0.7) }));
 
 /** Camera shake from impact cues (deterministic). */
 const useShake = (g: number) => {
