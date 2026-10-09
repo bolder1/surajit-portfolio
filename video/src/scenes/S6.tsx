@@ -348,8 +348,8 @@ export const Scene: React.FC = () => {
   const cam = interpolate(f, [0, 120], [1, 1.025], clamp) + interpolate(f, [70, 114], [0, 0.035], { ...clamp, easing: EI });
   const stutter = (f >= 45 && f < 47) || (f >= 50 && f < 52) ? 0.42 : 0;
 
-  // after the snap the system recedes, then leaves the words alone for the silence
-  const recede = interpolate(f, [70, 100], [1, 0.55], clamp) * interpolate(f, [102, 112], [1, 0], { ...clamp, easing: EI });
+  // after the messages switch off, the column guides fade and leave the words alone for the silence
+  const guideFade = interpolate(f, [OFF + 2, 110], [1, 0], { ...clamp, easing: EI });
 
   const pT = f < SNAP ? 0 : spring({ frame: f - SNAP + 1, fps, config: { stiffness: 210, damping: 26 } });
   const lineA = interpolate(f, [68, 82], [0, 1], { ...clamp, easing: EO });
@@ -367,7 +367,7 @@ export const Scene: React.FC = () => {
         const chaos: Pt[] = [p0, { x: p0.x + w.bow, y: p0.y }, { x: p3.x - w.bow, y: p3.y }, p3];
         const pts = chaos.map((c, n) => ({ x: lerp(c.x, w.g.x, p), y: lerp(c.y, lerp(w.g.y0, w.g.y1, n / 3), p) }));
         const d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)} C ${pts[1].x.toFixed(1)} ${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)} ${pts[2].y.toFixed(1)} ${pts[3].x.toFixed(1)} ${pts[3].y.toFixed(1)}`;
-        const op = lerp(w.o, 0.16, p) * (calm ? recede : 1);
+        const op = lerp(w.o, 0.16, p) * (calm ? guideFade : 1);
         const portO = (1 - Math.min(1, p * 2)) * 0.85;
         return (
           <g key={i}>
@@ -385,9 +385,11 @@ export const Scene: React.FC = () => {
   );
 
   const frag = (fr: Frag, i: number) => {
-    if (f < fr.at) return null;
+    // resolved messages switch off in the snap's left→right order, with the same 1-frame flicker they arrived with
+    const offAt = OFF + fragDelay(fr);
+    if (f < fr.at || f > offAt) return null;
     const w = spanW(fr.span);
-    const flick = f - fr.at === 1 ? 0.35 : 1;
+    const flick = f - fr.at === 1 || f === offAt ? 0.35 : 1;
     const p = snapP(f, fragDelay(fr), fps);
     const ch = fragChaos(i, fc, a);
     const chaosX = ch.x;
@@ -400,7 +402,7 @@ export const Scene: React.FC = () => {
     const sc = lerp(ch.sc, 1, p);
     const hot = p < 0.5;
     const ghostFade = fr.ghost ? 1 - p : 1;
-    const op = flick * ghostFade * (calm ? lerp(1, 0.62, Math.min(1, p)) * recede : fr.ghost ? (fr.blur ? 0.7 : 0.8) : 1);
+    const op = flick * ghostFade * (calm ? lerp(1, CALM_O, Math.min(1, p)) : fr.ghost ? (fr.blur ? 0.7 : 0.8) : 1);
     const blur = (fr.blur ?? 0) * (1 - Math.min(1, p));
     return (
       <div
