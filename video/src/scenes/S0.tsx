@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { C, mona, mono } from "../lib/theme";
-import { clamp, EI, EO, prog, rand } from "../lib/anim";
+import { clamp, EO, prog, rand } from "../lib/anim";
 import { Glow } from "../lib/FX";
 import type { Cue, Sfx } from "../lib/cues";
 import { keySfx } from "../lib/cues";
@@ -11,10 +11,10 @@ import { keySfx } from "../lib/cues";
  * f0–29   black; the request clock idles 000→012 while a block caret blinks twice on the beat.
  * f30/45/60/75  one real handshake step per beat, machine-typed; older lines recede (dim, blur, scale).
  * f80–89  silence, only the caret blinks after "subject = ?".
- * f90     the stack lifts, "IDENTITY:" prints and UNVERIFIED drops in huge (vermilion): letters print wide
- *         and light, then clamp narrow-heavy on the second deny beep (f94) with a wrong-password shake.
- *         One blink on the 8th (f98–104), then it stays lit into the push.
- * f106–117 speed-ramped push into the word, then the cut.
+ * f90     the stack lifts, "IDENTITY:" prints and UNVERIFIED drops in huge (vermilion = the state): letters
+ *         print wide and light, then clamp narrow-heavy on the second deny beep (f94) with a wrong-password shake.
+ *         One blink on the 8th (f98–104), then it holds lit for a full beat (f105–119) and hard-cuts on f120.
+ * Accent budget: vermilion only on the state (UNVERIFIED + the unanswered "?"), one soft bloom on the word.
  */
 
 type Kind = "kw" | "tx" | "dm" | "q";
@@ -97,7 +97,7 @@ const ID_TOP = Y_ACTIVE - LIFT + GAP; // "IDENTITY:" line (slot under "subject =
 const tone: Record<Kind, React.CSSProperties> = {
   kw: { color: C.paper },
   tx: { color: "rgba(243,236,222,0.72)" },
-  dm: { color: "rgba(243,236,222,0.38)" },
+  dm: { color: "rgba(243,236,222,0.46)" },
   q: { color: C.paper },
 };
 
@@ -138,7 +138,7 @@ const LogLine: React.FC<{ l: Line; f: number; idx: number }> = ({ l, f, idx }) =
   lift += LIFT * bigP;
   age += bigP * 1.3;
   const n = typed(l, f);
-  const op = interpolate(age, [0, 1, 2, 3, 4.5], [1, 0.5, 0.29, 0.18, 0.1], clamp);
+  const op = interpolate(age, [0, 1, 2, 3, 4.2], [1, 0.55, 0.36, 0.16, 0], clamp);
   const blur = interpolate(age, [0, 1, 4.5], [0, 0.35, 2.2], clamp);
   const depth = 1 - 0.022 * age;
   const isLast = idx === LINES.length - 1;
@@ -203,8 +203,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
   const idN = Math.max(0, Math.min(9, Math.floor(t * 4.5))); // prints from f91, once the stack has cleared
   return (
     <>
-      <Glow x={X1 + 560} y={BIG_BASE - 80} r={600} opacity={(0.14 + 0.24 * (low ? 0.25 : 1)) * kick} />
-      {/* the system prints the field name in the next log slot */}
+      {/* the system prints the field name in the next log slot (paper: only the state itself is vermilion) */}
       <div
         style={{
           position: "absolute",
@@ -215,8 +214,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
           fontFamily: mono,
           fontSize: FS,
           whiteSpace: "pre",
-          color: C.acc,
-          opacity: low ? 0.6 : 1,
+          color: C.paper,
         }}
       >
         {"IDENTITY:".slice(0, idN)}
@@ -233,7 +231,8 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
           letterSpacing: `${track}em`,
           color: C.acc,
           opacity: pulse,
-          textShadow: low ? undefined : "0 0 36px rgba(255,59,31,0.38)",
+          // the one bloom of the moment: it swells with the clamp and dies with the blink
+          textShadow: low ? undefined : `0 0 ${(14 + 14 * kick).toFixed(1)}px rgba(255,59,31,0.3)`,
         }}
       >
         {WORD.split("").map((ch, i) => {
@@ -244,7 +243,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
           const wght = interpolate(clampP, [0, 1], [interpolate(p, [0, 1], [240, 520]), 800]);
           const fresh = t - at < 2;
           return (
-            <span key={i} style={{ ...mona(wdth, wght), color: fresh ? "#ffd9cf" : C.acc }}>
+            <span key={i} style={{ ...mona(wdth, wght), color: fresh ? C.paper : C.acc }}>
               {ch}
             </span>
           );
@@ -258,10 +257,8 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
 export const Scene: React.FC = () => {
   const f = useCurrentFrame();
 
-  const push = interpolate(f, [0, 106], [1, 1.055], { ...clamp, easing: Easing.bezier(0.33, 0, 0.2, 1) });
-  const ramp = interpolate(f, [106, 117], [0, 1], { ...clamp, easing: EI });
-  const scale = push * (1 + 0.45 * ramp);
-  const exitBlur = ramp * 10;
+  // slow push the whole way; it keeps creeping through the held word, then a hard cut on f120 (no exit move)
+  const scale = interpolate(f, [0, 119], [1, 1.07], { ...clamp, easing: Easing.bezier(0.33, 0, 0.45, 1) });
 
   const introCaret = f % 15 < 8;
 
@@ -272,14 +269,12 @@ export const Scene: React.FC = () => {
         style={{
           transform: `scale(${scale})`,
           transformOrigin: `${X1 + 520}px ${BIG_BASE - 70}px`,
-          filter: exitBlur > 0.2 ? `blur(${exitBlur.toFixed(1)}px)` : undefined,
-          opacity: 1 - ramp * 0.6,
         }}
       >
         {f < 30 ? (
           <div style={{ position: "absolute", left: 0, top: Y_ACTIVE, height: LH, lineHeight: `${LH}px`, fontFamily: mono, fontSize: FS, whiteSpace: "pre" }}>
             {/* the request clock idles up to the first stamp, which the GET line then inherits */}
-            <span style={{ position: "absolute", left: X0, color: "rgba(243,236,222,0.42)", opacity: prog(f, 0, 6, EO) }}>
+            <span style={{ position: "absolute", left: X0, color: "rgba(243,236,222,0.5)" }}>
               [00:00.{String(Math.floor(interpolate(f, [0, 29], [0, 12], clamp))).padStart(3, "0")}]
             </span>
             <span style={{ position: "absolute", left: X1 }}>
@@ -297,7 +292,8 @@ export const Scene: React.FC = () => {
 };
 
 // ---------------------------------------------------------------- sound
-// One key per 2 typed chars, a blip as each protocol step arrives, silence 80–89, deny double-beep.
+// One key per 2 typed chars, a blip as each protocol step arrives, silence 81–89, deny double-beep.
+// No exit sound: the scene hard-cuts on the bar.
 const typingCues: Cue[] = LINES.flatMap((l, li) => {
   const out: Cue[] = [{ f: l.at, sfx: (li % 2 ? "blip-hi" : "blip") as Sfx, vol: 0.24 }];
   const end = doneAt(l);
@@ -315,5 +311,4 @@ export const cues: Cue[] = [
   { f: HIT, sfx: "blip-down", vol: 0.42 },
   { f: HIT, sfx: "click", vol: 0.24 },
   { f: DENY2, sfx: "blip-down", vol: 0.42 },
-  { f: 107, sfx: "whoosh-rev", vol: 0.4 },
 ];

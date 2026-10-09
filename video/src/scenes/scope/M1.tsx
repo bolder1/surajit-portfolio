@@ -113,7 +113,7 @@ const SignIn: React.FC<{ x: number; y: number; w: number }> = ({ x, y, w }) => (
     {[0, 1, 2, 3, 4, 5].map((k) => (
       <circle key={k} cx={x + 36 + k * 11} cy={y + 84} r={2.4} fill={C.paper} opacity={0.6} />
     ))}
-    <rect x={x + 22} y={y + 106} width={86} height={22} rx={11} fill={C.paper} fillOpacity={0.14} {...{ ...st, fill: undefined }} strokeOpacity={0.6} />
+    <rect x={x + 22} y={y + 106} width={86} height={22} rx={11} {...st} fill={C.paper} fillOpacity={0.14} strokeOpacity={0.6} />
     <path d={`M ${x + 46} ${y + 117} H ${x + 84}`} {...st} strokeOpacity={0.6} />
   </g>
 );
@@ -380,11 +380,10 @@ export const Scene: React.FC = () => (
   </ModuleShell>
 );
 
-// Arrivals, thinned: the first, then roughly every third frame of the cascade (not one per tile).
+// Arrivals, thinned to at most one blip per 3 frames (not one per tile).
 const arrivals = [...new Set(TILES.map((t) => t.arrive))].sort((a, b) => a - b);
 const arrivalCues: Cue[] = arrivals
-  .filter((fr, k) => k === 0 || fr - arrivals[0] >= 3 * k - 2)
-  .filter((fr, k, a) => k === 0 || fr - a[k - 1] >= 3)
+  .reduce<number[]>((kept, fr) => (kept.length === 0 || fr - kept[kept.length - 1] >= 3 ? [...kept, fr] : kept), [])
   .map((fr, k) => ({ f: fr, sfx: (k % 2 === 0 ? "blip" : "blip-hi") as Sfx, vol: 0.2 + 0.02 * k }));
 
 export const cues: Cue[] = [
