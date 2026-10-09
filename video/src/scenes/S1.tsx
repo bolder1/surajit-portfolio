@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, mona, mono, sans, serif } from "../lib/theme";
+import { C, mona, sans, serif } from "../lib/theme";
 import { clamp, EI, EIO, EO, lerp, prog, rand } from "../lib/anim";
 import { Glow } from "../lib/FX";
 import type { Cue } from "../lib/cues";
