@@ -312,7 +312,7 @@ export const Scene: React.FC = () => {
           <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
             {netIn > 0
               ? EDGES.map(([i, j], e) => {
-                  const o = 0.13 * netIn * (1 - Math.max(tArr[i], tArr[j])) * Math.min(strayO[i], strayO[j]);
+                  const o = 0.11 * netIn * (1 - Math.max(tArr[i], tArr[j])) * Math.min(strayO[i], strayO[j]);
                   if (o < 0.01) return null;
                   return <line key={e} x1={pos[i].x} y1={pos[i].y} x2={pos[j].x} y2={pos[j].y} stroke={C.paper} strokeOpacity={o} strokeWidth={1} />;
                 })
@@ -330,9 +330,10 @@ export const Scene: React.FC = () => {
               const lockF = startOf(k) + FLIGHT;
               const flash = f >= lockF - 1 && f < lockF + 3;
               const rEnd = tg.ring ? 3.3 : 4.6;
-              const s0 = n.hub ? 6 : 2.6;
+              const s0 = n.hub ? rEnd * 2 : 2.6;
               const size = lerp(s0, rEnd * 2, t) * outro(k);
               if (size < 0.3) return null;
+              if (n.hub && t < 0.55) return <circle key={i} cx={p.x} cy={p.y} r={lerp(5, rEnd, t / 0.55)} fill="none" stroke={C.paper} strokeWidth={1.25} opacity={0.7 * outro(k)} />;
               const fill = flash ? C.acc : tg.ring ? C.paper : n.hot && t < 0.5 ? C.acc : C.paper;
               const op = t < 0.98 ? lerp(n.hot ? 0.9 : n.o, 1, t) : tg.ring ? 0.62 + 0.38 * lockPulse : 1;
               return <rect key={i} x={p.x - size / 2} y={p.y - size / 2} width={size} height={size} rx={(size / 2) * t} fill={fill} opacity={op} />;
