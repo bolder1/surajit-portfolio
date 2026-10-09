@@ -202,9 +202,8 @@ const Dot: React.FC<{ hot: boolean; size?: number }> = ({ hot, size = 10 }) => (
       borderRadius: "50%",
       flexShrink: 0,
       background: hot ? C.acc : "transparent",
-      border: hot ? "none" : `1.5px solid ${C.dim}`,
+      border: hot ? "none" : `1.5px solid ${TXT_DIM}`,
       boxSizing: "border-box",
-      boxShadow: hot ? `0 0 12px ${C.accGlow}` : "none",
     }}
   />
 );
@@ -228,8 +227,8 @@ const FragBody: React.FC<{ fr: Frag; hot: boolean }> = ({ fr, hot }) => {
         }}
       >
         <Dot hot={hot} />
-        <div style={{ fontFamily: sans, fontWeight: 600, fontSize: 21, letterSpacing: "0.03em", color: C.paper, whiteSpace: "nowrap" }}>{fr.title}</div>
-        <div style={{ marginLeft: "auto", fontFamily: mono, fontSize: 14, letterSpacing: "0.08em", color: C.dim, whiteSpace: "nowrap" }}>{fr.detail}</div>
+        <div style={{ fontFamily: sans, fontWeight: 600, fontSize: 21, letterSpacing: "0.005em", color: C.paper, whiteSpace: "nowrap" }}>{fr.title}</div>
+        <div style={{ marginLeft: "auto", fontFamily: mono, fontSize: 16, color: TXT_DIM, whiteSpace: "nowrap" }}>{fr.detail}</div>
       </div>
     );
   }
@@ -248,9 +247,9 @@ const FragBody: React.FC<{ fr: Frag; hot: boolean }> = ({ fr, hot }) => {
           gap: 10,
           boxSizing: "border-box",
           fontFamily: mono,
-          fontSize: 15,
-          letterSpacing: "0.14em",
-          color: "rgba(243,236,222,0.82)",
+          fontSize: 16,
+          letterSpacing: "0.01em",
+          color: "rgba(243,236,222,0.86)",
           whiteSpace: "nowrap",
         }}
       >
