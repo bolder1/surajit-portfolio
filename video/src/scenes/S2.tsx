@@ -13,8 +13,9 @@ import rimSrc from "./_S2/rim.png";
  * 02 · CHALLENGE (180 f) — the hero biometric scan.
  * f0 halftone portrait (unverified) · f1–15 brackets fly in & lock · f10–26 ring boots
  * f30–120 scan beam resolves the photo, mesh draws, landmarks pop · ring fills in beat-packets
- * f60 LIVENESS ✓ · f75 IdP OIDC · f90 SUBJECT S.DUTTA · f135 verify: ring snaps, check, stamp
+ * f60 LIVENESS ✓ · f75 IdP OIDC · f90 SUBJECT S.DUTTA (values snap in) · f135 verify: ring snaps, check, stamp
  * f140–172 tension build under the riser · f172–180 held breath before S3's impact.
+ * Accent budget: the ring fill + one verify ripple + badge are flat vermilion; the stamp carries the only glow.
  */
 
 const DUR = 180;
@@ -22,17 +23,20 @@ const VERIFY = 135;
 const HOLD = 172;
 
 // ---------- geometry (stage px, 1920×1080) ----------
-const S = 0.66; // portrait scale vs. the 1500×1800 original
+// Face sits on the frame's vertical centre and a touch smaller than first cut, so the crown clears the
+// 138 px letterbox bar until the end-of-scene push (hair top ≈ y165 at f0, ≈ y141 at the verify beat).
+const S = 0.62; // portrait scale vs. the 1500×1800 original
 const ANCHOR = { x: 890, y: 850 }; // face centre in original px
-const FC = { x: 912, y: 512 }; // where that lands on stage
+const FC = { x: 912, y: 548 }; // where that lands on stage
 const IMG_L = FC.x - ANCHOR.x * S;
 const IMG_T = FC.y - ANCHOR.y * S;
 const IMG_W = 1500 * S;
 const IMG_H = 1800 * S;
-const R_IN = 266; // ring tick inner radius
-const R_OUT = 286;
-const HB = 318; // bracket half-side
-const BRK = 62; // bracket arm length
+const K = S / 0.66; // ring + brackets keep their fit around the face
+const R_IN = Math.round(266 * K); // ring tick inner radius
+const R_OUT = Math.round(286 * K);
+const HB = Math.round(318 * K); // bracket half-side
+const BRK = Math.round(62 * K); // bracket arm length
 
 const PTS = (face.pts as number[][]).map((p) => [p[0] * S + IMG_L, p[1] * S + IMG_T] as const);
 const segs = (edges: number[][]) =>
@@ -89,12 +93,8 @@ const landFrame = (start: number) => {
 // ---------- key landmarks that get a crosshair ----------
 const KEYS = [468, 473, 1, 61, 291, 152, 10];
 
-// sonar ripples off the ring: verify, then the heartbeat (lub-dub) under the riser
-const RIPPLES = [
-  { f: 135, a: 0.75, reach: 190 },
-  { f: 150, a: 0.4, reach: 150 },
-  { f: 157, a: 0.22, reach: 120 },
-];
+// one sonar ripple off the ring, on the verify beat only
+const RIPPLES = [{ f: 135, a: 0.7, reach: 180 }];
 
 // ---------- helpers ----------
 const typed = (s: string, f: number, start: number, cpf = 1) => s.slice(0, Math.max(0, Math.floor((f - start) * cpf)));
@@ -225,7 +225,7 @@ const Mesh: React.FC<{ f: number }> = ({ f }) => {
         </clipPath>
         <linearGradient id="s2-hot" gradientUnits="userSpaceOnUse" x1={0} y1={by - 70} x2={0} y2={by}>
           <stop offset="0" stopColor={C.paper} stopOpacity={0} />
-          <stop offset="1" stopColor="#ffd8c8" stopOpacity={0.95} />
+          <stop offset="1" stopColor={C.paper} stopOpacity={0.95} />
         </linearGradient>
       </defs>
       <g transform={tf}>
@@ -239,7 +239,7 @@ const Mesh: React.FC<{ f: number }> = ({ f }) => {
           </g>
         ) : null}
         <path d={cold} fill={C.paper} fillOpacity={Math.min(0.85, 0.42 * meshO)} />
-        <path d={hot} fill="#fff1e6" />
+        <path d={hot} fill={C.paper} />
         {KEYS.map((k) => {
           const age = f - POP[k];
           if (age < 0) return null;
@@ -261,7 +261,6 @@ const Ring: React.FC<{ f: number }> = ({ f }) => {
   const { fps } = useVideoConfig();
   const boot = prog(f, 10, 26, EIO);
   const lit = litCount(f);
-  const t = tension(f);
   let off = "";
   let on = "";
   for (let i = 0; i < 120; i++) {
@@ -279,9 +278,6 @@ const Ring: React.FC<{ f: number }> = ({ f }) => {
   const sc = f >= VERIFY ? 1 + 0.045 * (1 - snap) : 1;
   const rot = f >= VERIFY ? -7 * (1 - snap) : 0;
   const white = f >= VERIFY && f < VERIFY + 2;
-  // accelerating pulse that follows the riser's tremolo (1.5 Hz → 6 Hz)
-  const phase = f > VERIFY + 5 ? (2 * Math.PI * (1.5 * (f - VERIFY - 5) + 4.5 * Math.pow(f - VERIFY - 5, 2) / (2 * (HOLD - VERIFY - 5)))) / 30 : 0;
-  const pulse = f > VERIFY + 5 && f < HOLD ? 0.82 + 0.18 * Math.cos(phase) : 1;
   const badge = f >= VERIFY ? spring({ frame: f - VERIFY - 1, fps, config: { stiffness: 220, damping: 13 } }) : 0;
   const check = prog(f, VERIFY + 3, VERIFY + 11, EO);
   const [bx, by] = polar(R_OUT + 2, 0);
@@ -291,7 +287,7 @@ const Ring: React.FC<{ f: number }> = ({ f }) => {
         {/* faint outer & inner hairlines */}
         <circle cx={FC.x} cy={FC.y} r={R_OUT + 22} fill="none" stroke={C.paper} strokeOpacity={0.1 * boot} strokeWidth={1} />
         <path d={off} stroke={C.paper} strokeOpacity={0.24} strokeWidth={1.5} fill="none" />
-        <path d={on} stroke={white ? "#ffe2d8" : C.acc} strokeOpacity={pulse} strokeWidth={2} fill="none" style={{ filter: `drop-shadow(0 0 ${4 + t * 6}px rgba(255,59,31,0.7))` }} />
+        <path d={on} stroke={white ? C.paper : C.acc} strokeWidth={2} fill="none" />
       </g>
       {RIPPLES.map((rp) => {
         const age = f - rp.f;
@@ -301,7 +297,7 @@ const Ring: React.FC<{ f: number }> = ({ f }) => {
       })}
       {badge > 0.01 ? (
         <g transform={`translate(${bx} ${by}) scale(${badge})`}>
-          <circle r={23} fill={C.acc} style={{ filter: `drop-shadow(0 0 12px ${C.accGlow})` }} />
+          <circle r={23} fill={C.acc} />
           <path d="M-9 0.5 L-3 6.5 L9.5 -6" stroke={C.ink} strokeWidth={3.2} fill="none" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - check} />
         </g>
       ) : null}
@@ -313,8 +309,6 @@ const Brackets: React.FC<{ f: number }> = ({ f }) => {
   const { fps } = useVideoConfig();
   const lock = f >= VERIFY ? spring({ frame: f - VERIFY, fps, config: { stiffness: 300, damping: 14 } }) : 0;
   const hb = HB - 14 * lock;
-  const verified = f >= VERIFY;
-  const red = interpolate(f, [VERIFY, VERIFY + 8, VERIFY + 20], [1, 1, 0], clamp);
   const settle = interpolate(f, [VERIFY + 8, VERIFY + 24], [1, 0.6], clamp);
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
@@ -329,9 +323,6 @@ const Brackets: React.FC<{ f: number }> = ({ f }) => {
         return (
           <g key={k} transform={`translate(${x} ${y}) rotate(${(1 - s) * 18 * c.sx * c.sy}) scale(${-c.sx} ${-c.sy})`} opacity={Math.min(1, s * 1.4)}>
             <path d={d} stroke={C.paper} strokeOpacity={settle} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-            {verified && red > 0.01 ? (
-              <path d={d} stroke={C.acc} strokeOpacity={red} strokeWidth={2.5} fill="none" strokeLinecap="round" style={{ filter: `drop-shadow(0 0 8px ${C.accGlow})` }} />
-            ) : null}
           </g>
         );
       })}
@@ -344,7 +335,7 @@ const LX = 140;
 const LW = 400;
 
 const Label: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
-  <div style={{ fontFamily: mono, fontSize: 15, letterSpacing: "0.24em", color: C.dim, textTransform: "uppercase", whiteSpace: "nowrap", ...style }}>{children}</div>
+  <div style={{ fontFamily: mono, fontSize: 17, letterSpacing: "0.2em", color: C.dim, textTransform: "uppercase", whiteSpace: "nowrap", ...style }}>{children}</div>
 );
 
 const Check: React.FC<{ p: number; size?: number }> = ({ p, size = 22 }) => (
@@ -355,8 +346,7 @@ const Check: React.FC<{ p: number; size?: number }> = ({ p, size = 22 }) => (
 
 const Readouts: React.FC<{ f: number }> = ({ f }) => {
   const t = tension(f);
-  const dim = 1 - 0.45 * t;
-  const verified = f >= VERIFY;
+  const dim = 1 - 0.3 * t; // recede under the riser, but stay readable
 
   // The one big number is real: the 478 MediaPipe landmarks of his face, counted as the beam captures them.
   const count = POP.filter((pf) => pf <= f).length;
@@ -365,30 +355,28 @@ const Readouts: React.FC<{ f: number }> = ({ f }) => {
   const numCol = count > 0 ? C.paper : C.faint;
 
   const rule = prog(f, 6, 22, EIO);
+  // entrances vary: the header types, the count snaps on, labels are drawn out by their rules, values snap
+  const wipe = (p: number): React.CSSProperties => (p < 1 ? { clipPath: `inset(-4px ${((1 - p) * 100).toFixed(1)}% -4px 0)` } : {});
   const rows: { label: string; at: number; resolve: number; node: React.ReactNode; raw?: boolean }[] = [
     {
       label: "LIVENESS",
       at: 12,
       resolve: 60,
-      node:
-        f >= 60 ? (
-          <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {scramble("PASS", prog(f, 60, 66, EIO), f, 2)}
-            <Check p={prog(f, 62, 70, EO)} />
-          </span>
-        ) : null,
+      node: (
+        <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          PASS
+          <Check p={prog(f, 61, 68, EO)} />
+        </span>
+      ),
     },
-    { label: "IdP", at: 16, resolve: 75, raw: true, node: f >= 75 ? scramble("OIDC", prog(f, 75, 83, EIO), f, 3) : null },
-    { label: "SUBJECT", at: 20, resolve: 90, node: f >= 90 ? scramble("S. DUTTA", prog(f, 90, 102, EIO), f, 5) : null },
+    { label: "IdP", at: 16, resolve: 75, raw: true, node: "OIDC" },
+    { label: "SUBJECT", at: 20, resolve: 90, node: "S. DUTTA" },
   ];
 
   return (
     <div style={{ position: "absolute", left: LX, top: 262, width: LW, opacity: dim }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <Label style={{ color: C.paper, opacity: 0.85 }}>{typed("FACTOR 2 OF 2", f, 3)}</Label>
-        <Label style={{ color: verified ? C.acc : C.faint }}>{f >= 10 ? (verified ? "COMPLETE" : f >= BEAM_A ? "SCANNING" : "AWAITING") : ""}</Label>
-      </div>
-      <div style={{ display: "flex", alignItems: "flex-end", marginTop: 18, marginLeft: -8, opacity: interpolate(f, [4, 10], [0, 1], clamp) }}>
+      <Label style={{ color: C.paper, opacity: 0.85, height: 22 }}>{typed("FACTOR 2 OF 2", f, 3)}</Label>
+      <div style={{ display: "flex", alignItems: "flex-end", marginTop: 18, marginLeft: -8, opacity: f >= 4 ? 1 : 0 }}>
         <div
           style={{
             fontFamily: dots,
@@ -404,8 +392,8 @@ const Readouts: React.FC<{ f: number }> = ({ f }) => {
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 18 }}>
-        <Label style={{ color: done ? C.paper : C.dim, opacity: done ? 0.85 : 1 }}>{typed("FACE LANDMARKS", f, 8)}</Label>
-        <Label style={{ color: C.faint }}>{f >= 24 ? "/ 478" : ""}</Label>
+        <Label style={{ color: done ? C.paper : C.dim, opacity: done ? 0.85 : 1, ...wipe(rule) }}>FACE LANDMARKS</Label>
+        <Label style={{ color: done ? C.paper : C.dim, opacity: done ? 0.85 : 1 }}>{f >= 22 ? "/ 478" : ""}</Label>
       </div>
       <div style={{ height: 1, background: C.faint, width: `${rule * 100}%`, marginTop: 16 }} />
       {rows.map((r, i) => {
@@ -415,9 +403,9 @@ const Readouts: React.FC<{ f: number }> = ({ f }) => {
         const lineP = prog(f, 8 + i * 3, 24 + i * 3, EIO);
         return (
           <div key={r.label} style={{ position: "relative", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Label style={{ color: resolved ? C.paper : C.dim, opacity: resolved ? 0.85 : 1, textTransform: r.raw ? "none" : "uppercase" }}>{typed(r.label, f, r.at)}</Label>
+            <Label style={{ color: resolved ? C.paper : C.dim, opacity: resolved ? 0.85 : 1, textTransform: r.raw ? "none" : "uppercase", ...wipe(lineP) }}>{r.label}</Label>
             <div style={{ fontFamily: mono, fontSize: 24, letterSpacing: "0.12em", color: C.paper, display: "flex", alignItems: "center", height: 28 }}>
-              {pend ? <span style={{ color: C.faint }}>{r.label === "SUBJECT" ? "?" : blink ? "· · ·" : " · ·"}</span> : r.node}
+              {pend ? <span style={{ color: C.dim }}>{r.label === "SUBJECT" ? "?" : blink ? "· · ·" : " · ·"}</span> : resolved ? r.node : null}
             </div>
             <div style={{ position: "absolute", left: 0, bottom: 0, height: 1, width: `${lineP * 100}%`, background: C.line }} />
           </div>
@@ -436,7 +424,7 @@ const Stamp: React.FC<{ f: number }> = ({ f }) => {
   const wdth = interpolate(hit, [0, 1], [114, 92]);
   const wght = interpolate(hit, [0, 1], [900, 820]);
   const sc = interpolate(hit, [0, 1], [1.06, 1]);
-  const glow = interpolate(k, [0, 14], [1, 0.3], clamp) + tension(f) * 0.45;
+  const glow = interpolate(k, [0, 14], [1, 0.3], clamp) + tension(f) * 0.3; // the scene's one glow
   const track = interpolate(f, [VERIFY + 5, HOLD], [-0.012, 0.018], { ...clamp, easing: EI });
   const line = (txt: string, delay: number) => (
     <div
@@ -445,10 +433,10 @@ const Stamp: React.FC<{ f: number }> = ({ f }) => {
         fontSize: 102,
         lineHeight: 0.9,
         letterSpacing: `${track}em`,
-        color: k < 2 + delay ? "#fff1e8" : C.acc,
+        color: k < 2 + delay ? C.paper : C.acc,
         opacity: k >= delay ? 1 : 0,
         whiteSpace: "nowrap",
-        textShadow: `0 0 ${20 + 36 * glow}px rgba(255,59,31,${(0.3 + 0.35 * glow).toFixed(2)})`,
+        textShadow: `0 0 ${16 + 26 * glow}px rgba(255,59,31,${(0.22 + 0.28 * glow).toFixed(2)})`,
       }}
     >
       {txt}
@@ -471,8 +459,8 @@ export const Scene: React.FC = () => {
   const hudPush = push + 0.006 * t;
   const driftY = interpolate(f, [0, DUR], [6, -8], clamp);
 
-  const glowO =
-    interpolate(f, [0, BEAM_B], [0.1, 0.2], clamp) + interpolate(f, [VERIFY, VERIFY + 2, VERIFY + 22], [0, 0.32, 0.12], clamp) + t * 0.14;
+  // steady low backlight that grows with the resolved photo; the verify beat's glow lives on the stamp only
+  const glowO = interpolate(f, [0, BEAM_B], [0.08, 0.16], clamp);
   const breath = interpolate(f, [HOLD, HOLD + 3, DUR], [0, 0.16, 0.2], clamp);
 
   return (
@@ -504,14 +492,12 @@ export const Scene: React.FC = () => {
 // ---------- sound ----------
 const ringCues: Cue[] = PACKETS.flatMap((k, n) => [
   { f: k.a, sfx: (n % 2 ? "blip-hi" : "blip") as Cue["sfx"], vol: 0.2 + n * 0.015 },
-  { f: k.a + 2, sfx: "click" as const, vol: 0.18 },
-  { f: k.a + 4, sfx: "click" as const, vol: 0.13 },
+  { f: k.a + 2, sfx: "click" as const, vol: 0.16 },
 ]);
 
 export const cues: Cue[] = [
   { f: 0, sfx: "heartbeat", vol: 0.55 },
-  { f: 0, sfx: "glitch-1", vol: 0.3 },
-  { f: 1, sfx: "whoosh", vol: 0.32 },
+  { f: 1, sfx: "whoosh", vol: 0.32 }, // brackets fly in
   ...CORNERS.map((c, i) => ({ f: landFrame(c.start), sfx: "snap" as const, vol: 0.18 + i * 0.04 })),
   { f: 4, sfx: "chatter", vol: 0.22 },
   { f: BEAM_A, sfx: "scan", vol: 0.42 },
@@ -519,10 +505,10 @@ export const cues: Cue[] = [
   ...ringCues,
   { f: 61, sfx: "blip-up", vol: 0.26 },
   { f: 76, sfx: "click-lo", vol: 0.3 },
-  { f: 91, sfx: "chatter", vol: 0.3 },
+  { f: 91, sfx: "snap", vol: 0.26 }, // SUBJECT snaps to his name
   { f: 112, sfx: "riser", vol: 0.55 },
   { f: VERIFY, sfx: "lock", vol: 0.55 },
   { f: VERIFY, sfx: "blip-up", vol: 0.35 },
   { f: VERIFY + 3, sfx: "click", vol: 0.2 },
-  { f: 150, sfx: "heartbeat", vol: 0.4 },
+  // nothing after the check: the riser carries f140–172, then near-silence into S3's impact
 ];
