@@ -1,6 +1,5 @@
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { noise2D } from "@remotion/noise";
 import { C, mona, mono, sans, serif } from "../lib/theme";
 import { clamp, EI, EO, lerp, rand } from "../lib/anim";
 import { Glitch, Glow } from "../lib/FX";
@@ -60,9 +59,10 @@ type Frag = {
 const toast = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, detail: string, ghost = false, blur = 0): Frag => ({
   kind: "toast", at, cx, cy, rot, sc, col, span: 3, y: 212, h: 58, title, detail, alert: true, ghost, blur,
 });
-const chip = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, alert = false): Frag => ({
-  kind: "chip", at, cx, cy, rot, sc, col, span: 2, y: 286, h: 36, title, alert,
-});
+const chip = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, title: string, alert = false) => {
+  const fr: Frag = { kind: "chip", at, cx, cy, rot, sc, col, span: 2, y: 286, h: 36, title, alert };
+  return Object.assign(fr, { ghostify: (): Frag => ({ ...fr, ghost: true }) });
+};
 const code = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, lines: Tok[][]): Frag => ({
   kind: "code", at, cx, cy, rot, sc, col, span: 3, y: 772, h: 98, lines,
 });
@@ -100,11 +100,16 @@ const FRAGS: Frag[] = [
   ]),
   toast(45, 730, 692, 4, 1.2, 9, "POLICY CONFLICT", "ALLOW · DENY"),
   // alarm fatigue: the same errors fire again (they merge back into one on the snap)
+  chip(36, 318, 652, 7, 1.1, 2, "BAD SIGNATURE", true).ghostify(),
+  toast(39, 526, 286, -6, 1.15, 0, "MFA FAILED", "ATTEMPT 3 OF 3", true),
+  toast(42, 1150, 684, 4, 1.12, 6, "TOKEN EXPIRED", "exp < now", true),
+  chip(47, 930, 880, -3, 1.12, 6, "UNKNOWN DEVICE", true).ghostify(),
   toast(48, 600, 346, 1, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3", true),
   chip(49, 1290, 418, -6, 1.15, 10, "RETRY LIMIT", true),
+  chip(53, 1330, 452, 3, 1.1, 10, "RETRY LIMIT", true).ghostify(),
   // two repeats arrive right at the lens: huge, out of focus, cropped by the frame
-  toast(51, 1520, 250, 7, 2.5, 3, "403 FORBIDDEN", "GET /admin/users", true, 7),
-  toast(54, 420, 860, -5, 2.8, 9, "POLICY CONFLICT", "ALLOW · DENY", true, 9),
+  toast(51, 1400, 300, 7, 2.3, 3, "403 FORBIDDEN", "GET /admin/users", true, 4.5),
+  toast(54, 540, 796, -5, 2.6, 9, "POLICY CONFLICT", "ALLOW · DENY", true, 6),
   toast(56, 1222, 756, 3, 1.08, 6, "TOKEN EXPIRED", "exp < now", true),
 ];
 
@@ -114,58 +119,35 @@ const fragDelay = (fr: Frag) => {
   return Math.round(((colX(fr.col) - GX) / GW) * 7 + row * 1.5) + (fr.ghost ? 1 : 0);
 };
 
-/* ---------- tangled connectors → column guides ---------- */
+/* ---------- tangled dependencies → column guides ---------- */
 type Pt = { x: number; y: number };
 /**
- * Orthogonal flow-diagram connectors (H-V-H-V-H), routed across each other into a knot.
- * Chaos: xs = the three vertical runs, ys = the two horizontal runs. Calm: every vertex lands on one
- * column guide, so the corners vanish and the wire becomes a straight hairline.
+ * Node-graph links between the fragments (out-port on the right edge, in-port on the left edge), so
+ * the tangle reads as dependencies, not decoration. Links loop back when the target sits to the left.
+ * On the snap each link lets go of its fragments and straightens into one column guide of the grid.
  */
-type Wire = { at: number; x0: number; x3: number; xs: number[]; ys: number[]; y0: number; g: { x: number; y0: number; y1: number }; o: number; delay: number };
-const WIRES: Wire[] = GUIDE_X.flatMap((gx, k) =>
-  BANDS.map((b, bi) => {
-    const i = k * 2 + bi;
-    const r = (n: number) => rand(i * 17.3 + n * 5.1);
-    const left = r(1) < 0.5;
-    const x0 = left ? -40 + r(2) * 500 : 1460 + r(2) * 500;
-    const x3 = left ? 1100 + r(3) * 860 : -40 + r(3) * 860;
-    const at = i % 3 === 0 ? 0 : i % 3 === 1 ? 20 : 42;
-    const o = r(9) < 0.2 ? 0.7 : r(9) < 0.6 ? 0.42 : 0.22;
-    return {
-      at: at + Math.floor(r(10) * 6),
-      x0,
-      x3,
-      xs: [lerp(x0, x3, 0.2 + r(4) * 0.2), lerp(x0, x3, 0.45 + r(5) * 0.15), lerp(x0, x3, 0.65 + r(6) * 0.25)],
-      y0: 150 + r(7) * 780,
-      ys: [150 + r(8) * 780, 150 + r(11) * 780, 150 + r(12) * 780],
-      g: { x: gx, y0: b.y0, y1: b.y1 },
-      o,
-      delay: Math.round(((gx - GX) / GW) * 6) + bi,
-    };
-  }),
-);
-
-/** Polyline with rounded corners (radius shrinks on short legs, so straight lines stay straight). */
-const roundedPath = (pts: Pt[], r: number) => {
-  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const a = pts[i - 1];
-    const v = pts[i];
-    const b = pts[i + 1];
-    const la = Math.hypot(v.x - a.x, v.y - a.y);
-    const lb = Math.hypot(b.x - v.x, b.y - v.y);
-    const rr = Math.min(r, la / 2, lb / 2);
-    if (rr < 0.5) {
-      d += ` L ${v.x.toFixed(1)} ${v.y.toFixed(1)}`;
-      continue;
-    }
-    const p1 = { x: v.x + ((a.x - v.x) / la) * rr, y: v.y + ((a.y - v.y) / la) * rr };
-    const p2 = { x: v.x + ((b.x - v.x) / lb) * rr, y: v.y + ((b.y - v.y) / lb) * rr };
-    d += ` L ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q ${v.x.toFixed(1)} ${v.y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-  }
-  const z = pts[pts.length - 1];
-  return `${d} L ${z.x.toFixed(1)} ${z.y.toFixed(1)}`;
-};
+const NF = FRAGS.map((fr, i) => (fr.blur ? -1 : i)).filter((i) => i >= 0);
+type Wire = { a: number; b: number; at: number; g: { x: number; y0: number; y1: number }; o: number; delay: number; bow: number };
+const N_GUIDES = GUIDE_X.length * BANDS.length;
+const WIRES: Wire[] = Array.from({ length: 42 }, (_, i) => {
+  const gi = i % N_GUIDES; // more links than guides: several straighten onto the same hairline
+  const gx = GUIDE_X[Math.floor(gi / 2)];
+  const bi = gi % 2;
+  const band = BANDS[bi];
+  const r = (n: number) => rand(i * 17.3 + n * 5.1);
+  const a = NF[i % NF.length];
+  let b = NF[(i * 7 + 5) % NF.length];
+  if (b === a) b = NF[(i * 7 + 6) % NF.length];
+  return {
+    a,
+    b,
+    at: Math.max(FRAGS[a].at, FRAGS[b].at) + 1 + Math.floor(r(10) * 3),
+    g: { x: gx, y0: band.y0, y1: band.y1 },
+    o: r(9) < 0.2 ? 0.62 : r(9) < 0.6 ? 0.4 : 0.22,
+    delay: Math.round(((gx - GX) / GW) * 6) + bi,
+    bow: 120 + r(3) * 260,
+  };
+});
 
 /* ---------- chaos helpers ---------- */
 const amp = (fc: number) => interpolate(fc, [0, 20, 45, 56], [0.25, 0.45, 0.8, 1], clamp);
@@ -177,6 +159,26 @@ const jitter = (i: number, fc: number, a: number) => {
     y: (rand(i * 5.9 + st * 3.1) - 0.5) * 2 * 7 * a * big,
   };
 };
+/** Where fragment i sits in the chaos at chaos-clock fc. */
+const fragChaos = (i: number, fc: number, a: number) => {
+  const fr = FRAGS[i];
+  const j = jitter(i, fc, a);
+  const age = fc - fr.at;
+  const pop = interpolate(age, [0, 4], [1.08, 1], { ...clamp, easing: EO });
+  return {
+    x: fr.cx + j.x + (rand(i * 5.1) - 0.5) * 0.9 * fc,
+    y: fr.cy + j.y + (rand(i * 6.7) - 0.5) * 0.5 * fc,
+    rot: fr.rot,
+    sc: fr.sc * pop,
+  };
+};
+const port = (i: number, fc: number, a: number, side: 1 | -1) => {
+  const c = fragChaos(i, fc, a);
+  const half = (spanW(FRAGS[i].span) * c.sc) / 2 + 2;
+  const th = (c.rot * Math.PI) / 180;
+  return { x: c.x + side * half * Math.cos(th), y: c.y + side * half * Math.sin(th) };
+};
+
 const snapP = (f: number, delay: number, fps: number) =>
   f < SNAP + delay ? 0 : spring({ frame: f - SNAP - delay, fps, config: { stiffness: 620, damping: 34, mass: 0.55 } });
 
@@ -342,38 +344,20 @@ export const Scene: React.FC = () => {
         if (f < w.at) return null;
         const draw = interpolate(f, [w.at, w.at + 10], [0, 1], { ...clamp, easing: EO });
         const p = snapP(f, w.delay, fps);
-        // the routing itself keeps re-negotiating: runs slide, stepped like a solver that never converges
-        const st = Math.floor(fc / 2);
-        const wx = (n: number) => (noise2D(`wx${i}-${n}`, fc * 0.035, 0) * 70 + (rand(i * 3.7 + n + st * 1.3) - 0.5) * 16) * a;
-        const wy = (n: number) => (noise2D(`wy${i}-${n}`, fc * 0.035, 0) * 55 + (rand(i * 8.3 + n + st * 2.1) - 0.5) * 12) * a;
-        const xs = w.xs.map((x, n) => x + wx(n));
-        const ys = w.ys.map((y, n) => y + wy(n));
-        const y0 = w.y0 + wy(5);
-        const chaos: Pt[] = [
-          { x: w.x0, y: y0 },
-          { x: xs[0], y: y0 },
-          { x: xs[0], y: ys[0] },
-          { x: xs[1], y: ys[0] },
-          { x: xs[1], y: ys[1] },
-          { x: xs[2], y: ys[1] },
-          { x: xs[2], y: ys[2] },
-          { x: w.x3, y: ys[2] },
-        ];
-        const pts = chaos.map((c, n) => {
-          const gy = lerp(w.g.y0, w.g.y1, n / (chaos.length - 1));
-          return { x: lerp(c.x, w.g.x, p), y: lerp(c.y, gy, p) };
-        });
-        const d = roundedPath(pts, 16);
+        const p0 = port(w.a, fc, a, 1);
+        const p3 = port(w.b, fc, a, -1);
+        const chaos: Pt[] = [p0, { x: p0.x + w.bow, y: p0.y }, { x: p3.x - w.bow, y: p3.y }, p3];
+        const pts = chaos.map((c, n) => ({ x: lerp(c.x, w.g.x, p), y: lerp(c.y, lerp(w.g.y0, w.g.y1, n / 3), p) }));
+        const d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)} C ${pts[1].x.toFixed(1)} ${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)} ${pts[2].y.toFixed(1)} ${pts[3].x.toFixed(1)} ${pts[3].y.toFixed(1)}`;
         const op = lerp(w.o, 0.16, p) * (calm ? recede : 1);
-        const port = (1 - p) * 0.7;
-        const last = pts[pts.length - 1];
+        const portO = (1 - Math.min(1, p * 2)) * 0.85;
         return (
           <g key={i}>
             <path d={d} pathLength={1} strokeDasharray={`${p > 0 ? 1 : draw} 1`} stroke={C.paper} strokeOpacity={op} strokeWidth={1.25} fill="none" />
-            {port > 0.02 ? (
+            {portO > 0.02 ? (
               <>
-                <rect x={pts[0].x - 3} y={pts[0].y - 3} width={6} height={6} fill={C.paper} opacity={port * draw} />
-                <rect x={last.x - 3} y={last.y - 3} width={6} height={6} fill={C.paper} opacity={port * (draw > 0.98 ? 1 : 0)} />
+                <circle cx={pts[0].x} cy={pts[0].y} r={3.5} fill={C.ink} stroke={C.paper} strokeWidth={1.25} opacity={portO} />
+                <circle cx={pts[3].x} cy={pts[3].y} r={3.5} fill={C.paper} opacity={portO * (draw > 0.98 ? 1 : 0)} />
               </>
             ) : null}
           </g>
@@ -385,20 +369,17 @@ export const Scene: React.FC = () => {
   const frag = (fr: Frag, i: number) => {
     if (f < fr.at) return null;
     const w = spanW(fr.span);
-    const age = f - fr.at;
-    const pop = interpolate(age, [0, 4], [1.08, 1], { ...clamp, easing: EO });
-    const flick = age === 1 ? 0.35 : 1;
+    const flick = f - fr.at === 1 ? 0.35 : 1;
     const p = snapP(f, fragDelay(fr), fps);
-    const j = jitter(i, fc, a);
-    const drift = { x: (rand(i * 5.1) - 0.5) * 0.9 * fc, y: (rand(i * 6.7) - 0.5) * 0.5 * fc };
-    const chaosX = fr.cx + j.x + drift.x;
-    const chaosY = fr.cy + j.y + drift.y;
+    const ch = fragChaos(i, fc, a);
+    const chaosX = ch.x;
+    const chaosY = ch.y;
     const slotX = colX(fr.col) + w / 2;
     const slotY = fr.y + fr.h / 2;
     const x = lerp(chaosX, slotX, p);
     const y = lerp(chaosY, slotY, p);
     const rot = lerp(fr.rot, 0, p);
-    const sc = lerp(fr.sc * pop, 1, p);
+    const sc = lerp(ch.sc, 1, p);
     const hot = p < 0.5;
     const ghostFade = fr.ghost ? 1 - p : 1;
     const op = flick * ghostFade * (calm ? lerp(1, 0.62, Math.min(1, p)) * recede : fr.ghost ? (fr.blur ? 0.7 : 0.8) : 1);

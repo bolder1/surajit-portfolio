@@ -10,12 +10,14 @@ import type { Cue } from "../../lib/cues";
  * SCOPE 07 · DESIGN SYSTEMS (60 f) — "Systems, then surfaces."
  * An unbranded sign-in card is taken apart into its system, then put back as a surface.
  *  f0–6    card builds front-on, one component per frame (UI snaps)
- *  f3–16   card swings into an isometric view
- *  f9–20   EXPLODE: 8 layers separate along the card normal; surfaces drop to blueprint linework
- *  f17–30  vermilion leaders run to spec annotations (radius / token / spacing / error / focus)
+ *  f2–14   card swings into an isometric view (still a rendered surface)
+ *  f13–20  EXPLODE: 8 layers burst apart along the card normal; on beat 2 (f15) the card x-rays
+ *          to blueprint linework in a single frame
+ *  f18–30  vermilion leaders run to spec annotations (token / radius / spacing / error / focus)
  *          f30 (beat 3): focus ring switches on, 2px vermilion
  *  f39–45  leaders retract, layers collapse (accelerating) and SNAP flat on beat 4;
  *          the blueprint renders back into a solid cream surface on the hit
+ *  f45–52  hold on the finished card, focus ring + caret live
  *  f52–57  exit
  *
  * Projection is orthographic (true isometric drawing): every layer is a plane parallel to the card,
@@ -32,8 +34,8 @@ const RAD = 18;
 const TILT_A = 2;
 const TILT_B = 14;
 const EXPLODE = 13;
-const WIRE_A = 14;
-const WIRE_B = 16;
+const WIRE_A = 14.01;
+const WIRE_B = 15;
 const COLLAPSE_A = 39;
 const SNAP = 45;
 const FOCUS = 30;
@@ -96,7 +98,7 @@ const KeyGlyph: React.FC<{ color: string }> = ({ color }) => (
 );
 
 // ── layers ─────────────────────────────────────────────────────────────────
-type LayerProps = { wire: number; f: number; focus: number; err: number; snapIn: number };
+type LayerProps = { wire: number; f: number; focus: number; err: number };
 
 const btn = (top: number, wire: number, filled = false): React.CSSProperties => ({
   position: "absolute",
@@ -284,7 +286,7 @@ export const Scene: React.FC = () => {
   };
 
   // explode → collapse
-  const burst = spring({ frame: f - EXPLODE, fps, config: { stiffness: 130, damping: 14, mass: 0.9 } });
+  const burst = spring({ frame: f - EXPLODE, fps, config: { stiffness: 190, damping: 14, mass: 0.9 } });
   const collapse = prog(f, COLLAPSE_A, SNAP, EI);
   const spread = f >= SNAP ? 0 : burst * (1 - collapse);
   const zOf = (i: number) => (i - MID) * SPREAD * spread + i * 0.01;
@@ -343,7 +345,7 @@ export const Scene: React.FC = () => {
                   transform: layerMatrix(view, zOf(i)),
                 }}
               >
-                <Layer id={id} wire={wire} f={f} focus={focus} err={err} snapIn={snapFlash} />
+                <Layer id={id} wire={wire} f={f} focus={focus} err={err} />
               </div>
             ) : null,
           )}

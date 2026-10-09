@@ -49,8 +49,10 @@ er = np.array(A.filter(ImageFilter.MinFilter(17))).astype(np.float32) / 255.0
 edge = np.clip(al - er, 0, 1)
 edge = np.array(Image.fromarray((edge * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(4.5))).astype(np.float32) / 255.0
 fb = np.array(Image.fromarray((facing * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(6))).astype(np.float32) / 255.0
-rim = np.clip(edge * fb * 1.7, 0, 1)
-rim *= np.clip((1260 - yy) / 300.0, 0, 1)  # head + neck only, fading down the neck
+thin = edge * fb
+wide = np.array(Image.fromarray((np.clip(thin, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(16))).astype(np.float32) / 255.0
+rim = np.clip(thin * 0.75 + wide * 2.4, 0, 1)
+rim *= np.clip((1020 - yy) / 260.0, 0, 1)  # hair + jaw line only; fades out above the neck
 # avoid the straight cut where the ghost band was removed
 rim *= 1 - np.clip((100 - np.abs(yy - 775)) / 30.0, 0, 1) * (xx < 470)
 inner = red * al * np.clip((r - 0.5) / 0.35, 0, 1)  # the photo's own red highlights on the cheek

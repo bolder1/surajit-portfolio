@@ -11,16 +11,17 @@ import portraitSrc from "./_S8/portrait.png";
 import rimSrc from "./_S8/rim.png";
 
 /**
- * 08 · SESSION (180 f) — the end card. Full 16:9, no letterbox.
+ * 08 · SESSION (180 f): the end card. Full 16:9, no letterbox.
  *
- * f0   a vermilion "focused field" underline draws on; status chip snaps in; face contours start drawing
- * f2   SURAJIT DUTTA rises out of the underline (mask) while its tracking compresses 0.14em → -0.02em
- * f30  the underline collapses into the full stop: a vermilion period lands (click)
- * f38  one specular band crosses the name, f60 it reaches the period: glint (shimmer peaks)
- * f45  "Let's build something users trust." rises from its baseline
- * f75  contact types in (email, separator on f90, LinkedIn), vermilion caret
- * f120 sub boom: the portrait resolves under the mesh and its vermilion rim light ignites
- * f120–165 hold (caret blinks on the beat) · f165–177 fade to black
+ * f0    a vermilion "focused field" underline draws on; ACCESS GRANTED chip snaps in; the face mesh starts drawing
+ * f2    SURAJIT DUTTA rises out of the underline (mask) while its tracking compresses 0.14em to -0.02em
+ * f30   the underline slides right and collapses into the full stop: a vermilion period lands (click)
+ * f43   one specular band crosses the name; f60 it reaches the period: glint (shimmer swells under it)
+ * f45   "Let's build something users trust." rises from its baseline
+ * f75   contact types in (email, separator on f90, LinkedIn done f110), vermilion caret
+ * f111  9 frames of near-silence
+ * f120  sub boom: his portrait resolves under the mesh and its vermilion rim light ignites
+ * f120  hold to f165 (caret blinks on the beat) · f165 to f177 fade to black
  */
 
 const DUR = 180;
@@ -36,19 +37,30 @@ const FADE_B = 177;
 // ---------- name metrics (Mona Sans @ wdth 118 / wght 800, no kerning; measured with fontTools) ----------
 const NAME = "SURAJIT DUTTA";
 const ADV: Record<string, number> = { S: 718, U: 778, R: 778, A: 831, J: 455, I: 304, T: 669, D: 797, " ": 208 };
-const FS = 152;
+const FS = 146;
 const X0 = 150;
 const NAME_TOP = 470;
 const BASE = NAME_TOP + 0.885 * FS; // baseline (asc 1090 / desc 320, line-height 1)
 const MASK_H = 0.9 * FS; // mask edge sits just under the baseline
 const TRACK_A = 0.14;
 const TRACK_B = -0.02;
-const advSum = NAME.split("").reduce((s, ch) => s + ADV[ch], 0) / 1000; // em
+// the two T crossbars exactly touch at -0.02em (hairline AA seam), so that pair gets a clean gap
+const TT = 10;
+const TT_GAP = 0.015; // em
+const advSum = NAME.split("").reduce((s, ch) => s + ADV[ch], 0) / 1000 + TT_GAP; // em
 const nameW = (ls: number) => (advSum + NAME.length * ls) * FS;
 const DOT_W = 0.2 * FS;
 const DOT_H = 0.165 * FS;
 const DOT_X = X0 + nameW(TRACK_B) + 0.0197 * FS;
 const DOT_Y = BASE - DOT_H + 1.4;
+
+const SWEEP_TEXT = (
+  <>
+    {NAME.slice(0, TT)}
+    <span style={{ marginRight: `${TT_GAP}em` }}>{NAME[TT]}</span>
+    {NAME.slice(TT + 1)}
+  </>
+);
 
 const track = (f: number) => lerp(TRACK_A, TRACK_B, prog(f, 0, SETTLE, Easing.bezier(0.3, 0, 0.1, 1)));
 
@@ -63,9 +75,9 @@ const GLINT = (() => {
 })();
 
 // ---------- portrait + face mesh geometry ----------
-const PSC = 0.78; // display scale vs the 1500×1800 original (baked at 0.9)
+const PSC = 0.68; // display scale vs the 1500×1800 original (baked at 0.9)
 const FACE_C = { x: 809, y: 848 }; // face centre in original px
-const STAGE_C = { x: 1676, y: 448 };
+const STAGE_C = { x: 1686, y: 446 };
 const IMG_L = STAGE_C.x - FACE_C.x * PSC;
 const IMG_T = STAGE_C.y - FACE_C.y * PSC;
 const P = (face.pts as number[][]).map((p) => [IMG_L + p[0] * PSC, IMG_T + p[1] * PSC] as const);
@@ -89,21 +101,23 @@ const TYPE_END = charFrame(TYPE_B, LINKEDIN.length - 1);
 
 // ---------- layers ----------
 const FaceField: React.FC<{ f: number }> = ({ f }) => {
-  const resolve = prog(f, BOOM, BOOM + 24, EO);
-  const flare = interpolate(f, [BOOM, BOOM + 2, BOOM + 30], [0, 1, 0], { ...clamp, easing: EO });
+  // the hit: flare peaks on the boom frame, the photo resolves under the mesh
+  const resolve = prog(f, BOOM - 2, BOOM + 24, EO);
+  const flare = interpolate(f, [BOOM - 2, BOOM, BOOM + 30], [0, 1, 0], { ...clamp, easing: EO });
   const photoO = lerp(0.06, 0.22, resolve);
-  const rimO = Math.min(1, lerp(0, 0.62, resolve) + flare * 0.5);
+  const rimO = Math.min(1, lerp(0, 0.5, resolve) + flare * 0.5);
   const tessO = interpolate(f, [10, 60], [0, 0.085], clamp) * lerp(1, 0.4, resolve);
-  const contO = lerp(0.3, 0.07, resolve);
+  const contO = lerp(0.24, 0.06, resolve);
   const wipe = interpolate(f, [4, 56], [CX_MIN - 60, CX_MAX + 60], { ...clamp, easing: EIO });
-  const drift = interpolate(f, [0, DUR], [14, -14], clamp);
+  // parallax: the face layer pushes around its own centre, faster than the type layer
+  const push = interpolate(f, [0, DUR], [1.0, 1.035], clamp);
   return (
-    <AbsoluteFill style={{ transform: `translateX(${drift}px) scale(${interpolate(f, [0, DUR], [1.0, 1.035], clamp)})`, transformOrigin: "1680px 450px" }}>
+    <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: `${STAGE_C.x}px ${STAGE_C.y}px` }}>
       <Glow x={STAGE_C.x - 230} y={STAGE_C.y - 160} r={520} opacity={0.16 * resolve + 0.12 * flare} />
       <AbsoluteFill
         style={{
-          WebkitMaskImage: "linear-gradient(90deg, transparent 0px, transparent 1180px, #000 1500px)",
-          maskImage: "linear-gradient(90deg, transparent 0px, transparent 1180px, #000 1500px)",
+          WebkitMaskImage: "linear-gradient(90deg, transparent 0px, transparent 1250px, #000 1560px)",
+          maskImage: "linear-gradient(90deg, transparent 0px, transparent 1250px, #000 1560px)",
         }}
       >
         <Img src={portraitSrc} style={{ position: "absolute", left: IMG_L, top: IMG_T, width: 1500 * PSC, height: 1800 * PSC, opacity: photoO }} />
@@ -188,7 +202,7 @@ const Name: React.FC<{ f: number }> = ({ f }) => {
             const a = 2 + i * 1.2;
             const p = prog(f, a, a + 16, Easing.bezier(0.2, 0.9, 0.25, 1));
             return (
-              <span key={i} style={{ display: "inline-block", transform: `translateY(${(1 - p) * 104}%)` }}>
+              <span key={i} style={{ display: "inline-block", marginRight: i === TT ? `${TT_GAP}em` : undefined, transform: `translateY(${(1 - p) * 104}%)` }}>
                 {ch}
               </span>
             );
@@ -214,7 +228,7 @@ const Name: React.FC<{ f: number }> = ({ f }) => {
               opacity: sweepO,
             }}
           >
-            {NAME}
+            {SWEEP_TEXT}
           </div>
           {/* bloom of the hot core spilling past the letter edges */}
           <div
@@ -236,7 +250,7 @@ const Name: React.FC<{ f: number }> = ({ f }) => {
               opacity: sweepO * 0.9,
             }}
           >
-            {NAME}
+            {SWEEP_TEXT}
           </div>
         </>
       ) : null}
@@ -280,9 +294,9 @@ const Glint: React.FC<{ f: number }> = ({ f }) => {
   const rot = interpolate(f, [GLINT - 3, GLINT + 7], [-8, 14], clamp);
   return (
     <div style={{ position: "absolute", left: cx, top: cy, transform: `rotate(${rot}deg) scale(${s})`, mixBlendMode: "screen" }}>
-      <div style={{ position: "absolute", left: -110, top: -1.5, width: 220, height: 3, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.5) 30%, transparent 70%)" }} />
-      <div style={{ position: "absolute", left: -1.5, top: -55, width: 3, height: 110, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.5) 30%, transparent 70%)" }} />
-      <div style={{ position: "absolute", left: -26, top: -26, width: 52, height: 52, borderRadius: 26, background: "radial-gradient(circle, rgba(255,250,240,0.95) 0%, rgba(255,120,80,0.35) 35%, transparent 70%)" }} />
+      <div style={{ position: "absolute", left: -170, top: -2, width: 340, height: 4, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.55) 25%, transparent 70%)" }} />
+      <div style={{ position: "absolute", left: -2, top: -80, width: 4, height: 160, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.55) 25%, transparent 70%)" }} />
+      <div style={{ position: "absolute", left: -40, top: -40, width: 80, height: 80, borderRadius: 40, background: "radial-gradient(circle, rgba(255,250,240,0.95) 0%, rgba(255,110,70,0.4) 30%, transparent 70%)" }} />
     </div>
   );
 };
@@ -341,13 +355,15 @@ const Contact: React.FC<{ f: number }> = ({ f }) => {
 
 export const Scene: React.FC = () => {
   const f = useCurrentFrame();
-  const push = interpolate(f, [0, DUR], [1.0, 1.045], clamp);
+  const push = interpolate(f, [0, DUR], [1.0, 1.022], clamp);
   const fade = interpolate(f, [FADE_A, FADE_B], [0, 1], { ...clamp, easing: EIO });
-  const tail = interpolate(f, [BOOM, BOOM + 4, BOOM + 26], [0, 1, 0], { ...clamp, easing: EO });
+  const tail = interpolate(f, [BOOM - 2, BOOM, BOOM + 26], [0, 1, 0], { ...clamp, easing: EO });
+  // once fully black, draw nothing (the global cut-glitch slices would otherwise leak 1px seams)
+  if (fade >= 1) return <AbsoluteFill style={{ background: "#000" }} />;
   return (
     <AbsoluteFill style={{ background: C.ink, overflow: "hidden" }}>
-      <AbsoluteFill style={{ transform: `scale(${push + tail * 0.006})`, transformOrigin: "7.8% 56%" }}>
-        <FaceField f={f} />
+      <FaceField f={f} />
+      <AbsoluteFill style={{ transform: `scale(${push + tail * 0.005})`, transformOrigin: `${X0}px ${BASE}px` }}>
         <Chip f={f} />
         <Name f={f} />
         <Underline f={f} />
