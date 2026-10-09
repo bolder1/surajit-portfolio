@@ -13,11 +13,11 @@ import rimSrc from "./_S8/rim.png";
 /**
  * 08 · SESSION (180 f): the end card. Full 16:9, no letterbox.
  *
- * f0    a vermilion "focused field" underline draws on; ACCESS GRANTED chip snaps in; the face mesh starts drawing
+ * f0    a vermilion "focused field" underline snaps on and draws; the face mesh starts drawing
  * f2    SURAJIT DUTTA rises out of the underline (mask) while its tracking compresses 0.14em to -0.02em
  * f30   the underline slides right and collapses into the full stop: a vermilion period lands (click)
- * f43   one specular band crosses the name; f60 it reaches the period: glint (shimmer swells under it)
- * f45   "Let's build something users trust." rises from its baseline
+ * f43   one specular band crosses the name and leaves past the period (shimmer swells under it); no glint
+ * f45   "Let's build something users trust." rises from its baseline, in silence
  * f75   contact types in (email, separator on f90, LinkedIn done f110), vermilion caret
  * f111  9 frames of near-silence
  * f120  sub boom: his portrait resolves under the mesh and its vermilion rim light ignites
@@ -113,7 +113,8 @@ const FaceField: React.FC<{ f: number }> = ({ f }) => {
   const push = interpolate(f, [0, DUR], [1.0, 1.035], clamp);
   return (
     <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: `${STAGE_C.x}px ${STAGE_C.y}px` }}>
-      <Glow x={STAGE_C.x - 230} y={STAGE_C.y - 160} r={520} opacity={0.16 * resolve + 0.12 * flare} />
+      {/* the boom's bloom decays to a faint haze; the photo's own rim light carries the hold */}
+      <Glow x={STAGE_C.x - 230} y={STAGE_C.y - 160} r={520} opacity={0.06 * resolve + 0.14 * flare} />
       <AbsoluteFill
         style={{
           WebkitMaskImage: "linear-gradient(90deg, transparent 0px, transparent 1250px, #000 1560px)",
@@ -140,36 +141,6 @@ const FaceField: React.FC<{ f: number }> = ({ f }) => {
         </g>
       </svg>
     </AbsoluteFill>
-  );
-};
-
-const Chip: React.FC<{ f: number }> = ({ f }) => {
-  const sx = interpolate(f, [0, 3], [0.8, 1], { ...clamp, easing: EO });
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: X0 + 4,
-        top: NAME_TOP - 58,
-        height: 34,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "0 16px 0 13px",
-        border: `1px solid ${C.faint}`,
-        borderRadius: 17,
-        transform: `scaleX(${sx})`,
-        transformOrigin: "0 50%",
-        fontFamily: mono,
-        fontSize: 15,
-        letterSpacing: "0.22em",
-        color: C.dim,
-        whiteSpace: "nowrap",
-      }}
-    >
-      <div style={{ width: 8, height: 8, borderRadius: 4, background: C.acc, boxShadow: `0 0 10px ${C.accGlow}` }} />
-      ACCESS GRANTED · VERIFIED
-    </div>
   );
 };
 
@@ -280,24 +251,9 @@ const Underline: React.FC<{ f: number }> = ({ f }) => {
         height: h,
         background: C.acc,
         borderRadius: grow > 0.5 ? 3 : 0,
-        boxShadow: `0 0 ${12 + pop * 26}px ${C.accGlow}`,
+        boxShadow: `0 0 ${5 + pop * 22}px ${C.accGlow}`, // one pop on the landing, then a faint emissive edge
       }}
     />
-  );
-};
-
-const Glint: React.FC<{ f: number }> = ({ f }) => {
-  const s = interpolate(f, [GLINT - 3, GLINT, GLINT + 7], [0, 1, 0], { ...clamp, easing: Easing.bezier(0.3, 0, 0.3, 1) });
-  if (s <= 0.001) return null;
-  const cx = DOT_X + DOT_W / 2;
-  const cy = DOT_Y + DOT_H / 2;
-  const rot = interpolate(f, [GLINT - 3, GLINT + 7], [-8, 14], clamp);
-  return (
-    <div style={{ position: "absolute", left: cx, top: cy, transform: `rotate(${rot}deg) scale(${s})`, mixBlendMode: "screen" }}>
-      <div style={{ position: "absolute", left: -170, top: -2, width: 340, height: 4, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.55) 25%, transparent 70%)" }} />
-      <div style={{ position: "absolute", left: -2, top: -80, width: 4, height: 160, background: "radial-gradient(ellipse at center, #fffaf2 0%, rgba(255,240,220,0.55) 25%, transparent 70%)" }} />
-      <div style={{ position: "absolute", left: -40, top: -40, width: 80, height: 80, borderRadius: 40, background: "radial-gradient(circle, rgba(255,250,240,0.95) 0%, rgba(255,110,70,0.4) 30%, transparent 70%)" }} />
-    </div>
   );
 };
 
@@ -364,10 +320,8 @@ export const Scene: React.FC = () => {
     <AbsoluteFill style={{ background: C.ink, overflow: "hidden" }}>
       <FaceField f={f} />
       <AbsoluteFill style={{ transform: `scale(${push + tail * 0.005})`, transformOrigin: `${X0}px ${BASE}px` }}>
-        <Chip f={f} />
         <Name f={f} />
         <Underline f={f} />
-        <Glint f={f} />
         <Line f={f} />
         <Contact f={f} />
       </AbsoluteFill>
@@ -381,15 +335,13 @@ const typeCues = (text: string, start: number, base: number): Cue[] =>
   text
     .split("")
     .map((_, i) => ({ f: charFrame(start, i), i }))
-    .filter(({ i }) => i % 2 === 0)
-    .map(({ f, i }) => ({ f, sfx: keySfx(base + i / 2), vol: 0.13 + ((i * 7) % 5) * 0.012 }));
+    .filter(({ i }) => i % 4 === 0) // 1.5 chars/frame: a key every 4th char keeps it a patter, not a buzz
+    .map(({ f, i }) => ({ f, sfx: keySfx(base + i / 4), vol: 0.13 + ((i * 7) % 5) * 0.012 }));
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "whoosh-long", vol: 0.42 },
-  { f: 1, sfx: "snap", vol: 0.18 },
-  { f: SETTLE, sfx: "click", vol: 0.28 },
-  { f: GLINT - 24, sfx: "shimmer", vol: 0.38 },
-  { f: LINE_IN, sfx: "swish", vol: 0.28 },
+  { f: 1, sfx: "snap", vol: 0.2 }, // the field underline snaps on
+  { f: SETTLE, sfx: "click", vol: 0.28 }, // full stop lands
+  { f: GLINT - 24, sfx: "shimmer", vol: 0.38 }, // swells under the specular band
   ...typeCues(EMAIL, TYPE_A, 0),
   { f: SEP_F, sfx: "click-lo", vol: 0.16 },
   ...typeCues(LINKEDIN, TYPE_B, 3),

@@ -6,13 +6,15 @@ import { Glow } from "../lib/FX";
 import type { Cue, Sfx } from "../lib/cues";
 
 /**
- * 05 · SPEED (120 f) — the AI-workflow proof, told on a posture instrument.
+ * 05 · SPEED (120 f): the AI-workflow proof, told on a posture instrument.
  * One instrument, three states:
  *  f0–27   GAUGE: a 270° gauge of 15 day-segments sweeps full. TYPICAL CYCLE · 15 business days · 3 WEEKS
  *  f30–43  UNCURL: the arc straightens into a 3-week timeline (curvature → 0, segments become day cells)
  *  f45     beat 4: the first 5 days light vermilion; the other 10 fold flat, right to left
- *  f45–60  the Doto odometer climbs with the fold … lands on −70 % on the bar downbeat (f60)
- *  f62–84  ACTIVE DIRECTORY PROTOTYPE / FIGMA MAKE + CLAUDE · AI-ASSISTED type in; hold
+ *  f45–60  the Doto odometer climbs with the fold, lands on ~70 % on the bar downbeat (f60)
+ *          (source fact: "~70% faster", 3 weeks to 5 days; 15 → 5 business days is 67 %, hence the ~)
+ *  f61–68  FASTER rises out of its mask beside the %, width opening 75 → 110
+ *  f66–88  ACTIVE DIRECTORY PROTOTYPE / FIGMA MAKE + CLAUDE · AI-ASSISTED type in; hold
  *  f105–116 exit (beat 8): stat wipes down, lines wipe left, labels drop, cells retract to the 5 days
  */
 
@@ -45,12 +47,12 @@ const UNCURL_B = 43;
 const STATE = 45; // 5 days light up
 const foldStart = (k: number) => STATE + 1 + (N - 1 - k); // k = 14 first … k = 5 last (f55)
 const FOLD_LEN = 5;
-const LAND = 60; // −70 % on the downbeat
+const LAND = 60; // ~70 % on the downbeat
 const ODO = (f: number) => 70 * interpolate(f, [STATE + 1, LAND], [0, 1], { ...clamp, easing: Easing.bezier(0.3, 0.45, 0.35, 1) });
 const L1 = "ACTIVE DIRECTORY PROTOTYPE";
 const L2 = "FIGMA MAKE + CLAUDE · AI-ASSISTED";
-const T1 = 63;
-const T2 = 72;
+const T1 = 66;
+const T2 = 75;
 const CPS = 2.6; // chars per frame
 const EXIT = 105;
 
@@ -128,6 +130,7 @@ export const Scene: React.FC = () => {
   const statIn = prog(f, STATE + 1, STATE + 7, EO);
   const daysS = spring({ frame: f - STATE - 1, fps, config: { stiffness: 220, damping: 15 } });
   const strike = prog(f, LAND, LAND + 5, EO);
+  const fasterP = prog(f, LAND + 1, LAND + 9, EO);
 
   // ── sweep tick ring
   const ticks: React.ReactNode[] = [];
@@ -170,7 +173,6 @@ export const Scene: React.FC = () => {
     const hotS = hot ? spring({ frame: f - STATE - k, fps, config: { stiffness: 380, damping: 16 } }) : 0;
     const fp = five ? 0 : prog(f, foldStart(k), foldStart(k) + FOLD_LEN, EIO);
     const ex = prog(f, EXIT + 1 + (N - 1 - k) * 0.35, EXIT + 6 + (N - 1 - k) * 0.35, EI);
-    const glowPulse = landed && five ? interpolate(f, [LAND, LAND + 2, LAND + 14], [0, 1, 0.25], clamp) : 0;
     return (
       <div
         key={k}
@@ -211,7 +213,6 @@ export const Scene: React.FC = () => {
               borderRadius: lerp(3, 8, u),
               background: hot ? C.acc : C.paper,
               opacity: hot ? 1 : 0.9,
-              boxShadow: hot ? `0 0 ${12 + 26 * glowPulse}px rgba(255,59,31,${0.22 + 0.4 * glowPulse})` : "none",
             }}
           />
           {/* weekday letter */}
@@ -256,8 +257,8 @@ export const Scene: React.FC = () => {
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: "960px 560px" }}>
         {/* light */}
         <Glow x={G.x} y={G.y} r={560} color="rgba(243,236,222,0.07)" opacity={1 - u} />
-        <Glow x={cellLeft(2) + CELL_W / 2} y={ROW_Y} r={340} opacity={(f >= STATE ? 0.16 : 0) * (1 - exitP) + (landed ? 0.3 * interpolate(f, [LAND, LAND + 14], [1, 0], clamp) : 0)} />
-        <Glow x={600} y={360} r={560} opacity={landed ? 0.34 * interpolate(f, [LAND, LAND + 18], [1, 0], clamp) : 0} />
+        {/* the landing's one bloom, behind the stat */}
+        <Glow x={600} y={360} r={560} opacity={landed ? 0.3 * interpolate(f, [LAND, LAND + 18], [1, 0], clamp) : 0} />
 
         {/* timeline axis */}
         <div
@@ -291,7 +292,7 @@ export const Scene: React.FC = () => {
                 fontSize={20}
                 letterSpacing="0.1em"
                 fill={C.paper}
-                opacity={(shown >= d ? 0.85 : 0.3) * ringIn}
+                opacity={(shown >= d ? 0.85 : 0.45) * ringIn}
               >
                 {d}
               </text>
@@ -321,7 +322,7 @@ export const Scene: React.FC = () => {
             top: wk.y,
             transform: `translateX(${lerp(-50, -100, u)}%) translateY(${drop * 60}px)`,
             whiteSpace: "nowrap",
-            opacity: prog(f, 18, 26, EO) * (f < UNCURL_B ? 1 - prog(u, 0, 0.2) : prog(f, UNCURL_B, UNCURL_B + 4, EO)) * (1 - drop),
+            opacity: (f >= DAY_FRAMES[N - 1] ? 1 : 0) * (f < UNCURL_B ? 1 - prog(u, 0, 0.2) : prog(f, UNCURL_B, UNCURL_B + 4, EO)) * (1 - drop),
           }}
         >
           <div style={{ ...mona(100, 640), fontSize: lerp(44, 34, u), letterSpacing: "0.04em", color: C.paper, opacity: lerp(0.92, 0.5, prog(f, STATE, STATE + 10, EO)) }}>3 WEEKS</div>
@@ -345,7 +346,7 @@ export const Scene: React.FC = () => {
           </div>
         </div>
 
-        {/* odometer: −70 % */}
+        {/* odometer: ~70 % */}
         <div style={{ position: "absolute", left: STAT_X, top: STAT_Y, clipPath: `inset(${clipTop}% -60px ${clipBottom}% -60px)` }}>
           <div style={{ display: "flex", alignItems: "flex-start", transform: `scale(${statPunch})`, transformOrigin: "0% 100%" }}>
             <div
@@ -353,16 +354,18 @@ export const Scene: React.FC = () => {
                 height: LH,
                 lineHeight: `${LH}px`,
                 width: FS * 0.6,
-                marginRight: -34,
+                marginRight: -6,
                 fontFamily: dots,
                 fontWeight: wght,
                 fontSize: FS,
                 color: signC,
                 textAlign: "center",
-                textShadow: landed ? `0 0 34px rgba(255,59,31,${0.45 * (1 - landS * 0.6)})` : "none",
+                // Doto draws ~ at cap height: drop it to the digits' optical middle and keep it off the 7
+                transform: `translateY(${0.2 * FS}px) scale(0.84)`,
+                transformOrigin: "50% 30%",
               }}
             >
-              −
+              ~
             </div>
             <Column pos={tensPos} wght={wght} color={C.paper} />
             <Column pos={ones} wght={wght} color={C.paper} />
@@ -375,7 +378,6 @@ export const Scene: React.FC = () => {
                 marginTop: CAP_TOP - 0.156 * PCT,
                 marginLeft: 18,
                 color: signC,
-                textShadow: landed ? `0 0 34px rgba(255,59,31,${0.45 * (1 - landS * 0.6)})` : "none",
               }}
             >
               %
@@ -384,9 +386,22 @@ export const Scene: React.FC = () => {
         </div>
 
         {/* system lines */}
-        <div style={{ position: "absolute", left: 1120, top: 330, fontFamily: mono, whiteSpace: "nowrap", clipPath: `inset(0 ${wipe * 100}% 0 0)` }}>
-          <div style={{ fontSize: 18, letterSpacing: "0.26em", color: C.dim, opacity: statIn, height: 26 }}>CYCLE TIME</div>
-          <div style={{ width: 600, height: 1, background: C.paper, opacity: 0.2, margin: "18px 0 24px", transform: `scaleX(${prog(f, LAND, LAND + 10, EO)})`, transformOrigin: "0 50%" }} />
+        <div style={{ position: "absolute", left: 1120, top: 292, fontFamily: mono, whiteSpace: "nowrap", clipPath: `inset(0 ${wipe * 100}% 0 0)` }}>
+          <div style={{ overflow: "hidden", height: 74, paddingTop: 4 }}>
+            <div
+              style={{
+                ...mona(interpolate(fasterP, [0, 1], [75, 110]), interpolate(fasterP, [0, 1], [560, 800])),
+                fontSize: 66,
+                lineHeight: 1,
+                letterSpacing: "0.01em",
+                color: C.paper,
+                transform: `translateY(${(1 - fasterP) * 105}%)`,
+              }}
+            >
+              FASTER
+            </div>
+          </div>
+          <div style={{ width: 600, height: 1, background: C.paper, opacity: 0.2, margin: "16px 0 24px", transform: `scaleX(${prog(f, LAND + 2, LAND + 12, EO)})`, transformOrigin: "0 50%" }} />
           <div style={{ fontSize: 30, letterSpacing: "0.12em", color: C.paper, height: 40 }}>
             {typed(L1, T1)}
             {caret(L1, T1) && f < T2 ? <span style={{ color: C.acc }}>▌</span> : null}
@@ -405,11 +420,10 @@ const keys: Sfx[] = ["key-0", "key-3", "key-1", "key-4", "key-2", "key-5"];
 /** thin a run of frames so no two ticks sit closer than `gap` frames */
 const thin = (frames: number[], gap = 2) =>
   frames.reduce<number[]>((acc, fr) => (acc.length === 0 || fr - acc[acc.length - 1] >= gap ? [...acc, fr] : acc), []);
-const dayTicks = thin(DAY_FRAMES.slice(0, N - 1));
+const dayTicks = thin(DAY_FRAMES.slice(0, N - 1), 3);
 export const cues: Cue[] = [
   { f: 0, sfx: "blip", vol: 0.24 }, // instrument powers on
-  { f: 1, sfx: "chatter", vol: 0.16 }, // tick ring draws
-  // a tick as the sweep crosses each day (thinned to ≥2 f apart)
+  // a tick as the sweep crosses a day (thinned to ≥3 f apart)
   ...dayTicks.map((fr, i) => ({ f: fr, sfx: i % 2 ? ("click" as const) : ("key-1" as const), vol: 0.15 + 0.008 * i })),
   { f: DAY_FRAMES[N - 1], sfx: "click-lo", vol: 0.26 }, // day 15: full cycle
   { f: UNCURL_A - 2, sfx: "whoosh", vol: 0.42 }, // arc uncurls into 3 weeks
@@ -417,8 +431,8 @@ export const cues: Cue[] = [
   { f: STATE, sfx: "blip-up", vol: 0.32 }, // 5 days go live
   { f: STATE + 1, sfx: "swish", vol: 0.32 }, // 10 days fold away
   // odometer: a tick each time the tens digit turns over
-  ...thin(ODO_FRAMES.filter((fr) => fr <= LAND - 5)).map((fr, i) => ({ f: fr, sfx: keys[i % keys.length], vol: 0.2 })),
-  // near-silence, then the landing on the downbeat
+  ...thin(ODO_FRAMES.filter((fr) => fr <= LAND - 7)).map((fr, i) => ({ f: fr, sfx: keys[i % keys.length], vol: 0.2 })),
+  // f54–59 near-silence, then the landing on the downbeat
   { f: LAND, sfx: "impact-soft", vol: 0.88 },
   { f: LAND, sfx: "snap", vol: 0.3 },
   // system lines type in (every 3rd char)
@@ -428,5 +442,5 @@ export const cues: Cue[] = [
   ...Array.from({ length: Math.ceil(L2.length / CPS) }, (_, i) => T2 + i)
     .filter((_, i) => i % 3 === 1)
     .map((fr, i) => ({ f: fr, sfx: keys[(i + 4) % keys.length], vol: 0.13 })),
-  { f: EXIT, sfx: "whoosh", vol: 0.38 },
+  // exit is silent: the cut to THESIS carries it
 ];
