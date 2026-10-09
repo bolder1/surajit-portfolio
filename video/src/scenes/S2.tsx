@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Easing, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, dots, mona, mono } from "../lib/theme";
-import { clamp, EI, EIO, EO, prog, scramble } from "../lib/anim";
+import { clamp, EI, EIO, EO, prog } from "../lib/anim";
 import { Glow } from "../lib/FX";
 import type { Cue } from "../lib/cues";
 import face from "../assets/face.json";
