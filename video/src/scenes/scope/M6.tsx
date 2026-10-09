@@ -15,7 +15,7 @@ import type { Cue } from "../../lib/cues";
  *  f2     origin device selected (UI snap)
  *  f8     PUSH (the and-of-1): selection hands off to the wave
  *  f8–22  wave crosses the wall; devices flip, ✕ marks appear
- *  f19–30 out-of-policy devices remediate, one by one; near-silence f23–29
+ *  f22–30 out-of-policy devices remediate in the order they appeared; near-silence f23–29
  *  f30    beat 2: last device fixed, OUT OF POLICY 00, held 23 f
  *  f53–58 exit
  */
