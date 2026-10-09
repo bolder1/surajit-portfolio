@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from "remotion";
 import { C, mona, mono, serif } from "../lib/theme";
-import { clamp, EI, EIO, EO, lerp, prog } from "../lib/anim";
+import { clamp, EIO, EO, lerp, prog } from "../lib/anim";
 import { Glow } from "../lib/FX";
 import { keySfx, type Cue } from "../lib/cues";
 import face from "../assets/face.json";
