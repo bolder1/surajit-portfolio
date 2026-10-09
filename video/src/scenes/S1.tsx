@@ -15,7 +15,7 @@ import { keySfx } from "../lib/cues";
  * f46–60  dots flip to vermilion symbols, then lock L→R; each lock pulls its slot tight (tracking compresses).
  *         Last letter locks on f60 (downbeat).
  * f60–75  the input folds shut; letters reflow out of it into EVERY LOGIN / IS A DOOR. at 200 px,
- *         weight 600 → 820 on the way (EIO, lands on beat f75).
+ *         weight 600 → 820 on the way (EIO, line by line, lands on beat f75).
  * f75–89  "Someone has to design it." rises from a baseline mask, hung off the D of DOOR.
  * f90     "design" turns vermilion (beat). Hold.
  * f104–117 everything exits up through its line masks; whoosh.
@@ -35,8 +35,10 @@ const EYE = 45;
 const flipAt = (i: number) => 46 + i * 0.22;
 const lockAt = (i: number) => 49 + (i * 11) / (N - 1); // last lock lands on f60
 const DONE = 60;
-const flyAt = (i: number) => DONE + i * 0.17; // reflow stagger
-const FLY = 11; // reflow duration → last letter lands ≈ f74.6
+// reflow: each line moves as one rigid group (no per-glyph stagger, so spacing never collides);
+// line 2 trails line 1 by 2 frames and lands on the beat (f75).
+const flyAt = (i: number) => DONE + lineOf(i) * 2;
+const FLY = 13;
 const LINE2 = 75;
 const ACC = 90;
 const OUT = 104;
