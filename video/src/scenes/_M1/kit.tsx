@@ -5,16 +5,12 @@ import { clamp, EI, prog } from "../../lib/anim";
 
 /**
  * Family kit for SCOPE modules M1–M3 (IdP · SSO / PASSWORD VAULT / MFA).
- * Shared language: blueprint dot grid, 1–1.5 px cream linework, mono micro labels,
- * a slow camera push, a vermilion "grant pulse" on beat 4 (f45) and the same
- * speed-ramped exit into the cut (f49 → f57).
+ * Shared language: blueprint dot grid, 1–1.5 px cream linework, mono labels (16 px minimum),
+ * a slow camera push, one vermilion state change per module on beat 3 (f30), held for
+ * 20 f, then the same speed-ramped exit into the cut (f50 → f58).
  */
 
 export type Pt = { x: number; y: number };
-
-/** Kept for modules that import it: beat 4, the default resolve frame. */
-export const GRANT = 45;
-
 
 /* ------------------------------------------------------------------ polylines */
 
@@ -104,7 +100,7 @@ export const Stage: React.FC<{ focus: Pt; children: React.ReactNode; push?: numb
   );
 };
 
-/** Blueprint dot grid with a radial falloff around `focus`, drifting slowly (parallax layer). */
+/** Blueprint dot grid with a radial falloff around `focus`, drifting slowly (parallax layer). Dots only: no registration crosses. */
 export const DotGrid: React.FC<{ focus: Pt; rx?: number; ry?: number; drift?: number; id: string; opacity?: number }> = ({
   focus,
   rx = 760,
@@ -121,9 +117,6 @@ export const DotGrid: React.FC<{ focus: Pt; rx?: number; ry?: number; drift?: nu
         <pattern id={`${id}-p`} width={32} height={32} patternUnits="userSpaceOnUse" x={off} y={off * 0.3}>
           <circle cx={16} cy={16} r={1.1} fill={C.paper} opacity={0.16} />
         </pattern>
-        <pattern id={`${id}-q`} width={160} height={160} patternUnits="userSpaceOnUse" x={off} y={off * 0.3}>
-          <path d="M 80 74 V 86 M 74 80 H 86" stroke={C.paper} strokeWidth={1} opacity={0.22} />
-        </pattern>
         <radialGradient id={`${id}-g`} cx={focus.x} cy={focus.y} r={rx} gradientUnits="userSpaceOnUse"
           gradientTransform={`translate(${focus.x} ${focus.y}) scale(1 ${ry / rx}) translate(${-focus.x} ${-focus.y})`}>
           <stop offset="0" stopColor="#fff" stopOpacity={1} />
@@ -136,20 +129,19 @@ export const DotGrid: React.FC<{ focus: Pt; rx?: number; ry?: number; drift?: nu
       </defs>
       <g mask={`url(#${id}-m)`}>
         <rect width={1920} height={1080} fill={`url(#${id}-p)`} />
-        <rect width={1920} height={1080} fill={`url(#${id}-q)`} />
       </g>
     </svg>
   );
 };
 
-/** Mono system label (uppercase, tracked). */
+/** Mono system label (uppercase, tracked). Never below 16 px. */
 export const Mono: React.FC<{ children: React.ReactNode; size?: number; color?: string; style?: React.CSSProperties }> = ({
   children,
-  size = 14,
+  size = 16,
   color = C.dim,
   style,
 }) => (
-  <div style={{ fontFamily: mono, fontSize: size, letterSpacing: "0.22em", textTransform: "uppercase", color, whiteSpace: "nowrap", ...style }}>
+  <div style={{ fontFamily: mono, fontSize: Math.max(16, size), letterSpacing: "0.22em", textTransform: "uppercase", color, whiteSpace: "nowrap", ...style }}>
     {children}
   </div>
 );
