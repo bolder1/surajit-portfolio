@@ -17,8 +17,9 @@ import { DotGrid, flashAt, Mono, Stage, Wipe, type Pt } from "../_M1/kit";
  * f30  (beat 3) centre slot turns 90° and lights vermilion: VAULT · OPEN, one pulse. Held f30–50, exit f51–58.
  */
 
-const O: Pt = { x: 1470, y: 490 };
-const DIAL_SCALE = 0.86;
+// Outer frame r340 × 0.82 × 1.05 push ≈ 293 px: clears the title's right edge (x≈1215) and stays inside x 1780 / y 170.
+const O: Pt = { x: 1480, y: 482 };
+const DIAL_SCALE = 0.82;
 const GRANT = 30;
 const SZ = 760; // layer box
 const H = SZ / 2;
@@ -189,8 +190,9 @@ const Dial: React.FC<{ f: number }> = ({ f }) => {
             <line x1={18} y1={0} x2={30} y2={0} stroke={C.paper} strokeOpacity={0.4} />
           </g>
           {/* fixed index: reticle + triangle at 12 o'clock */}
-          <line x1={0} y1={-100} x2={0} y2={-202} stroke={aligned || snapFl > 0.02 ? C.acc : C.paper} strokeOpacity={aligned ? 0.8 : 0.2 + 0.7 * snapFl} strokeWidth={1.2} />
-          <polygon points={`0,${-236} -9,${-252} 9,${-252}`} fill={aligned || snapFl > 0.3 ? C.acc : C.paper} />
+          {/* the index flashes vermilion on each snap; on the hold the lit slot is the only vermilion in the dial */}
+          <line x1={0} y1={-100} x2={0} y2={-202} stroke={snapFl > 0.02 ? C.acc : C.paper} strokeOpacity={(aligned ? 0.55 : 0.2) + 0.45 * snapFl} strokeWidth={1.2} />
+          <polygon points={`0,${-236} -9,${-252} 9,${-252}`} fill={snapFl > 0.3 ? C.acc : C.paper} />
           {/* grant pulse */}
           {pulse > 0 && pulse < 1 ? <circle r={96 + 250 * pulse} fill="none" stroke={C.acc} strokeWidth={1.6} opacity={0.85 * (1 - pulse)} /> : null}
         </Layer>
