@@ -139,11 +139,11 @@ export const Scene: React.FC = () => {
     const x = slotX[i];
     const w = slotW[i];
     // 1) masked dot (snaps in), standing up into a vermilion cap-height bar once the eye is open
-    const barEnd = lockAt(i) + OPEN - 1;
+    const barEnd = lockAt(i) + 2;
     if (f < barEnd) {
       const sp = spring({ frame: f - dotAt(i), fps, config: { stiffness: 420, damping: 16, mass: 0.6 } });
       const up = prog(f, flipAt(i), flipAt(i) + 2, EO);
-      const close = prog(f, lockAt(i), barEnd, EI); // the bar collapses as the letter opens out of it
+      const close = prog(f, lockAt(i), barEnd, EO); // the bar collapses into the letter as it opens
       const bw = lerp(16, 5, up);
       const bh = lerp(16, CAP_A, up) * (1 - close);
       lines[ln].push(
