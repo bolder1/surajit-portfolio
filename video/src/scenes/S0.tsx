@@ -13,7 +13,7 @@ import { keySfx } from "../lib/cues";
  * f80–89  silence, only the caret blinks after "subject = ?".
  * f90     the stack lifts, "IDENTITY:" prints and UNVERIFIED drops in huge (vermilion): letters print wide
  *         and light, then clamp narrow-heavy on the second deny beep (f94) with a wrong-password shake.
- *         Then it blinks on 8ths.
+ *         One blink on the 8th (f98–104), then it stays lit into the push.
  * f106–117 speed-ramped push into the word, then the cut.
  */
 
@@ -193,9 +193,10 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
   const t = f - HIT;
   const clampP = prog(f, DENY2, DENY2 + 7, EO);
   const shake = f >= DENY2 ? Math.sin((f - DENY2) * 2.1) * 24 * Math.exp(-(f - DENY2) / 3.2) : 0;
-  // blinks on 8ths once clamped: bright [90,99) [105,113), low otherwise
-  const low = (f >= 99 && f < 105) || f >= 113;
-  const pulse = low ? 0.24 : 1;
+  // one blink on the 8th after the clamp, then it stays lit into the push-in (caret keeps blinking)
+  const low = f >= 98 && f < 105;
+  const pulse = low ? 0.34 : 1;
+  const lift = LIFT * prog(f, HIT, HIT + 10, EO);
   const track = interpolate(clampP, [0, 1], [0.05, -0.012]);
   const kick = prog(f, HIT, HIT + 6, EO);
   const idN = Math.min(9, Math.floor((t + 1) * 4.5));
@@ -207,7 +208,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
         style={{
           position: "absolute",
           left: X1,
-          top: ID_TOP,
+          top: ID_TOP + LIFT - lift,
           height: LH,
           lineHeight: `${LH}px`,
           fontFamily: mono,
@@ -247,7 +248,7 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
             </span>
           );
         })}
-        <Caret on={f < 99 || (f >= 105 && f < 113)} color={C.acc} h={BIG * 0.729} w={BIG * 0.3} base gap={BIG * 0.06} />
+        <Caret on={f < 98 || (f >= 105 && f < 112)} color={C.acc} h={BIG * 0.729} w={BIG * 0.3} base gap={BIG * 0.06} />
       </div>
     </>
   );
