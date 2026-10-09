@@ -47,3 +47,4 @@ previews/
 videos/**/review/work-*/
 videos/**/review/.*hf-transaction*/
 videos/**/.hf-transaction*/
+videos/**/review/*.mp4

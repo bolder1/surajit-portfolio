@@ -8,7 +8,7 @@ description: >
   pass behind it. Everything is hand-built motion, synthesised sound, real screenshots and his real photo.
 unit: "frame 1920x1080 · 30 fps · 120 BPM (beat 15 f = 0.5 s, bar 60 f = 2 s) · 1560 f total"
 principle: "one beam · one focal accent per frame · real work under real glass · nothing generated"
-proof: "compositions/00-styleframe.html · review/styleframe-*.png · review/styleframe.mp4"
+proof: "compositions/00-styleframe.html · review/styleframe-0{1,2,3}-*.png · review/styleframe.mp4 · review/portrait-test.png"
 
 colors:
   void: "#0B0716" # base background of every frame
@@ -149,9 +149,11 @@ and decays. That is the whole texture language; it is applied the same way in ev
 7. **CRT power-on** (entrance of every raster asset: captures, case screens, portrait). scaleX
    0.02→1 in 0.12 s power4.out, then scaleY 0.006→1 in 0.24 s expo.out; a beam-core flash layer
    95%→0 in 0.36 s; a scanline overlay (3 px period, 1 px void-deep @ 55%) 90%→0 in 0.7 s power2.in.
-   Scanlines exist **only** during these 21 frames. SFX `crt-on`.
-8. **CRT power-off.** Used once: F11's last 12 frames (1368–1380). Frame container scaleY 1→0.004 in
-   6 f power3.in, then scaleX 1→0 in 4 f power4.in, a beam-core dot holds 2 f. SFX `power-down`.
+   Scanlines exist **only** during these 21 frames. No SFX of its own: `crt-on` is reserved for
+   F1's open (SOUND.md); the `glass-tink` of the glass condensing covers the moment.
+8. **CRT power-off.** Used once, at the end of F11: frame container scaleY 1→0.004 in 6 f power3.in
+   (1365–1371), then scaleX 1→0.004 in 6 f power4.in (1371–1377); a beam-core dot holds through the
+   bed's breath gap (1377–1380). SFX: a short reversed `crt-on` blip (SOUND.md).
 9. **Grain.** `ReelKit.grainURL(1337)` tile, `mix-blend-mode: overlay` @ 10%, re-rolled every video
    frame with `ReelKit.grainPos(t)`. Topmost layer of every frame, `data-layout-ignore`.
 10. **Vignette.** Radial 78% × 74%, clear to 58%, void-deep @ 72% at the edge. Sits above the world,
@@ -220,7 +222,7 @@ rotate.
 - **Tint** `.lg-tint`: Tier H rgba(180,150,255,0.07); Tier B carrying text rgba(20,12,38,0.42).
 - **Shade** `.lg-shade` (inset stack): `inset 0 2px 1px -1px rgba(255,255,255,.7)`, `inset 0 26px 40px
   -30px rgba(255,255,255,.35)`, `inset 0 -34px 54px -34px rgba(34,230,255,.28)`, `inset 0 0 36px
-  rgba(180,150,255,.10)`, `inset 0 0 0 1px rgba(243,238,255,.10)`.
+  rgba(255,255,255,.05)` (neutral: a coloured zero-offset inner glow trips impeccable's dark-glow test), `inset 0 0 0 1px rgba(243,238,255,.10)`.
 - **Specular rim** `.lg-rim`: 2 px masked ring (`mask-composite: exclude` + `-webkit-mask-composite:
   xor`), `conic-gradient(from var(--spec), #FFF@95% 0°, #FFF@18% 46°, transparent 90°, beam@70% 168°,
   transparent 214°, cyan@45% 300°, #FFF@95% 360°)`. Lit top-left, beam-tinted bottom-right, cyan
@@ -247,11 +249,17 @@ rotate.
   (magenta and cyan vanished). Never combine `url()` with other backdrop functions.
 - `feGaussianBlur` inside a backdrop SVG filter left a dark inner frame (the backdrop edge is
   transparent). No blur inside Tier B filters.
-- WebGL1 runs on SwiftShader; WebGL2 does not. The registry liquid-glass blocks (`vfx-liquid-glass`,
+- WebGL1 runs on SwiftShader; WebGL2 does not (the CLI's probe still prints "WebGL unavailable",
+  meaning no hardware GPU). The registry liquid-glass blocks (`vfx-liquid-glass`,
   `liquid-glass-widgets`) need three.js plus the html-in-canvas `drawElementImage` API and ship
   placeholder copy, so they were rejected in favour of this SVG recipe.
 - Budget: 1 Tier H + 3 Tier B visible at once. Each Tier H costs 3 displacement passes over
   (w + 2·pad) × (h + 2·pad) per frame.
+- **Render cost (measured):** the full style frame (1 Tier H, 1 Tier B, beam bloom in both world
+  copies, floor, grain) renders at 0.31–0.53 s per frame wall-clock with 2 workers (`beginframe
+  capture · software gpu`; 37.7 s for 120 frames on an idle machine, 63.5 s while another render
+  ran), so the 1560-frame film projects to 8–14 min. Run one render at a time. Runtime WebGL media grading
+  multiplies that by ~9 (see Asset treatment): bake treatments instead.
 
 ## Typography
 
@@ -273,6 +281,10 @@ rotate.
   width axis is the signature move; a chrome or neon display font would break "one expressive font
   per frame". Instrument Serif (impeccable reflex list, editorial lane) and Inter Tight are not used.
 - Minimum sizes: labels 22 px, statements 44 px, display 120 px. Hierarchy steps ≥ 1.25×.
+- `npx impeccable` flags Mona Sans as an overused font. It stays: it is his established brand face
+  (ANTI-SLOP.md names it the primary voice) and impeccable's own rule lets identity preservation win.
+  Its other remaining advisory, "repeating-gradient stripes", is the 21-frame CRT power-on scanline
+  layer, which is deliberate and never left on screen.
 
 ## Motion language
 
@@ -286,8 +298,10 @@ Energetic means **fast arrivals, hard stops, held frames**, not everything movin
 - **Speed ramps.** The beam cruises (none), decelerates into pads (power2.out), and fires through
   glass (power2.in). Camera moves (a frame's world container) go power3.in into a cut and expo.out
   out of the next one, velocity-matched.
-- **Silence.** 8 frames of void before the drop (232–240) and the breakdown (F11) are part of the
-  motion design; nothing moves in them except grain.
+- **Silence.** 8 frames of void before the drop (232–240), the breakdown (F11) and the 3-frame breath
+  before the final lift (1377–1380) are part of the motion design; nothing moves in them but grain.
+- **Lock to the bed.** Every cut and primary hit sits on a frame in the hit map of
+  `assets/audio/README.md` (drop 240, stat 900, counter stabs 1230/1245/1260/1275, final chord 1500).
 
 ### Transition system (the beam carries most of them)
 
@@ -302,8 +316,9 @@ Energetic means **fast arrivals, hard stops, held frames**, not everything movin
 | 960     | F7 → F8   | **Hard cut.** |
 | 1080    | F8 → F9   | **Continue upward.** Out y 0→−300, 6 f power3.in; in y 300→0, 9 f expo.out. |
 | 1200    | F9 → F10  | **Hard cut + chroma** (3 f). |
+| 1305    | F10 end   | **Tape-stop.** The bed slows to a halt over 1305–1320: floor scroll rate → 0, beam head freezes, frame sags 4 px (power2.out). |
 | 1320    | F10 → F11 | **Hard cut** into the breakdown. |
-| 1380    | F11 → F12 | **CRT off → CRT on** (1368–1380 off, 1380–1392 on). |
+| 1380    | F11 → F12 | **CRT off → CRT on** (1365–1377 off, dot 1377–1380, 1380–1392 on). |
 | 1530    | F12 end   | Fade to void-deep over 30 f, sine.inOut. |
 
 ## Asset treatment
@@ -314,16 +329,21 @@ Copy every asset into `assets/` (paths in compositions are root-relative: `asset
   `../../public/projects/**`): always inside glass. The frame's hero capture is the Tier H screen;
   secondaries sit in a Tier B frame or wear the skin alone. **UI Fidelity:** no colour grade, no hue
   shift, no duotone, no scanlines after power-on. The showcase concept renders are very dark (average
-  luma ≈ 37/255), so each one gets the measured exposure correction through the canonical tool:
-  `npx hyperframes media-treatment --file compositions/<frame>.html --selector "#<img-id>" --grading
-  '{"adjust":{"exposure":0.42,"contrast":0.12,"shadows":0.1}}' --apply` (run `--analyze` first; keep
-  exposure ≤ 0.5). Light case screens (banking-tool, design-system cover) get no correction and sit
-  on capture-well. Entrance is always the CRT power-on. Inside the glass, tall mobile captures scroll
-  at constant speed (≈ 75 px/s, `ease: none`); desktop captures push in 1.00→1.04 over the hold.
-- **Portrait** (`../../public/v5/portrait.png`, 3776×4532, red-lit, alpha): downscale to 1200 px tall
-  before use (`assets/img/portrait.png`). It lives in a Tier H slab (F3, F12). Treatment: "phosphor
-  print", an ordered dither in the film's own inks through media-treatment, resolving after power-on
-  (recipe and test in `review/portrait-test.png`; see the note at the end of this file).
+  luma 24/255; `media-treatment --analyze` suggests exposure +0.21, contrast +0.12), so each one gets
+  an exposure-only lift, the same curve on R, G and B, **baked offline**:
+  `python3 -I assets/lib/bake.py lift assets/img/<name>.jpg assets/img/<name>.lift.jpg`
+  (gamma 1.22, gain 1.16; luma 24 → 42). Do **not** use runtime `data-color-grading` in this film: on
+  this renderer its WebGL pass costs about 6.6 s per frame (measured: 15 frames took 105 s with it,
+  11 s without). Light case screens (banking-tool, design-system cover) get no lift and sit on
+  capture-well. Entrance is always the CRT power-on. Inside the glass, tall mobile captures scroll at
+  constant speed (≈ 75 px/s, `ease: none`); desktop captures push in 1.00→1.04 over the hold.
+- **Portrait** (`../../public/v5/portrait.png`, 3776×4532, red-lit): "phosphor print", baked by
+  `python3 -I assets/lib/bake.py portrait ../../public/v5/portrait.png assets/img/portrait`, which
+  writes `portrait-duo.png` (1000×1200 gradient map void → haze → beam → beam-core at 0 / 0.32 /
+  0.68 / 1) and `portrait-dither.png` (the same four inks, 4×4 Bayer ordered dither on a 4 px cell).
+  Stack the dither over the duotone inside a Tier H slab (F3, F12). After the CRT power-on the dither
+  layer goes 1 → 0.35 opacity in 0.5 s power2.out, so his face resolves out of the raster and keeps
+  a print texture. Tested: `review/portrait-test.png` (dither · duotone · final 35% stack).
 - **3D loops** (`public/v5/*.webm`): not used. They read as a different, rendered world.
 
 ## Per-frame focal elements
@@ -342,6 +362,27 @@ Copy every asset into `assets/` (paths in compositions are root-relative: `asset
 | F10 Numbers               | 1200–1320 | the number landing                         | volt   | Tier H plate over the counter            | arcade score count               |
 | F11 Make complex feel calm| 1320–1380 | the line pulling straight                  | beam-core / ink | none (the breath)              | CRT power-off                    |
 | F12 Invitation            | 1380–1560 | the name, signed by the beam               | beam   | Tier H portrait slab + Tier B status chip | CRT power-on, signature stroke  |
+
+## Registry blocks
+
+Searched with `npx hyperframes catalog --query` for liquid glass, neon trail, synthwave grid, CRT/VHS,
+glitch cuts and variable-font titles. Installed (both pass lint; adapt before mounting):
+
+- `compositions/lt-neon-border.html` (block): two arcs of light travel a rounded panel's edge with a
+  five-layer bloom (`spread` + blur stack). Use its edge-travel math, not its panel: it becomes the
+  rim light that runs once around the F12 status chip and the F4 DONE chip as the beam arrives.
+  Recolour to beam / beam-core, drop its CDN GSAP and Inter, prefix ids with the frame id.
+- `compositions/components/rgb-glitch-text.html` (component): three stacked copies with R/C offsets.
+  The only chroma split in the film, on the cuts marked "chroma" (F6→F7, F9→F10). Cut its jitter to
+  2 steps of 0.066 s (≤ 4 frames), offsets ±6 px, tone "paper" recoloured to ink.
+
+Rejected: `vfx-liquid-glass` and `liquid-glass-widgets` (three.js + html-in-canvas `drawElementImage`,
+WebGL2-era shaders, placeholder stats copy; the SVG lens above is lighter and tested),
+`liquid-glass-notification`, `ios26-liquid-glass`, `macos-tahoe-liquid-glass` (other people's OS
+chrome), `scan-band` (an RGB band on a held wordmark breaks the cuts-only rule), `glitch` and
+`chromatic-radial-split` (WebGL shader transitions, too loud), `variable-axis-type` (loads Roboto Flex
+from Google Fonts, which the render browser cannot reach; the same axis morph is done on Mona Sans),
+`caption-neon-glow` (no captions in this film; glowing type is banned here).
 
 ## Builder contract
 
