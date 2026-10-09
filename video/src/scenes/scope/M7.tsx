@@ -4,21 +4,22 @@ import { ModuleShell, Em } from "../../lib/ModuleShell";
 import { C, mono, sans } from "../../lib/theme";
 import { clamp, EI, EIO, EO, prog } from "../../lib/anim";
 import { Glow } from "../../lib/FX";
-import type { Cue } from "../../lib/cues";
+import { keySfx, type Cue } from "../../lib/cues";
 
 /**
- * SCOPE 07 · DESIGN SYSTEMS (60 f) — "Systems, then surfaces."
+ * SCOPE 07 · DESIGN SYSTEMS (60 f) · "Systems, then surfaces."
  * An unbranded sign-in card is taken apart into its system, then put back as a surface.
  *  f0–6    card builds front-on, one component per frame (UI snaps)
  *  f2–14   card swings into an isometric view (still a rendered surface)
  *  f13–20  EXPLODE: 8 layers burst apart along the card normal; on beat 2 (f15) the card x-rays
  *          to blueprint linework in a single frame
- *  f18–30  vermilion leaders run to spec annotations (token / radius / spacing / error / focus)
- *          f30 (beat 3): focus ring switches on, 2px vermilion
- *  f39–45  leaders retract, layers collapse (accelerating) and SNAP flat on beat 4;
- *          the blueprint renders back into a solid cream surface on the hit
- *  f45–52  hold on the finished card, focus ring + caret live
- *  f52–57  exit
+ *  f18–30  hairline leaders run to spec annotations (token / radius / spacing / error / focus)
+ *          f30 (beat 2): focus ring switches on, 2px vermilion (the card's one accent)
+ *  f31–37  near-silence: layers collapse (accelerating), annotations ride along
+ *  f38     SNAP flat on the and-of-2: blueprint and annotations cut out in one frame, the card
+ *          renders back into a solid cream surface
+ *  f38–53  hold on the finished card, focus ring + caret live (15 f)
+ *  f53–58  exit
  *
  * Projection is orthographic (true isometric drawing): every layer is a plane parallel to the card,
  * so each one is a single 2D affine matrix, and annotation anchors use the exact same math.
@@ -28,7 +29,7 @@ import type { Cue } from "../../lib/cues";
 const CW = 400;
 const CH = 580;
 const PAD = 36;
-const RAD = 18;
+const RAD = 16; // the "radius / 16" annotation reads this
 
 // ── timing ─────────────────────────────────────────────────────────────────
 const TILT_A = 2;
@@ -36,9 +37,10 @@ const TILT_B = 14;
 const EXPLODE = 13;
 const WIRE_A = 14.01;
 const WIRE_B = 15;
-const COLLAPSE_A = 39;
-const SNAP = 45;
+const COLLAPSE_A = 32;
+const SNAP = 38;
 const FOCUS = 30;
+const EXIT = 53;
 
 // ── layer stack (bottom → top) ─────────────────────────────────────────────
 const LAYERS = ["grid", "surface", "primary", "input", "divider", "passkey", "sso", "header"] as const;
@@ -262,13 +264,13 @@ const Layer: React.FC<{ id: LayerId } & LayerProps> = ({ id, wire, f, focus, err
 type Note = { key: string; val: string; layer: LayerId; u: number; v: number; side: "L" | "R"; lx: number; ly: number; at: number };
 const NOTES: Note[] = [
   { key: "token", val: "ink-900", layer: "header", u: PAD + 23, v: 61, side: "L", lx: 930, ly: 300, at: 18 },
-  { key: "radius", val: "12", layer: "surface", u: CW - 5.3, v: CH - 5.3, side: "R", lx: 1648, ly: 590, at: 21 },
+  { key: "radius", val: String(RAD), layer: "surface", u: CW - RAD * 0.293, v: CH - RAD * 0.293, side: "R", lx: 1648, ly: 590, at: 21 },
   { key: "spacing", val: "8pt", layer: "grid", u: 16, v: 64, side: "L", lx: 906, ly: 560, at: 24 },
   { key: "state", val: "error", layer: "input", u: PAD + 186, v: 466, side: "R", lx: 1590, ly: 700, at: 27 },
   { key: "focus", val: "2px", layer: "input", u: CW - PAD + 5, v: 420, side: "R", lx: 1590, ly: 430, at: FOCUS },
 ];
-const NOTE_OUT_A = 39;
-const NOTE_OUT_B = 43;
+/** annotations exist only while the card is a blueprint: they cut out with it on the snap */
+const noteOn = (f: number) => f < SNAP;
 
 export const Scene: React.FC = () => {
   const f = useCurrentFrame();
@@ -294,7 +296,7 @@ export const Scene: React.FC = () => {
   // blueprint while exploded, hard cut back to a rendered surface on the snap
   const wire = f >= SNAP ? 0 : prog(f, WIRE_A, WIRE_B, EIO);
   const focus = f >= FOCUS ? interpolate(f, [FOCUS, FOCUS + 3], [0, 1], { ...clamp, easing: EO }) : 0;
-  const err = f >= SNAP ? 0 : prog(f, 26, 29, EO) * (1 - prog(f, NOTE_OUT_A, NOTE_OUT_B, EO));
+  const err = f >= SNAP ? 0 : prog(f, 26, 29, EO);
   const snapFlash = interpolate(f, [SNAP, SNAP + 1, SNAP + 8], [0, 1, 0], clamp);
   const settle = f >= SNAP ? spring({ frame: f - SNAP, fps, config: { stiffness: 420, damping: 18 } }) : 1;
 
@@ -302,7 +304,7 @@ export const Scene: React.FC = () => {
   const built = (id: LayerId) => f >= BUILD.indexOf(id) - 2;
 
   const push = interpolate(f, [0, 60], [1, 1.05], clamp);
-  const exit = interpolate(f, [52, 57], [0, 1], { ...clamp, easing: EI });
+  const exit = interpolate(f, [EXIT, EXIT + 5], [0, 1], { ...clamp, easing: EI });
 
   // exploded-view guides: the four corner posts through the stack
   const zBot = zOf(0);
@@ -320,7 +322,6 @@ export const Scene: React.FC = () => {
     <ModuleShell index={7} title="DESIGN SYSTEMS" line={<>Systems, <Em>then surfaces.</Em></>}>
       <AbsoluteFill style={{ opacity: 1 - exit, transform: `scale(${push + exit * 0.04})`, transformOrigin: "1262px 520px" }}>
         <Glow x={centre.x} y={centre.y + 30} r={520} color="rgba(243,236,222,0.10)" opacity={1 - wire * 0.5} />
-        <Glow x={centre.x} y={centre.y} r={400} color="rgba(255,244,228,0.16)" opacity={snapFlash} />
 
         {/* corner posts */}
         <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
@@ -371,80 +372,70 @@ export const Scene: React.FC = () => {
 
         {/* leaders + annotations */}
         <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-          {NOTES.map((n, i) => {
-            const draw = prog(f, n.at, n.at + 5, EO);
-            const out = prog(f, NOTE_OUT_A + i * 0.5, NOTE_OUT_B, EO);
-            const vis = draw * (1 - out);
-            if (vis <= 0.001) return null;
-            const a = project(view, n.u, n.v, zOf(zIndexOf(n.layer)));
-            const dir = n.side === "R" ? 1 : -1;
-            const end = { x: n.lx - dir * 14, y: n.ly };
-            const knee = { x: end.x - dir * 46, y: n.ly };
-            const l1 = Math.hypot(knee.x - a.x, knee.y - a.y);
-            const l2 = Math.hypot(end.x - knee.x, end.y - knee.y);
-            const L = l1 + l2;
-            return (
-              <g key={n.key}>
-                <path
-                  d={`M ${a.x} ${a.y} L ${knee.x} ${knee.y} L ${end.x} ${end.y}`}
-                  fill="none"
-                  stroke={C.acc}
-                  strokeWidth={1.25}
-                  strokeDasharray={L}
-                  strokeDashoffset={L * (1 - vis)}
-                />
-                <circle cx={a.x} cy={a.y} r={3.5 * Math.min(1, draw * 3)} fill={C.acc} opacity={1 - out} />
-                <circle cx={a.x} cy={a.y} r={4 + 6 * draw} fill="none" stroke={C.acc} strokeWidth={1} opacity={(1 - out) * (1 - draw * 0.6)} />
-              </g>
-            );
-          })}
+          {noteOn(f)
+            ? NOTES.map((n) => {
+                const draw = prog(f, n.at, n.at + 5, EO);
+                if (draw <= 0.001) return null;
+                const a = project(view, n.u, n.v, zOf(zIndexOf(n.layer)));
+                const dir = n.side === "R" ? 1 : -1;
+                const end = { x: n.lx - dir * 14, y: n.ly };
+                const knee = { x: end.x - dir * 46, y: n.ly };
+                const l1 = Math.hypot(knee.x - a.x, knee.y - a.y);
+                const l2 = Math.hypot(end.x - knee.x, end.y - knee.y);
+                const L = l1 + l2;
+                const hot = n.key === "focus" || n.key === "state";
+                const ink = hot ? C.acc : paperA(0.6);
+                return (
+                  <g key={n.key}>
+                    <path d={`M ${a.x} ${a.y} L ${knee.x} ${knee.y} L ${end.x} ${end.y}`} fill="none" stroke={ink} strokeWidth={1.25} strokeDasharray={L} strokeDashoffset={L * (1 - draw)} />
+                    <circle cx={a.x} cy={a.y} r={3.5 * Math.min(1, draw * 3)} fill={ink} />
+                  </g>
+                );
+              })
+            : null}
         </svg>
-        {NOTES.map((n, i) => {
-          const txt = `${n.key} / ${n.val}`;
-          const typed = Math.floor(interpolate(f, [n.at + 1, n.at + 1 + txt.length / 3.4], [0, txt.length], clamp));
-          const out = prog(f, NOTE_OUT_A + i * 0.5, NOTE_OUT_B, EO);
-          if (f < n.at + 1 || out >= 1) return null;
-          const k = txt.slice(0, Math.min(typed, n.key.length + 3));
-          const v = typed > n.key.length + 3 ? txt.slice(n.key.length + 3, typed) : "";
-          return (
-            <div
-              key={n.key}
-              style={{
-                position: "absolute",
-                top: n.ly - 14,
-                ...(n.side === "R" ? { left: n.lx } : { right: 1920 - n.lx }),
-                fontFamily: mono,
-                fontSize: 21,
-                lineHeight: "28px",
-                letterSpacing: "0.04em",
-                whiteSpace: "nowrap",
-                opacity: 1 - out,
-                clipPath: `inset(0 ${n.side === "R" ? out * 100 : 0}% 0 ${n.side === "L" ? out * 100 : 0}%)`,
-              }}
-            >
-              <span style={{ color: C.dim }}>{k}</span>
-              <span style={{ color: n.key === "focus" || n.key === "state" ? C.acc : C.paper }}>{v}</span>
-            </div>
-          );
-        })}
+        {noteOn(f)
+          ? NOTES.map((n) => {
+              const txt = `${n.key} / ${n.val}`;
+              const typed = Math.floor(interpolate(f, [n.at + 1, n.at + 1 + txt.length / 3.4], [0, txt.length], clamp));
+              if (f < n.at + 1) return null;
+              const k = txt.slice(0, Math.min(typed, n.key.length + 3));
+              const v = typed > n.key.length + 3 ? txt.slice(n.key.length + 3, typed) : "";
+              return (
+                <div
+                  key={n.key}
+                  style={{
+                    position: "absolute",
+                    top: n.ly - 14,
+                    ...(n.side === "R" ? { left: n.lx } : { right: 1920 - n.lx }),
+                    fontFamily: mono,
+                    fontSize: 21,
+                    lineHeight: "28px",
+                    letterSpacing: "0.04em",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span style={{ color: C.dim }}>{k}</span>
+                  <span style={{ color: n.key === "focus" || n.key === "state" ? C.acc : C.paper }}>{v}</span>
+                </div>
+              );
+            })
+          : null}
       </AbsoluteFill>
     </ModuleShell>
   );
 };
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "glitch-1", vol: 0.26 },
-  { f: 1, sfx: "chatter", vol: 0.2 }, // components snap in
-  { f: 9, sfx: "whoosh", vol: 0.42 }, // swing lands, card bursts apart on beat 2
-  { f: 15, sfx: "click-lo", vol: 0.24 }, // x-ray to blueprint
-  // annotations land
-  { f: 18, sfx: "click", vol: 0.2 },
-  { f: 21, sfx: "key-2", vol: 0.18 },
-  { f: 24, sfx: "click", vol: 0.17 },
+  { f: 1, sfx: keySfx(0), vol: 0.15 }, // components snap in
+  { f: 4, sfx: keySfx(3), vol: 0.13 },
+  { f: 9, sfx: "whoosh", vol: 0.36 }, // swing lands, card bursts apart
+  { f: 15, sfx: "click-lo", vol: 0.24 }, // x-ray to blueprint (beat 1)
+  { f: 18, sfx: "click", vol: 0.2 }, // first annotation
+  { f: 24, sfx: "key-2", vol: 0.17 },
   { f: 27, sfx: "blip-down", vol: 0.2 }, // error state
-  { f: FOCUS, sfx: "blip-up", vol: 0.3 }, // focus ring on (beat 3)
-  { f: 38, sfx: "whoosh-rev", vol: 0.36 }, // collapse inhale
+  { f: FOCUS, sfx: "blip-up", vol: 0.3 }, // focus ring on (beat 2)
+  // f31–37 near-silence while the layers collapse
   { f: SNAP, sfx: "snap", vol: 0.36 },
   { f: SNAP, sfx: "impact-soft", vol: 0.42 },
-  { f: 52, sfx: "swish", vol: 0.24 },
 ];
