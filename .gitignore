@@ -42,3 +42,8 @@ Thumbs.db
 
 .vercel
 previews/
+
+# hyperframes render temp
+videos/**/review/work-*/
+videos/**/review/.*hf-transaction*/
+videos/**/.hf-transaction*/
