@@ -3,38 +3,38 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { ModuleShell, Em } from "../../lib/ModuleShell";
 import { C, dots, mono } from "../../lib/theme";
 import { clamp, EIO, EO, prog } from "../../lib/anim";
-import { Glow } from "../../lib/FX";
 import type { Cue } from "../../lib/cues";
 import { DotGrid, flashAt, Mono, Stage, Wipe, type Pt } from "../_M1/kit";
 
 /**
  * SCOPE 02 · PASSWORD VAULT (60 f) — "Secrets, kept simple."
  * A blueprint combination dial on a slowly yawing 3D plane (rings on separate depth layers → parallax).
- * f0   dial already spinning (ratchet) → f15 snaps to 37 (beat 2)
- * f17  reverses → f30 snaps to 82 (beat 3)
- * f31  short turn → f37 snaps to 14 (8th after beat 3); readout locks each pair in Doto
- * f38–44 eight bolts retract into the door, one after another
- * f45  (beat 4) centre slot turns 90° and glows vermilion — UNLOCKED, grant pulse; f49–57 exit.
+ * f0   dial already spinning (ratchet) → f8 snaps to 37 (8th)
+ * f9   reverses → f15 snaps to 09 (beat 2)
+ * f16  short turn → f19 snaps to 26 (16th); readout locks each pair in Doto
+ * f19–28 eight bolts retract into the door, one after another
+ * f29  near-silence
+ * f30  (beat 3) centre slot turns 90° and lights vermilion: VAULT · OPEN, one pulse. Held f30–50, exit f51–58.
  */
 
-const O: Pt = { x: 1508, y: 520 };
+const O: Pt = { x: 1470, y: 490 };
 const DIAL_SCALE = 0.86;
-const GRANT = 45;
+const GRANT = 30;
 const SZ = 760; // layer box
 const H = SZ / 2;
-const COMBO = [37, 82, 14];
-const SNAPS = [15, 30, 37];
+const COMBO = [37, 9, 26];
+const SNAPS = [8, 15, 19];
 
 /* ---------------- dial angle (deg, clockwise) ---------------- */
 const A = (n: number) => -n * 3.6;
 const A1 = A(COMBO[0]); // -133.2
-const A2 = A(COMBO[1]) + 360; // 64.8   (turn back the other way)
-const A3 = A(COMBO[2]); // -50.4
+const A2 = A(COMBO[1]); // -32.4   (turn back the other way, +100.8°)
+const A3 = A(COMBO[2]); // -93.6   (short turn, -61.2°)
 const settle = (f: number, at: number, amp: number) => (f >= at ? amp * Math.exp(-(f - at) / 2.2) * Math.sin((f - at) * 1.9) : 0);
 const dialAngle = (f: number) => {
   let a: number;
-  if (f <= SNAPS[0]) a = interpolate(f, [0, SNAPS[0]], [A1 + 330, A1], { ...clamp, easing: Easing.bezier(0.12, 0.55, 0.25, 1) });
-  else if (f <= SNAPS[1]) a = interpolate(f, [SNAPS[0] + 2, SNAPS[1]], [A1, A2], { ...clamp, easing: Easing.bezier(0.55, 0, 0.2, 1) });
+  if (f <= SNAPS[0]) a = interpolate(f, [0, SNAPS[0]], [A1 + 250, A1], { ...clamp, easing: Easing.bezier(0.12, 0.55, 0.25, 1) });
+  else if (f <= SNAPS[1]) a = interpolate(f, [SNAPS[0] + 1, SNAPS[1]], [A1, A2], { ...clamp, easing: Easing.bezier(0.55, 0, 0.2, 1) });
   else a = interpolate(f, [SNAPS[1] + 1, SNAPS[2]], [A2, A3], { ...clamp, easing: Easing.bezier(0.5, 0, 0.2, 1) });
   return a + settle(f, SNAPS[0], -4) + settle(f, SNAPS[1], 4) + settle(f, SNAPS[2], -3.5);
 };
@@ -71,11 +71,11 @@ const Dial: React.FC<{ f: number }> = ({ f }) => {
   const pitch = interpolate(f, [0, 60], [9, 3], { ...clamp, easing: EIO });
   const snapFl = Math.max(...SNAPS.map((s) => flashAt(f, s, 7)));
   const aligned = f >= SNAPS[2];
-  const open = prog(f, GRANT - 3, GRANT + 4, Easing.out(Easing.back(1.7)));
-  const glowP = prog(f, GRANT - 2, GRANT + 3);
+  const open = prog(f, GRANT - 1, GRANT + 4, Easing.out(Easing.back(1.7)));
+  const glowP = prog(f, GRANT - 1, GRANT + 2);
+  // the module's one glow: the lit slot, flaring on the open beat and settling for the hold
+  const slotGlow = glowP * (6 + 14 * flashAt(f, GRANT, 12));
   const pulse = prog(f, GRANT, GRANT + 13, EO);
-  const pulse2 = prog(f, GRANT + 3, GRANT + 16, EO);
-  const inP = prog(f, 0, 10);
 
   return (
     <div style={{ position: "absolute", inset: 0, perspective: 1500, perspectiveOrigin: `${O.x - 260}px ${O.y}px` }}>
@@ -107,11 +107,11 @@ const Dial: React.FC<{ f: number }> = ({ f }) => {
         {/* z −20: bolts */}
         <Layer z={-20}>
           {BOLTS.map((d, k) => {
-            const p = prog(f, 38 + k * 0.8, 45 + k * 0.8, Easing.out(Easing.back(1.5)));
+            const p = prog(f, SNAPS[2] + k * 0.6, SNAPS[2] + 5 + k * 0.6, Easing.out(Easing.back(1.5)));
             const r0 = R_BOLT_LOCK - BOLT_RETRACT * p;
             return (
               <g key={k} transform={`rotate(${d})`}>
-                <rect x={-7} y={-(r0 + BOLT_LEN)} width={14} height={BOLT_LEN} rx={4} fill={C.ink} stroke={C.paper} strokeOpacity={0.7} strokeWidth={1.3} />
+                <rect x={-8} y={-(r0 + BOLT_LEN)} width={16} height={BOLT_LEN} rx={4} fill={C.ink2} stroke={C.paper} strokeOpacity={0.85} strokeWidth={1.5} />
                 <line x1={0} y1={-(r0 + 8)} x2={0} y2={-(r0 + BOLT_LEN - 8)} stroke={C.paper} strokeOpacity={0.3} strokeWidth={1} />
               </g>
             );
@@ -180,32 +180,21 @@ const Dial: React.FC<{ f: number }> = ({ f }) => {
 
         {/* z 60: centre disc + slot + fixed index */}
         <Layer z={60}>
-          <defs>
-            <radialGradient id="m2-core">
-              <stop offset="0" stopColor={C.acc} stopOpacity={0.75} />
-              <stop offset="0.45" stopColor={C.acc} stopOpacity={0.22} />
-              <stop offset="1" stopColor={C.acc} stopOpacity={0} />
-            </radialGradient>
-          </defs>
-          <circle r={150 * (0.6 + 0.4 * glowP)} fill="url(#m2-core)" opacity={glowP * 0.7} />
           <circle r={96} fill={C.ink} stroke={C.paper} strokeOpacity={0.75} strokeWidth={1.5} />
           {ring(84, 0.18)}
           <g transform={`rotate(${90 * open})`}>
-            <rect x={-9} y={-40} width={18} height={80} rx={9} fill={C.acc} opacity={glowP} style={{ filter: `drop-shadow(0 0 ${16 * glowP}px ${C.acc})` }} />
+            <rect x={-9} y={-40} width={18} height={80} rx={9} fill={C.acc} opacity={glowP} style={{ filter: slotGlow > 0.3 ? `drop-shadow(0 0 ${slotGlow.toFixed(1)}px ${C.acc})` : undefined }} />
             <rect x={-9} y={-40} width={18} height={80} rx={9} fill="none" stroke={glowP > 0.5 ? C.acc : C.paper} strokeWidth={1.5} />
             <line x1={-30} y1={0} x2={-18} y2={0} stroke={C.paper} strokeOpacity={0.4} />
             <line x1={18} y1={0} x2={30} y2={0} stroke={C.paper} strokeOpacity={0.4} />
           </g>
           {/* fixed index: reticle + triangle at 12 o'clock */}
           <line x1={0} y1={-100} x2={0} y2={-202} stroke={aligned || snapFl > 0.02 ? C.acc : C.paper} strokeOpacity={aligned ? 0.8 : 0.2 + 0.7 * snapFl} strokeWidth={1.2} />
-          <polygon points={`0,${-236} -9,${-252} 9,${-252}`} fill={aligned || snapFl > 0.3 ? C.acc : C.paper} style={{ filter: aligned ? `drop-shadow(0 0 8px ${C.accGlow})` : undefined }} />
+          <polygon points={`0,${-236} -9,${-252} 9,${-252}`} fill={aligned || snapFl > 0.3 ? C.acc : C.paper} />
           {/* grant pulse */}
           {pulse > 0 && pulse < 1 ? <circle r={96 + 250 * pulse} fill="none" stroke={C.acc} strokeWidth={1.6} opacity={0.85 * (1 - pulse)} /> : null}
-          {pulse2 > 0 && pulse2 < 1 ? <circle r={96 + 220 * pulse2} fill="none" stroke={C.paper} strokeWidth={1} opacity={0.4 * (1 - pulse2)} /> : null}
         </Layer>
       </div>
-      {/* fade-in veil for the first frames (dial is visible from f0) */}
-      <AbsoluteFill style={{ background: C.ink, opacity: 0.35 * (1 - inP), pointerEvents: "none" }} />
     </div>
   );
 };
@@ -216,7 +205,6 @@ const Readout: React.FC<{ f: number }> = ({ f }) => {
   const live = reading(a);
   const inP = prog(f, 3, 11, EO);
   const opened = f >= GRANT;
-  const st = flashAt(f, GRANT, 10);
   const groups = COMBO.map((n, g) => {
     const startLive = g === 0 ? 0 : SNAPS[g - 1];
     const locked = f >= SNAPS[g];
@@ -225,14 +213,14 @@ const Readout: React.FC<{ f: number }> = ({ f }) => {
     const txt = locked ? String(n).padStart(2, "0") : isLive ? String(live).padStart(2, "0") : "--";
     const color = fl > 0.25 ? C.acc : locked ? C.paper : isLive ? "rgba(243,236,222,0.7)" : C.faint;
     return (
-      <span key={g} style={{ color, textShadow: fl > 0.25 ? `0 0 18px ${C.accGlow}` : "none", display: "inline-block", width: "1.25em", textAlign: "center" }}>
+      <span key={g} style={{ color, display: "inline-block", width: "1.25em", textAlign: "center" }}>
         {txt}
       </span>
     );
   });
   return (
     <Wipe p={inP} style={{ position: "absolute", left: 830, top: 398 }}>
-      <Mono size={14}>Combination</Mono>
+      <Mono size={16}>Combination</Mono>
       <div style={{ fontFamily: dots, fontWeight: 800, fontSize: 60, lineHeight: 1, marginTop: 14, display: "flex", alignItems: "center", gap: 2 }}>
         {groups[0]}
         <span style={{ color: C.faint, fontSize: 30 }}>·</span>
@@ -248,32 +236,13 @@ const Readout: React.FC<{ f: number }> = ({ f }) => {
             borderRadius: 5,
             background: opened ? C.acc : "transparent",
             border: `1.5px solid ${opened ? C.acc : C.dim}`,
-            boxShadow: opened ? `0 0 ${10 + 14 * st}px ${C.accGlow}` : "none",
           }}
         />
-        <Mono size={14} color={opened ? C.acc : C.dim}>
-          {opened ? "Vault · open" : f >= SNAPS[2] ? "Bolts · retracting" : "Vault · sealed"}
+        <Mono size={16} color={opened ? C.acc : "rgba(243,236,222,0.55)"}>
+          {opened ? "Vault · open" : "Vault · sealed"}
         </Mono>
       </div>
     </Wipe>
-  );
-};
-
-const Blueprint: React.FC<{ f: number }> = ({ f }) => {
-  const draw = prog(f, 0, 14, EO);
-  const x0 = 790;
-  const x1 = 1800;
-  return (
-    <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-      <line x1={x0} y1={O.y} x2={x0 + (x1 - x0) * draw} y2={O.y} stroke={C.paper} strokeOpacity={0.16} strokeWidth={1} strokeDasharray="6 6" />
-      {Array.from({ length: 26 }, (_, i) => {
-        const x = x0 + i * 40;
-        if (x > x0 + (x1 - x0) * draw) return null;
-        const big = i % 5 === 0;
-        return <line key={i} x1={x} y1={O.y - (big ? 8 : 4)} x2={x} y2={O.y + (big ? 8 : 4)} stroke={C.paper} strokeOpacity={big ? 0.3 : 0.16} strokeWidth={1} />;
-      })}
-      <line x1={O.x} y1={O.y - 380 * draw} x2={O.x} y2={O.y + 380 * draw} stroke={C.paper} strokeOpacity={0.08} strokeWidth={1} />
-    </svg>
   );
 };
 
@@ -282,9 +251,6 @@ const Motif: React.FC = () => {
   return (
     <Stage focus={O} exitA={51}>
       <DotGrid focus={O} id="m2" rx={700} ry={460} />
-      <Glow x={O.x} y={O.y} r={520} color="rgba(243,236,222,0.06)" />
-      <Glow x={O.x} y={O.y} r={300} opacity={0.32 * prog(f, GRANT - 2, GRANT + 6)} />
-      <Blueprint f={f} />
       <Dial f={f} />
       <Readout f={f} />
     </Stage>
@@ -300,16 +266,11 @@ export const Scene: React.FC = () => (
 );
 
 export const cues: Cue[] = [
-  { f: 0, sfx: "dial", vol: 0.5 }, // dial already spinning: ratchet decelerates into…
-  { f: SNAPS[0], sfx: "snap", vol: 0.32 }, // …37
-  { f: SNAPS[0], sfx: "click-lo", vol: 0.2 },
-  { f: SNAPS[0] + 2, sfx: "dial", vol: 0.38 }, // turn back
-  { f: SNAPS[1], sfx: "snap", vol: 0.32 }, // 82
-  { f: SNAPS[1] + 1, sfx: "dial", vol: 0.28 },
-  { f: SNAPS[2], sfx: "snap", vol: 0.36 }, // 14
-  { f: SNAPS[2], sfx: "click-lo", vol: 0.22 },
-  { f: 39, sfx: "click-lo", vol: 0.2 }, // bolts retract
-  { f: 41, sfx: "click", vol: 0.15 },
-  { f: 43, sfx: "click-lo", vol: 0.18 },
+  { f: 0, sfx: "dial", vol: 0.4 }, // one ratchet pass under all three turns and the bolts (≈27 f)
+  { f: SNAPS[0], sfx: "snap", vol: 0.3 }, // 37
+  { f: SNAPS[1], sfx: "click-lo", vol: 0.26 }, // 09
+  { f: SNAPS[2], sfx: "snap", vol: 0.34 }, // 26
+  { f: SNAPS[2] + 2, sfx: "click-lo", vol: 0.2 }, // bolts start to retract
+  // f27–29: near-silence before the open
   { f: GRANT, sfx: "lock", vol: 0.56 }, // slot turns: open
 ];
