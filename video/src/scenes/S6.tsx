@@ -70,53 +70,58 @@ const chip = (at: number, cx: number, cy: number, rot: number, sc: number, col: 
   return Object.assign(fr, { ghostify: (): Frag => ({ ...fr, ghost: true }) });
 };
 const code = (at: number, cx: number, cy: number, rot: number, sc: number, col: number, lines: Tok[][]): Frag => ({
-  kind: "code", at, cx, cy, rot, sc, col, span: 3, y: 772, h: 98, lines,
+  kind: "code", at, cx, cy, rot, sc, col, span: 3, y: 772, h: 102, lines,
 });
 
 const T = (t: string, hi?: 1 | 2): Tok => ({ t, hi });
 
+/*
+ * Copy is real output, in each system's own casing: OIDC / OAuth / RFC 6750 error codes, the
+ * jsonwebtoken and Node/OpenSSL messages, Kerberos KRB_AP_ERR_SKEW, the AWS "explicit deny", and the
+ * Active Directory password-policy defaults (24 remembered, 42-day maximum age). No invented numbers.
+ */
 const FRAGS: Frag[] = [
-  toast(2, 560, 318, -3.5, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3"),
+  toast(2, 560, 318, -3.5, 1.12, 0, "MFA failed", "attempt 3 of 3"),
   code(8, 430, 792, 1.5, 1.06, 0, [
     [T("<saml:Assertion ", 1), T('ID="_8f3a…c21">')],
     [T("  <ds:SignatureValue>"), T("MIIC9z…", 2)],
     [T("  <saml:Conditions NotOnOrAfter=")],
   ]),
-  toast(15, 1420, 300, 2.5, 1.18, 3, "403 FORBIDDEN", "GET /admin/users"),
-  chip(15, 1010, 226, -2, 1.12, 0, "CLOCK SKEW 312s"),
+  toast(15, 1420, 300, 2.5, 1.18, 3, "403 Forbidden", "GET /admin/users"),
+  chip(15, 1010, 226, -2, 1.12, 0, "KRB_AP_ERR_SKEW"),
   code(19, 1540, 772, -3, 1.0, 3, [
     [T("× ", 2), T("12+ characters, 1 symbol", 1)],
     [T("× ", 2), T("not one of your last 24")],
-    [T("× ", 2), T("expires every 30 days")],
+    [T("× ", 2), T("expires every 42 days")],
   ]),
-  chip(22, 262, 612, 4, 1.04, 2, "BAD SIGNATURE", true),
-  chip(26, 1690, 424, -3, 1.08, 4, "SESSION TIMEOUT"),
-  toast(30, 1190, 724, -2, 1.08, 6, "TOKEN EXPIRED", "exp < now"),
+  chip(22, 262, 612, 4, 1.04, 2, "invalid signature", true),
+  chip(26, 1690, 424, -3, 1.08, 4, "login_required"),
+  toast(30, 1190, 724, -2, 1.08, 6, "Session expired", "jwt expired"),
   code(31, 300, 404, -4, 0.98, 6, [
     [T('{"Effect":', 1), T('"Deny"', 2), T(",")],
     [T(' "Action":"*",')],
     [T(' "Resource":"admin/*"}')],
   ]),
-  chip(34, 870, 846, 3, 1.1, 6, "UNKNOWN DEVICE", true),
-  chip(37, 700, 418, -5, 1.05, 8, "CERT EXPIRED"),
+  chip(34, 870, 846, 3, 1.1, 6, "unrecognized device", true),
+  chip(37, 700, 418, -5, 1.05, 8, "CERT_HAS_EXPIRED"),
   code(41, 1590, 590, 5, 0.92, 9, [
     [T("HTTP/1.1 ", 1), T("401 Unauthorized", 2)],
     [T("WWW-Authenticate: Bearer")],
     [T("  error="), T('"invalid_token"', 2)],
   ]),
-  toast(45, 730, 692, 4, 1.2, 9, "POLICY CONFLICT", "ALLOW · DENY"),
+  toast(45, 730, 692, 4, 1.2, 9, "Access denied", "explicit deny"),
   // alarm fatigue: the same errors fire again (they merge back into one on the snap)
-  chip(36, 318, 652, 7, 1.1, 2, "BAD SIGNATURE", true).ghostify(),
-  toast(39, 526, 286, -6, 1.15, 0, "MFA FAILED", "ATTEMPT 3 OF 3", true),
-  toast(42, 1150, 684, 4, 1.12, 6, "TOKEN EXPIRED", "exp < now", true),
-  chip(47, 930, 880, -3, 1.12, 6, "UNKNOWN DEVICE", true).ghostify(),
-  toast(48, 600, 346, 1, 1.12, 0, "MFA FAILED", "ATTEMPT 3 OF 3", true),
-  chip(49, 1290, 418, -6, 1.15, 10, "RETRY LIMIT", true),
-  chip(53, 1330, 452, 3, 1.1, 10, "RETRY LIMIT", true).ghostify(),
+  chip(36, 318, 652, 7, 1.1, 2, "invalid signature", true).ghostify(),
+  toast(39, 526, 286, -6, 1.15, 0, "MFA failed", "attempt 3 of 3", true),
+  toast(42, 1150, 684, 4, 1.12, 6, "Session expired", "jwt expired", true),
+  chip(47, 930, 880, -3, 1.12, 6, "unrecognized device", true).ghostify(),
+  toast(48, 600, 346, 1, 1.12, 0, "MFA failed", "attempt 3 of 3", true),
+  chip(49, 1290, 418, -6, 1.15, 10, "account locked", true),
+  chip(53, 1330, 452, 3, 1.1, 10, "account locked", true).ghostify(),
   // two repeats arrive right at the lens: huge, out of focus, cropped by the frame
-  toast(51, 1400, 300, 7, 2.3, 3, "403 FORBIDDEN", "GET /admin/users", true, 4.5),
-  toast(54, 540, 796, -5, 2.6, 9, "POLICY CONFLICT", "ALLOW · DENY", true, 6),
-  toast(56, 1222, 756, 3, 1.08, 6, "TOKEN EXPIRED", "exp < now", true),
+  toast(51, 1400, 300, 7, 2.3, 3, "403 Forbidden", "GET /admin/users", true, 4.5),
+  toast(54, 540, 796, -5, 2.6, 9, "Access denied", "explicit deny", true, 6),
+  toast(56, 1222, 756, 3, 1.08, 6, "Session expired", "jwt expired", true),
 ];
 
 /** Snap order: a left→right sweep, top row first. */
