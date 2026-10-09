@@ -10,3 +10,4 @@ public/music
 .build-scenes.workflow.js
 out
 __pycache__
+.review-stills.mjs
