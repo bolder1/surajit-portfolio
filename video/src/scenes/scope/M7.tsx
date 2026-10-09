@@ -29,20 +29,20 @@ const PAD = 36;
 const RAD = 18;
 
 // ── timing ─────────────────────────────────────────────────────────────────
-const TILT_A = 3;
-const TILT_B = 16;
-const EXPLODE = 9;
-const WIRE_A = 9;
-const WIRE_B = 15;
+const TILT_A = 2;
+const TILT_B = 14;
+const EXPLODE = 13;
+const WIRE_A = 14;
+const WIRE_B = 16;
 const COLLAPSE_A = 39;
 const SNAP = 45;
 const FOCUS = 30;
 
 // ── layer stack (bottom → top) ─────────────────────────────────────────────
-const LAYERS = ["grid", "surface", "header", "sso", "passkey", "divider", "input", "primary"] as const;
+const LAYERS = ["grid", "surface", "primary", "input", "divider", "passkey", "sso", "header"] as const;
 type LayerId = (typeof LAYERS)[number];
 const MID = (LAYERS.length - 1) / 2;
-const SPREAD = 50; // card-native px per layer at full explode
+const SPREAD = 46; // card-native px per layer at full explode
 const zIndexOf = (id: LayerId) => LAYERS.indexOf(id);
 
 // ── colour helpers ─────────────────────────────────────────────────────────
@@ -257,11 +257,11 @@ const Layer: React.FC<{ id: LayerId } & LayerProps> = ({ id, wire, f, focus, err
 // ── spec annotations ───────────────────────────────────────────────────────
 type Note = { key: string; val: string; layer: LayerId; u: number; v: number; side: "L" | "R"; lx: number; ly: number; at: number };
 const NOTES: Note[] = [
-  { key: "radius", val: "12", layer: "surface", u: CW - 5.3, v: 5.3, side: "R", lx: 1560, ly: 236, at: 17 },
-  { key: "token", val: "ink-900", layer: "header", u: PAD + 23, v: 61, side: "L", lx: 960, ly: 352, at: 20 },
-  { key: "spacing", val: "8pt", layer: "grid", u: PAD, v: CH - 120, side: "L", lx: 960, ly: 560, at: 23 },
-  { key: "state", val: "error", layer: "input", u: PAD + 186, v: 466, side: "R", lx: 1590, ly: 648, at: 26 },
-  { key: "focus", val: "2px", layer: "input", u: CW - PAD + 5, v: 410, side: "R", lx: 1590, ly: 470, at: FOCUS },
+  { key: "token", val: "ink-900", layer: "header", u: PAD + 23, v: 61, side: "L", lx: 900, ly: 300, at: 18 },
+  { key: "radius", val: "12", layer: "surface", u: CW - 5.3, v: CH - 5.3, side: "R", lx: 1636, ly: 716, at: 21 },
+  { key: "spacing", val: "8pt", layer: "grid", u: 16, v: 64, side: "L", lx: 880, ly: 590, at: 24 },
+  { key: "state", val: "error", layer: "input", u: PAD + 186, v: 466, side: "R", lx: 1636, ly: 626, at: 27 },
+  { key: "focus", val: "2px", layer: "input", u: CW - PAD + 5, v: 420, side: "R", lx: 1636, ly: 536, at: FOCUS },
 ];
 const NOTE_OUT_A = 39;
 const NOTE_OUT_B = 43;
@@ -274,11 +274,11 @@ export const Scene: React.FC = () => {
   const tilt = prog(f, TILT_A, TILT_B, EIO);
   const drift = interpolate(f, [TILT_B, 58], [0, 1], clamp);
   const view: View = {
-    ax: 56 * tilt,
-    az: -34 * tilt - 5 * drift,
-    s: interpolate(tilt, [0, 1], [0.86, 0.9]) + 0.02 * drift,
-    cx: 1262,
-    cy: interpolate(tilt, [0, 1], [512, 528]),
+    ax: 58 * tilt,
+    az: -34 * tilt - 4 * drift,
+    s: interpolate(tilt, [0, 1], [0.76, 0.98]) + 0.02 * drift,
+    cx: interpolate(tilt, [0, 1], [1420, 1268]),
+    cy: interpolate(tilt, [0, 1], [410, 512]),
   };
 
   // explode → collapse
@@ -316,7 +316,7 @@ export const Scene: React.FC = () => {
     <ModuleShell index={7} title="DESIGN SYSTEMS" line={<>Systems, <Em>then surfaces.</Em></>}>
       <AbsoluteFill style={{ opacity: 1 - exit, transform: `scale(${push + exit * 0.04})`, transformOrigin: "1262px 520px" }}>
         <Glow x={centre.x} y={centre.y + 30} r={520} color="rgba(243,236,222,0.10)" opacity={1 - wire * 0.5} />
-        <Glow x={centre.x} y={centre.y} r={420} opacity={0.5 * snapFlash} />
+        <Glow x={centre.x} y={centre.y} r={460} color="rgba(255,244,228,0.35)" opacity={snapFlash} />
 
         {/* corner posts */}
         <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
@@ -410,7 +410,7 @@ export const Scene: React.FC = () => {
                 top: n.ly - 14,
                 ...(n.side === "R" ? { left: n.lx } : { right: 1920 - n.lx }),
                 fontFamily: mono,
-                fontSize: 21,
+                fontSize: 22,
                 lineHeight: "28px",
                 letterSpacing: "0.06em",
                 whiteSpace: "nowrap",
@@ -431,13 +431,13 @@ export const Scene: React.FC = () => {
 export const cues: Cue[] = [
   { f: 0, sfx: "glitch-1", vol: 0.26 },
   { f: 1, sfx: "chatter", vol: 0.2 }, // components snap in
-  { f: 7, sfx: "whoosh", vol: 0.42 }, // swing + explode
-  { f: 15, sfx: "click-lo", vol: 0.2 }, // layers settle apart
+  { f: 9, sfx: "whoosh", vol: 0.42 }, // swing lands, card bursts apart on beat 2
+  { f: 15, sfx: "click-lo", vol: 0.24 }, // x-ray to blueprint
   // annotations land
-  { f: 17, sfx: "click", vol: 0.2 },
-  { f: 20, sfx: "key-2", vol: 0.18 },
-  { f: 23, sfx: "click", vol: 0.17 },
-  { f: 26, sfx: "blip-down", vol: 0.2 }, // error state
+  { f: 18, sfx: "click", vol: 0.2 },
+  { f: 21, sfx: "key-2", vol: 0.18 },
+  { f: 24, sfx: "click", vol: 0.17 },
+  { f: 27, sfx: "blip-down", vol: 0.2 }, // error state
   { f: FOCUS, sfx: "blip-up", vol: 0.3 }, // focus ring on (beat 3)
   { f: 38, sfx: "whoosh-rev", vol: 0.36 }, // collapse inhale
   { f: SNAP, sfx: "snap", vol: 0.36 },

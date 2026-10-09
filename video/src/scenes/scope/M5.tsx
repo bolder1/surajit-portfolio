@@ -12,7 +12,7 @@ import type { Cue } from "../../lib/cues";
  * A vermilion review line sweeps down; each row it crosses is decided:
  * GRANTED (pill fills vermilion) or REVOKED (strike, row dims and slides back). Standing high-risk access goes.
  *  f0–12  camera swings onto the table, rows PENDING
- *  f10–46 review line sweeps 7 rows; stamps at DEC frames (first on beat 1)
+ *  f10–48 review line sweeps 7 rows; stamps at f15 20 25 30 34 39 44 (beats 1 and 2 land on rows 1 and 4)
  *  f45    beat 3: REVIEWED 07/07 → CERTIFIED
  *  f52–57 exit
  */
@@ -34,8 +34,9 @@ const TH = HEAD + ROWS.length * RH;
 const COL = { av: 30, id: 94, res: 320, risk: 664, pill: 790 };
 
 const SWEEP_A = 10;
-const SWEEP_B = 46;
-const SWEEP = Easing.bezier(0.3, 0.05, 0.6, 0.95);
+const SWEEP_B = 48;
+// tuned so stamps land at f15 20 25 30 34 39 44: first on beat 1, AD › Domain Admins revoked on beat 2
+const SWEEP = Easing.bezier(0.3, 0.15, 0.7, 0.85);
 const lineY = (f: number) => interpolate(f, [SWEEP_A, SWEEP_B], [HEAD - 6, TH + 4], { ...clamp, easing: SWEEP });
 // frame at which the review line reaches each row's centre
 const DEC = ROWS.map((_, i) => {

@@ -89,6 +89,7 @@ const X1 = X0 + 14 * CH; // content column (≈418)
 const Y_ACTIVE = 560; // top of the line being typed
 const GAP = 50;
 const LIFT = 96; // the stack lifts this much when the answer lands
+const LIFT_LEN = 6; // …snapping up in 6 frames
 const BIG = 200; // UNVERIFIED size
 const BIG_BASE = 742; // UNVERIFIED baseline
 const ID_TOP = Y_ACTIVE - LIFT + GAP; // "IDENTITY:" line (slot under "subject = ?")
@@ -133,7 +134,7 @@ const LogLine: React.FC<{ l: Line; f: number; idx: number }> = ({ l, f, idx }) =
     lift += GAP * p;
     age += p;
   }
-  const bigP = prog(f, HIT, HIT + 10, EO);
+  const bigP = prog(f, HIT, HIT + LIFT_LEN, EO);
   lift += LIFT * bigP;
   age += bigP * 1.3;
   const n = typed(l, f);
@@ -196,10 +197,10 @@ const Answer: React.FC<{ f: number }> = ({ f }) => {
   // one blink on the 8th after the clamp, then it stays lit into the push-in (caret keeps blinking)
   const low = f >= 98 && f < 105;
   const pulse = low ? 0.34 : 1;
-  const lift = LIFT * prog(f, HIT, HIT + 10, EO);
+  const lift = LIFT * prog(f, HIT, HIT + LIFT_LEN, EO);
   const track = interpolate(clampP, [0, 1], [0.05, -0.012]);
   const kick = prog(f, HIT, HIT + 6, EO);
-  const idN = Math.min(9, Math.floor((t + 1) * 4.5));
+  const idN = Math.max(0, Math.min(9, Math.floor(t * 4.5))); // prints from f91, once the stack has cleared
   return (
     <>
       <Glow x={X1 + 560} y={BIG_BASE - 80} r={600} opacity={(0.14 + 0.24 * (low ? 0.25 : 1)) * kick} />
