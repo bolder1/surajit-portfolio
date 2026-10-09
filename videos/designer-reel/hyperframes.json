@@ -9,5 +9,17 @@
   "media": {
     "autoProxy": true
   },
-  "authoringSkill": "general-video"
+  "authoringSkill": "general-video",
+  "registryItems": [
+    {
+      "name": "lt-neon-border",
+      "type": "hyperframes:block",
+      "target": "compositions/lt-neon-border.html"
+    },
+    {
+      "name": "rgb-glitch-text",
+      "type": "hyperframes:component",
+      "target": "compositions/components/rgb-glitch-text.html"
+    }
+  ]
 }

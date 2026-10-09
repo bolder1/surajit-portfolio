@@ -288,13 +288,16 @@
 
           <svg data-hf-id="hf-p3r6" width="0" height="0" style="position: absolute" aria-hidden="true">
             <defs data-hf-id="hf-1mne" id="sf-defs">
-              <filter data-hf-id="hf-ao2o" id="sf-bloom" x="-200" y="-200" width="2400" height="1500" filterUnits="userSpaceOnUse">
-                <fegaussianblur data-hf-id="hf-97c5" in="SourceGraphic" stdDeviation="5" result="b1" />
-                <fegaussianblur data-hf-id="hf-mnj2" in="SourceGraphic" stdDeviation="16" result="b2" />
-                <femerge data-hf-id="hf-zn2o"><femergenode data-hf-id="hf-16kr" in="b2" /><femergenode data-hf-id="hf-siow" in="b1" /><femergenode data-hf-id="hf-cmaw" in="SourceGraphic" /></femerge>
+              <!-- bloom regions hug the beam: full-frame blur regions roughly double render time on SwiftShader -->
+              <filter id="sf-bloom" x="-100" y="-110" width="1860" height="782" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
-              <filter data-hf-id="hf-ribj" id="sf-soft" x="-100" y="-100" width="2120" height="1280" filterUnits="userSpaceOnUse">
-                <fegaussianblur data-hf-id="hf-8w1q" stdDeviation="22" />
+              <filter id="sf-bloom-lens" x="1160" y="10" width="660" height="660" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
             </defs>
           </svg>
@@ -316,13 +319,14 @@
           var HZ = 690, FH = 1560, NH = 44;
           var BEAM = "M -40 612 H 1040 L 1652 0 L 1700 -48";
           var copies = 0;
-          function world() {
+          function world(bloom) {
             var t = "sf" + copies++; // unique gradient/mask ids per copy
             var s = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>';
             s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ') scale(1150 330) translate(-960 -' + HZ + ')">';
             s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
             s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
-            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect x="0" y="' + HZ + '" width="1920" height="' + (1080 - HZ) + '" fill="url(#' + t + '-fade)"/></mask></defs>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect x="0" y="' + HZ + '" width="1920" height="' + (1080 - HZ) + '" fill="url(#' + t + '-fade)"/></mask>';
+            s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#ff2e97" stop-opacity="0.34"/><stop offset="1" stop-color="#ff2e97" stop-opacity="0"/></radialGradient></defs>';
             s += '<rect class="sf-haze" x="-200" y="200" width="2320" height="980" fill="url(#' + t + '-haze)"/>';
             s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
             for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
@@ -336,8 +340,8 @@
               s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>';
             }
             s += "</g>";
-            s += '<ellipse cx="1490" cy="1000" rx="270" ry="30" fill="#ff2e97" fill-opacity="0.3" filter="url(#sf-soft)"/>';
-            s += '<g filter="url(#sf-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+            s += '<ellipse cx="1490" cy="1000" rx="330" ry="46" fill="url(#' + t + '-caustic)"/>';
+            s += '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
             s += '<path class="sf-b-old" d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
             s += '<path class="sf-b-fresh" d="' + BEAM + '" stroke="#ff2e97" stroke-width="6"/>';
             s += '<path class="sf-b-core" d="' + BEAM + '" stroke="#ffd9ec" stroke-width="2.2"/>';
@@ -345,8 +349,8 @@
             s += '<circle class="sf-pad" cx="1040" cy="612" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
             return s + "</g></svg>";
           }
-          document.getElementById("sf-world-main").innerHTML = world();
-          document.getElementById("sf-world-lens").innerHTML = world();
+          document.getElementById("sf-world-main").innerHTML = world("sf-bloom");
+          document.getElementById("sf-world-lens").innerHTML = world("sf-bloom-lens");
 
           var rows = root.querySelectorAll(".sf-hl");
           function setGrid(phase) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
-import { C, mono } from "./theme";
+import { BEAT, C, mono } from "./theme";
 import { clamp, EIO } from "./anim";
 import { Grain, Scanlines, Vignette } from "./FX";
 import { LETTERBOX_OPEN, SECTIONS, TOTAL } from "../timeline";
@@ -28,7 +28,8 @@ export const Finish: React.FC<{ offset?: number }> = ({ offset = 0 }) => {
       <path d={d} stroke={C.dim} strokeWidth={1.5} fill="none" />
     </svg>
   );
-  const granted = g >= LETTERBOX_OPEN;
+  // S7 opens on DENIED; the session only goes active on the GRANTED burst one beat later.
+  const granted = g >= LETTERBOX_OPEN + BEAT;
   return (
     <AbsoluteFill style={{ pointerEvents: "none", opacity: endO }}>
       <Scanlines opacity={0.035} />

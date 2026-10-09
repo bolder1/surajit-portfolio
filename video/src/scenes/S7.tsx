@@ -3,7 +3,7 @@ import { AbsoluteFill, Easing, interpolate, Sequence, spring, useCurrentFrame, u
 import { noise2D } from "@remotion/noise";
 import { C, mona, mono } from "../lib/theme";
 import { clamp, EI, EIO, EO, lerp, rand } from "../lib/anim";
-import { Flash, Glow } from "../lib/FX";
+import { Flash } from "../lib/FX";
 import { LightLeak } from "@remotion/light-leaks";
 import type { Cue, Sfx } from "../lib/cues";
 import face from "../assets/face.json";
@@ -14,12 +14,15 @@ import face from "../assets/face.json";
  *         password field.
  * f7–14   it collapses into a single vermilion seam that stretches across the frame (the closed door).
  * f15     beat: the seam splits. ACCESS bursts up out of it and GRANTED down, each letter rippling from
- *         condensed-hairline to extended-black (centre out). Chime, flash, warm RGB split, light leak.
+ *         condensed-hairline to extended-black (centre out). Chime, a 2-frame white flash, light leak.
  *         The burst throws out the identity graph: his face-mesh points as a drifting network.
+ *         Glow budget: one emissive source at a time (seam → flash frame → leak); type stays flat, no
+ *         text-shadows, no halo blobs. No RGB split here: 03 already spent it on the name slam.
  * f45–66  the lockup steps left; f46–90 the graph converges, clockwise, into his initials avatar:
  *         a 120-dot ring (the verification ring from 02) around an SD dot-matrix monogram.
  * f64     SUBJECT · S. DUTTA   SCOPE · 7 DOMAINS types in. f90 avatar locks, presence badge on.
  * f104–117 exit: type wipes up out of its own cap line, the avatar's dots go out from the rim inward.
+ * f116–119 deliberate 4-frame dip (HUD only, no SFX) so 08's underline snap lands on a clean frame.
  */
 
 const HIT = 15;
@@ -118,7 +121,6 @@ const NODES = FP.map((p, i) => ({
   sy: SEAM_Y + (rand(i * 8.8) - 0.5) * 6,
   d: rand(i * 3.7) * 7,
   hub: rand(i * 4.1) < 0.07,
-  hot: rand(i * 6.3) < 0.05,
   o: 0.28 + rand(i * 9.2) * 0.4,
   swirl: (rand(i * 5.5) - 0.5) * 220,
 }));
@@ -162,7 +164,7 @@ const EDGES: [number, number][] = NODES.flatMap((n, i) => {
 const ACCESS = "ACCESS";
 const GRANTED = "GRANTED";
 
-const Word: React.FC<{ text: string; size: number; hit: number; color: string; glow: boolean; heat?: number; f: number; fps: number }> = ({ text, size, hit, color, glow, heat = 0, f, fps }) => {
+const Word: React.FC<{ text: string; size: number; hit: number; color: string; f: number; fps: number }> = ({ text, size, hit, color, f, fps }) => {
   const n = text.length;
   return (
     <div style={{ display: "flex", justifyContent: "center", fontSize: size, lineHeight: 1, letterSpacing: `${TRACK}em`, whiteSpace: "nowrap" }}>
@@ -172,7 +174,7 @@ const Word: React.FC<{ text: string; size: number; hit: number; color: string; g
         const wd = interpolate(s, [0, 1], [75, 125], clamp);
         const wg = interpolate(s, [0, 1], [200, 900], clamp);
         return (
-          <span key={i} style={{ ...mona(wd, wg), color, textShadow: glow ? `0 0 46px rgba(255,59,31,0.5)` : heat > 0.02 ? `0 0 ${30 + 30 * heat}px rgba(255,90,50,${0.85 * heat})` : "none" }}>
+          <span key={i} style={{ ...mona(wd, wg), color }}>
             {ch}
           </span>
         );
@@ -181,11 +183,9 @@ const Word: React.FC<{ text: string; size: number; hit: number; color: string; g
   );
 };
 
-const Lockup: React.FC<{ f: number; fps: number; tint?: string; exit: number }> = ({ f, fps, tint, exit }) => {
+const Lockup: React.FC<{ f: number; fps: number; exit: number }> = ({ f, fps, exit }) => {
   const syA = f < HIT ? 0 : spring({ frame: f - HIT, fps, config: { stiffness: 320, damping: 15, mass: 0.7 } });
   const syG = f < HIT + 2 ? 0 : spring({ frame: f - HIT - 2, fps, config: { stiffness: 320, damping: 15, mass: 0.7 } });
-  const accessColor = tint ?? C.paper;
-  const heat = tint ? 0 : interpolate(f, [HIT, HIT + 10], [1, 0], { ...clamp, easing: EO });
   // exit: each word slides up through a mask fixed at its own top edge
   const eA = interpolate(exit, [0, 0.8], [0, 1], { ...clamp, easing: EI });
   const eG = interpolate(exit, [0.15, 1], [0, 1], { ...clamp, easing: EI });
@@ -206,7 +206,7 @@ const Lockup: React.FC<{ f: number; fps: number; tint?: string; exit: number }> 
           clipPath: dA > 0 ? `inset(${dA + CAPTOP * F1 - 6}px 0 0 0)` : undefined,
         }}
       >
-        <Word text={ACCESS} size={F1} hit={HIT} color={accessColor} glow={false} heat={heat} f={f} fps={fps} />
+        <Word text={ACCESS} size={F1} hit={HIT} color={C.paper} f={f} fps={fps} />
       </div>
       <div
         style={{
@@ -219,7 +219,7 @@ const Lockup: React.FC<{ f: number; fps: number; tint?: string; exit: number }> 
           clipPath: dG > 0 ? `inset(${dG + CAPTOP * F2 - 6}px 0 0 0)` : undefined,
         }}
       >
-        <Word text={GRANTED} size={F2} hit={HIT + 2} color={tint ?? C.acc} glow={!tint} f={f} fps={fps} />
+        <Word text={GRANTED} size={F2} hit={HIT + 2} color={C.acc} f={f} fps={fps} />
       </div>
     </>
   );
@@ -234,6 +234,7 @@ const MONO_LINE: { t: string; hi?: boolean }[] = [
 ];
 const MONO_LEN = MONO_LINE.reduce((n, s) => n + s.t.length, 0);
 const TYPE_AT = 64;
+const MONO_DIM = "rgba(243,236,222,0.6)"; // labels stay ≥ 45 % after the vignette
 
 export const Scene: React.FC = () => {
   const f = useCurrentFrame();
@@ -255,7 +256,6 @@ export const Scene: React.FC = () => {
   /* lockup move */
   const m = interpolate(f, [45, 66], [0, 1], { ...clamp, easing: EIO });
   const exit = interpolate(f, [104, 114], [0, 1], clamp);
-  const chroma = interpolate(f, [HIT, HIT + 6], [18, 0], { ...clamp, easing: EO });
 
   /* identity graph → avatar */
   const netIn = interpolate(f, [24, 42], [0, 1], clamp);
@@ -324,7 +324,7 @@ export const Scene: React.FC = () => {
               if (k === undefined) {
                 if (strayO[i] < 0.02) return null;
                 if (n.hub) return <circle key={i} cx={p.x} cy={p.y} r={5} fill="none" stroke={C.paper} strokeWidth={1.25} opacity={0.7 * strayO[i]} />;
-                return <rect key={i} x={p.x - 1.3} y={p.y - 1.3} width={2.6} height={2.6} fill={n.hot ? C.acc : C.paper} opacity={(n.hot ? 0.9 : n.o) * strayO[i]} />;
+                return <rect key={i} x={p.x - 1.3} y={p.y - 1.3} width={2.6} height={2.6} fill={C.paper} opacity={n.o * strayO[i]} />;
               }
               const tg = TARGETS[k];
               const lockF = startOf(k) + FLIGHT;
@@ -334,8 +334,8 @@ export const Scene: React.FC = () => {
               const size = lerp(s0, rEnd * 2, t) * outro(k);
               if (size < 0.3) return null;
               if (n.hub && t < 0.55) return <circle key={i} cx={p.x} cy={p.y} r={lerp(5, rEnd, t / 0.55)} fill="none" stroke={C.paper} strokeWidth={1.25} opacity={0.7 * outro(k)} />;
-              const fill = flash ? C.acc : tg.ring ? C.paper : n.hot && t < 0.5 ? C.acc : C.paper;
-              const op = t < 0.98 ? lerp(n.hot ? 0.9 : n.o, 1, t) : tg.ring ? 0.62 + 0.38 * lockPulse : 1;
+              const fill = flash ? C.acc : C.paper;
+              const op = t < 0.98 ? lerp(n.o, 1, t) : tg.ring ? 0.62 + 0.38 * lockPulse : 1;
               return <rect key={i} x={p.x - size / 2} y={p.y - size / 2} width={size} height={size} rx={(size / 2) * t} fill={fill} opacity={op} />;
             })}
           </svg>
@@ -347,7 +347,6 @@ export const Scene: React.FC = () => {
             <circle cx={AV.x + RING_R * Math.SQRT1_2} cy={AV.y + RING_R * Math.SQRT1_2} r={24 * badge} fill={C.acc} stroke={C.ink} strokeWidth={9 * badge} />
           </svg>
         ) : null}
-        {badge > 0.01 ? <Glow x={AV.x + RING_R * Math.SQRT1_2} y={AV.y + RING_R * Math.SQRT1_2} r={90} opacity={0.6 * badge} /> : null}
 
         {/* DENIED: condensed hairline, flickering, shaking like a rejected field, then collapsing */}
         {f < HIT ? (
@@ -367,7 +366,6 @@ export const Scene: React.FC = () => {
               opacity: deniedOn,
               transformOrigin: `50% ${0.52 * 150}px`,
               transform: `translateX(${shake}px) scaleY(${collapse})`,
-              textShadow: `0 0 30px ${C.accGlow}`,
               whiteSpace: "nowrap",
             }}
           >
@@ -384,7 +382,7 @@ export const Scene: React.FC = () => {
               height: 3,
               background: f >= HIT && f < HIT + 2 ? "#fff4e6" : C.acc,
               opacity: seamO,
-              boxShadow: `0 0 24px 4px ${C.accGlow}`,
+              boxShadow: `0 0 14px 1px ${C.accGlow}`,
             }}
           />
         ) : null}
@@ -397,17 +395,6 @@ export const Scene: React.FC = () => {
               transform: `translate(${lerp(0, -401, m)}px, ${lerp(0, -12, m)}px) scale(${lerp(1, 0.55, m)})`,
             }}
           >
-            <Glow x={960} y={650} r={760} opacity={interpolate(f, [HIT, HIT + 4, 45, 66], [0.6, 0.42, 0.24, 0.18], clamp) * (1 - exit)} />
-            {chroma > 0.4 ? (
-              <>
-                <AbsoluteFill style={{ transform: `translateX(${-chroma}px)`, mixBlendMode: "screen", opacity: 0.85 }}>
-                  <Lockup f={f} fps={fps} tint="#ff2a1a" exit={exit} />
-                </AbsoluteFill>
-                <AbsoluteFill style={{ transform: `translateX(${chroma}px)`, mixBlendMode: "screen", opacity: 0.6 }}>
-                  <Lockup f={f} fps={fps} tint="#ffb45a" exit={exit} />
-                </AbsoluteFill>
-              </>
-            ) : null}
             <Lockup f={f} fps={fps} exit={exit} />
           </AbsoluteFill>
         ) : null}
@@ -422,7 +409,7 @@ export const Scene: React.FC = () => {
               fontFamily: mono,
               fontSize: 21,
               letterSpacing: "0.22em",
-              color: C.dim,
+              color: MONO_DIM,
               whiteSpace: "pre",
               clipPath: `inset(0 ${monoExit * 100}% 0 0)`,
             }}
@@ -433,7 +420,7 @@ export const Scene: React.FC = () => {
                 const t = seg.t.slice(0, Math.max(0, left));
                 left -= seg.t.length;
                 return (
-                  <span key={i} style={{ color: seg.hi ? C.paper : C.dim }}>
+                  <span key={i} style={{ color: seg.hi ? C.paper : MONO_DIM }}>
                     {t}
                   </span>
                 );
@@ -445,18 +432,8 @@ export const Scene: React.FC = () => {
       </AbsoluteFill>
 
       <Flash at={0} len={7} color={C.acc} max={0.2} />
-      {/* the seam bursts: light spreads from the line, not a flat white frame */}
-      {f >= HIT && f < HIT + 6 ? (
-        <AbsoluteFill
-          style={{
-            background: "radial-gradient(ellipse 58% 22% at 50% 50%, rgba(255,244,230,0.95) 0%, rgba(255,120,80,0.35) 45%, transparent 75%)",
-            opacity: interpolate(f, [HIT, HIT + 5], [1, 0], { ...clamp, easing: EO }),
-            transform: `scaleY(${interpolate(f, [HIT, HIT + 5], [0.35, 1.6], clamp)})`,
-            mixBlendMode: "screen",
-            pointerEvents: "none",
-          }}
-        />
-      ) : null}
+      {/* the seam bursts: a white flash frame on the beat, gone in 2 f (red on DENIED at f0, white on GRANTED) */}
+      <Flash at={HIT - 1} len={3} color="#fff4e6" max={0.72} />
       {/* one warm leak on the burst; hue pulled back to vermilion/amber (no magenta) */}
       <Sequence from={HIT} durationInFrames={LEAK_DUR} layout="none">
         <AbsoluteFill style={{ opacity: LEAK_O, mixBlendMode: "screen", pointerEvents: "none" }}>
@@ -475,17 +452,14 @@ export const cues: Cue[] = [
   { f: 1, sfx: "whoosh-rev", vol: 0.42 }, // pulls into the burst, ends on f15
   { f: 1, sfx: "blip-down", vol: 0.32 }, // deny double-beep, 5 f apart, on lit flicker frames
   { f: 6, sfx: "blip-down", vol: 0.3 },
-  { f: 13, sfx: "swish", vol: 0.38 },
-  // f15: the seam splits
+  // f15: the seam splits. Chime + transient only: no glitch on the resolution, no extra air
   { f: HIT, sfx: "granted", vol: 0.72 },
   { f: HIT, sfx: "snap", vol: 0.3 },
-  { f: HIT + 1, sfx: "glitch-2", vol: 0.3 },
-  // the lockup steps aside, the graph converges
-  { f: 45, sfx: "whoosh", vol: 0.3 },
-  { f: 48, sfx: "chatter", vol: 0.25 },
-  ...Array.from({ length: Math.ceil(MONO_LEN / 2.2) }, (_, k) => ({ f: TYPE_AT + k, sfx: `key-${k % 6}` as Sfx, vol: 0.14 })).filter((_, k) => k % 2 === 0),
+  // the convergence is scored by the ring's ratchet alone (no generic data chatter, no whoosh on the
+  // lockup's slow ease); the summary line gets one key every 3 f across all six variants
+  ...Array.from({ length: Math.ceil(MONO_LEN / 2.2 / 3) }, (_, k) => ({ f: TYPE_AT + k * 3, sfx: `key-${k % 6}` as Sfx, vol: 0.14 })),
   { f: 67, sfx: "dial", vol: 0.4 }, // ring fills clockwise
   { f: LOCKED, sfx: "lock", vol: 0.5 },
   { f: LOCKED, sfx: "blip-hi", vol: 0.24 },
-  { f: 104, sfx: "whoosh", vol: 0.3 },
+  // f104–119 exit and dip: no whoosh into the cut, the bed carries it
 ];

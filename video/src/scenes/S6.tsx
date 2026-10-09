@@ -353,9 +353,6 @@ export const Scene: React.FC = () => {
   const cam = interpolate(f, [0, 120], [1, 1.025], clamp) + interpolate(f, [70, 114], [0, 0.035], { ...clamp, easing: EI });
   const stutter = (f >= 45 && f < 47) || (f >= 50 && f < 52) ? 0.42 : 0;
 
-  // after the messages switch off, the column guides fade and leave the words alone for the silence
-  const guideFade = interpolate(f, [OFF + 2, 110], [1, 0], { ...clamp, easing: EI });
-
   const pT = f < SNAP ? 0 : spring({ frame: f - SNAP + 1, fps, config: { stiffness: 210, damping: 26 } });
   const lineA = interpolate(f, [68, 82], [0, 1], { ...clamp, easing: EO });
   const lineB = interpolate(f, [75, 89], [0, 1], { ...clamp, easing: EO });
@@ -372,7 +369,8 @@ export const Scene: React.FC = () => {
         const chaos: Pt[] = [p0, { x: p0.x + w.bow, y: p0.y }, { x: p3.x - w.bow, y: p3.y }, p3];
         const pts = chaos.map((c, n) => ({ x: lerp(c.x, w.g.x, p), y: lerp(c.y, lerp(w.g.y0, w.g.y1, n / 3), p) }));
         const d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)} C ${pts[1].x.toFixed(1)} ${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)} ${pts[2].y.toFixed(1)} ${pts[3].x.toFixed(1)} ${pts[3].y.toFixed(1)}`;
-        const op = lerp(w.o, 0.16, p) * (calm ? guideFade : 1);
+        // each guide clears with the messages in its column: the sweep empties the grid left→right
+        const op = lerp(w.o, 0.16, p) * (calm ? interpolate(f, [OFF + w.delay, OFF + w.delay + 3], [1, 0], clamp) : 1);
         const portO = (1 - Math.min(1, p * 2)) * 0.85;
         return (
           <g key={i}>
@@ -466,10 +464,10 @@ export const Scene: React.FC = () => {
           }}
         >
           <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
-            <div style={{ transform: `translateY(${(1 - lineA) * 105}%)`, filter: `blur(${(1 - lineA) * 7}px)` }}>Using it</div>
+            <div style={{ transform: `translateY(${(1 - lineA) * 105}%)` }}>Using it</div>
           </div>
           <div style={{ overflow: "hidden", padding: "0.05em 0.08em 0.12em", margin: "-0.05em -0.08em -0.12em" }}>
-            <div style={{ transform: `translateY(${(1 - lineB) * 105}%)`, filter: `blur(${(1 - lineB) * 7}px)` }}>shouldn’t be.</div>
+            <div style={{ transform: `translateY(${(1 - lineB) * 105}%)` }}>shouldn’t be.</div>
           </div>
         </div>
       ) : null}
@@ -516,12 +514,12 @@ export const cues: Cue[] = [
   { f: 41, sfx: "key-3", vol: 0.16 },
   { f: 42, sfx: "blip", vol: 0.2 },
   // stutters: glitch-1 (9 f) on the first, the shorter glitch-2 (6.6 f) on the second so nothing
-  // rings into the freeze; ghost repeats from here on stay silent (alarm fatigue reads in the picture)
+  // rings into the freeze; ghost repeats from here on stay silent (alarm fatigue reads in the picture),
+  // only the out-of-focus one that hits the lens on f54 gets a blip (f51's is covered by the stutter)
   { f: 45, sfx: "blip-down", vol: 0.32 },
   { f: 45, sfx: "glitch-1", vol: 0.4 },
   { f: 49, sfx: "click", vol: 0.18 },
   { f: 50, sfx: "glitch-2", vol: 0.38 },
-  { f: 51, sfx: "blip-hi", vol: 0.24 },
   { f: 52, sfx: "riser", vol: 0.55 }, // 2 s, inaudible until ~f76, hard stop at f112
   { f: 54, sfx: "blip", vol: 0.26 },
   // f57–59 freeze: the sound cuts out with the motion
