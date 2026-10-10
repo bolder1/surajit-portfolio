@@ -49,6 +49,9 @@
            bottom aligned with the slab; the rim light that runs once around it is its only light */
         #f12-chip { position: absolute; left: 720px; top: 904px; width: 760px; height: 76px; border-radius: 38px; backdrop-filter: url(#f12-chip-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 38px 38px; }
         #f12-chip .f12-tint { background: rgba(20, 12, 38, 0.42); }
+        /* the tint rises to ~0.84 behind the label (feathered, no inner edge) so the floor rows don't cross the type;
+           the 10-26 px rim band keeps the plain tint, so the bent floor still reads through the glass there */
+        #f12-chip-veil { position: absolute; inset: 9px 24px; background: rgba(20, 12, 38, 0.72); -webkit-mask: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent), linear-gradient(180deg, transparent, #000 15px, #000 calc(100% - 15px), transparent); -webkit-mask-composite: source-in; mask-composite: intersect; }
         #f12-chip-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 0.14em; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #f3eeff; white-space: nowrap; }
         .f12-rl { position: absolute; left: 680px; top: 864px; width: 840px; height: 156px; overflow: visible; opacity: 0; }
 
@@ -56,7 +59,9 @@
         #f12-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px); opacity: 0; }
         #f12-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
         /* the line's phosphor bloom: an even band along the whole line (not a flare), ~gaussian in y, only on 1380-1385 */
-        #f12-halo { position: absolute; left: 0; top: 190px; width: 1920px; height: 700px; opacity: 0; } /* gaussian band, built in the script */
+        /* two gaussians (sigma 40 / 140 px), beam-core easing to beam, baked as a pre-dithered RGBA strip (clumped 2 px
+           triangular noise, +-8 alpha units) so the H.264 encode cannot band its dark edges; tiles across x */
+        #f12-halo { position: absolute; left: 0; top: 190px; width: 1920px; height: 700px; opacity: 0; background: url("assets/img/f12-halo.png") 0 0 / 512px 700px repeat-x; }
         .f12-line { position: absolute; left: 0; width: 1920px; background: #ffd9ec; opacity: 0; }
         #f12-cline { top: 537px; height: 6px; background: #ffffff; box-shadow: 0 0 8px 2px rgba(255, 217, 236, 0.95), 0 0 28px 8px rgba(255, 46, 151, 0.5), 0 0 90px 24px rgba(255, 46, 151, 0.2); }
         .f12-edge { top: 539px; height: 2px; box-shadow: 0 0 8px 2px rgba(255, 217, 236, 0.7), 0 0 26px 6px rgba(255, 46, 151, 0.25); }
@@ -95,6 +100,7 @@
             <svg class="f12-rl" id="f12-rl-under" viewBox="0 0 840 156" aria-hidden="true" data-layout-ignore><defs><g id="f12-rl-glow"></g><g id="f12-rl-core"></g></defs><g transform="translate(40,40)" id="f12-rl-u"></g></svg>
             <div id="f12-chip">
               <div class="f12-tint"></div>
+              <div id="f12-chip-veil"></div>
               <div class="f12-shade"></div>
               <div class="f12-grim" id="f12-chip-rim"></div>
               <div id="f12-chip-text"><span>OPEN TO SENIOR ROLES &amp; SELECT FREELANCE</span></div>
@@ -251,15 +257,6 @@
             var b = Math.floor((t - E2) / 0.25 + 1e-6);
             k2.style.opacity = t < T2 ? 0 : t < E2 ? 1 : b < 6 && b % 2 === 0 ? 1 : 0;
           }
-
-          // the line's bloom profile: two gaussians (core sigma 40 px, tail sigma 140 px), beam-core easing out to beam
-          var hs = [];
-          for (var d = -350; d <= 350; d += 14) {
-            var u = Math.abs(d), al = Math.min(1, 0.6 * Math.exp(-(u * u) / 3200) + 0.48 * Math.exp(-(u * u) / 39200)) * (1 - Math.pow(u / 350, 6));
-            var m = Math.pow(Math.min(1, u / 240), 1.2), g = Math.round(217 - 171 * m), bl = Math.round(236 - 85 * m);
-            hs.push("rgba(255, " + g + ", " + bl + ", " + al.toFixed(3) + ") " + ((d + 350) / 7).toFixed(2) + "%");
-          }
-          document.getElementById("f12-halo").style.background = "linear-gradient(180deg, " + hs.join(", ") + ")";
 
           var grain = document.getElementById("f12-grain");
           grain.style.backgroundImage = K.grainURL(1337);

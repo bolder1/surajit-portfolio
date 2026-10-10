@@ -2,11 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- F8 "What I do" (film 960-1080, 4 s). Seven disciplines, one per line on a 128 px pitch, slam in on the eighths
-         from the cut (960, 967.5 ... 1005). One Tier B liquid-glass selector carries each new word down into its line and
-         hugs it exactly (same ease, same centre, width fitted to the word as its width axis opens); the beam head steps
-         down the rail with it, one pad per word. Deselected words stay solid: ink-dim, wdth 75, wght 640. 1020 the beam fires along the bottom,
-         the toolbox types behind it, and everything pushes up for the "continue upward" cut (last 6 f).
+    <!-- F8 "What I do" (film 960-1080, 4 s). The cut opens composed: the persisted beam already routes the list (rail down
+         the left with seven pad sockets, underline along the bottom) and PRODUCT DESIGN sits in its condensing glass
+         selector. Then one discipline per eighth (967.5 ... 1005): from the frame before the eighth the selector and the beam
+         head step down one line (2 f expo.out), the outgoing word condenses (ink-dim, wdth 75, wght 640) and the new word rises
+         out of its own line mask into the selector, width axis opening. Lines are separate masks and the rising word is
+         clipped to the glass, so no two words ever overlap; the pill's width follows the word's width every frame.
+         1020 the beam fires along the bottom, the toolbox types behind it, everything pushes up for the cut (last 6 f).
          Local time = film frame - 960. Needs ReelKit. -->
   </head>
   <body>
@@ -24,7 +26,7 @@
         .f08-wr { position: relative; display: block; font-family: "Mona Sans", sans-serif; font-size: 120px; line-height: 128px; letter-spacing: -0.01em; white-space: nowrap; color: #b4a8da; --wdth: 75; --wght: 900; font-variation-settings: "wdth" var(--wdth), "wght" var(--wght); }
 
         /* Tier B selector pill: a lens over the list (inward rim magnifies the word under it) */
-        #f08-pill { position: absolute; left: 108px; top: 0; height: 128px; border-radius: 64px; backdrop-filter: url(#f08-sel-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; transform-origin: 0% 50%; }
+        #f08-pill { position: absolute; left: 108px; top: 0; height: 128px; border-radius: 64px; backdrop-filter: url(#f08-sel-f); box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; }
         #f08-pill .lg-tint { background: rgba(180, 150, 255, 0.07); }
         .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
         .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
@@ -74,7 +76,6 @@
           var P = 128, TOP = function (i) { return 42 + P * i; };
           var MID = function (i) { return TOP(i) + 66; }; // cap middle of line i (baseline TOP + 110.5, cap 89)
           var LX = 168, PL = 108, PH = 128, R = PH / 2, RX = 136, BY = 968;
-          var LW = WORDS.map(function (_, i) { return F(7.5 * i); }); // 960, 967.5, 975, 982.5, 990, 997.5, 1005
 
           var list = "";
           WORDS.forEach(function (w, i) { list += '<div class="f08-row" style="top:' + TOP(i) + 'px"><span class="f08-wr" data-layout-allow-overflow data-layout-allow-occlusion>' + w + "</span></div>"; });
@@ -82,21 +83,24 @@
           var rows = Q(".f08-wr");
 
           // world: haze and one beam: in from the top edge, down the rail through a pad per line, a 90-degree bend at the
-          // bottom and out along the floor line under the list (the toolbox types along it)
+          // bottom and out along the floor line under the list (the toolbox types along it). The whole route is on screen
+          // from the cut at its persisted strength (0.5) with an unlit socket per line; fresh + head step down it
           var ROUTE = "M " + RX + " -20 V " + BY + " H 1960";
           var w = '<defs><radialGradient id="f08-haze-g" cx="760" cy="600" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(760 600) scale(1150 330) translate(-760 -600)">';
           w += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient></defs>';
           w += '<rect id="f08-haze" x="-200" y="160" width="2320" height="900" fill="url(#f08-haze-g)"/>';
           w += '<g filter="url(#f08-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
           w += '<path class="f08-old" d="' + ROUTE + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          w += '<path class="f08-old" d="' + ROUTE + '" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
           w += '<path class="f08-fresh" d="' + ROUTE + '" stroke="#ff2e97" stroke-width="6"/>';
           w += '<path class="f08-core" d="' + ROUTE + '" stroke="#ffd9ec" stroke-width="2.2"/>';
           w += '<path class="f08-head" d="' + ROUTE + '" stroke="#ffffff" stroke-width="7"/>';
+          WORDS.forEach(function (_, i) { w += '<circle cx="' + RX + '" cy="' + MID(i) + '" r="11" stroke="#ff2e97" stroke-width="3.5" stroke-opacity="0.5" fill="#0b0716"/>'; });
           WORDS.forEach(function (_, i) { w += '<circle class="f08-pad" cx="' + RX + '" cy="' + MID(i) + '" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>'; });
           document.getElementById("f08-world").innerHTML = w + "</g>";
-          var BD = Q(".f08-old, .f08-core"), BF = Q(".f08-fresh"), BH = Q(".f08-head");
+          var BC = Q(".f08-core"), BF = Q(".f08-fresh"), BH = Q(".f08-head");
           var RL = BY + 20 + (1960 - RX); // route length
-          function setBeam(s) { K.dash(BD, RL, s, null); K.dash(BF, RL, s, 560); K.dash(BH, RL, s, 70); }
+          function setBeam(s) { K.dash(BC, RL, s, null); K.dash(BF, RL, s, 560); K.dash(BH, RL, s, 70); }
 
           // selector lens: an exact stadium map for any width, built from three feImages (left cap, a 1 px middle
           // column stretched, right cap) so the pill can slide and re-fit each word without re-decoding a map
@@ -125,7 +129,9 @@
           fm += ch("r", "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0") + ch("g", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0") + ch("b", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0");
           fm += '<feBlend in="r" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b" mode="screen"/></filter>';
           document.getElementById("f08-defs").insertAdjacentHTML("beforeend", fm);
-          var selF = document.getElementById("f08-sel-f"), mapMEl = document.getElementById("f08-mapm"), mapREl = document.getElementById("f08-mapr");
+          // edge chroma split R 1.00 / G 0.96 / B 0.92 (calmer than ReelKit's 1 / 0.9 / 0.8, matching F7's glass, so the
+          // white word does not pick up red and orange fringes)
+          var selF = document.getElementById("f08-sel-f"), selD = selF.querySelectorAll("feDisplacementMap"), mapMEl = document.getElementById("f08-mapm"), mapREl = document.getElementById("f08-mapr");
           var pill = document.getElementById("f08-pill");
           var CHIP = K.spring(0.45, 0.8, 0.7);
           function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
@@ -135,41 +141,52 @@
           function so(nodes, v) { for (var n = 0; n < nodes.length; n++) nodes[n].style.strokeOpacity = v.toFixed(3); }
 
           // one pure function of local time drives the words, the selector and the beam, so they cannot drift apart.
-          // word i (i >= 1) drops into its line from the line above while the pill slides down with it: same expo.out
-          // (0.3 s), same centre; its width axis opens 75 -> selected (0.42 s expo.out) and the pill's right edge follows
-          var ent = [], wdA = [];
+          // step i (i >= 1) starts on the whole frame before its eighth, E[i] = ceil(7.5 i) - 1 (967, 974, 982, 989, 997,
+          // 1004), so every step first shows on the eighth's own frame (968, 975, 983, 990, 998, 1005) with no empty-glass
+          // frame: the selector + beam head move one line down (2 f expo.out), word i - 1 condenses (2 f power2.out) and
+          // word i rises out of its own mask (0.3 s expo.out), width axis opening 75 -> selected (0.42 s expo.out).
+          // Word 0 is already in place on the cut, its width axis opening.
+          var E = WORDS.map(function (_, i) { return i ? F(Math.ceil(7.5 * i) - 1) : 0; }), PM = F(2);
+          var wdA = [], rowEls = Q(".f08-row");
           function render(t) {
-            var a = 0, i = 0;
-            while (i < 6 && t >= LW[i + 1]) i++;
+            var i = 0;
+            while (i < 6 && t >= E[i + 1]) i++;
             for (var j = 0; j < 7; j++) {
-              var e = j === 0 ? expo(t / 0.3) : expo((t - LW[j]) / 0.3), ow = j === 0 ? expo(t / 0.35) : expo((t - LW[j]) / 0.42);
-              var dsel = j < 6 ? out((t - LW[j + 1]) / 0.25, 2) : 0;
-              var wd = (j === 0 ? 88 : 75) + (WSEL[j] - (j === 0 ? 88 : 75)) * ow;
+              var e = j === 0 ? 1 : expo((t - E[j]) / 0.3), ow = j === 0 ? expo((t + F(1)) / 0.35) : expo((t - E[j]) / 0.42);
+              var dsel = j < 6 ? out((t - E[j + 1]) / PM, 2) : 0;
+              var w0 = j === 0 ? 92 : 75, wd = w0 + (WSEL[j] - w0) * ow;
               wd = wd + (75 - wd) * dsel;
-              ent[j] = e; wdA[j] = wd;
-              rows[j].style.transform = "translateY(" + (-(j === 0 ? 12 : P) * (1 - e)).toFixed(2) + "px)";
+              wdA[j] = wd;
+              rows[j].style.transform = "translateY(" + (P * 1.05 * (1 - e)).toFixed(2) + "px)";
               rows[j].style.setProperty("--wdth", wd.toFixed(2));
               rows[j].style.setProperty("--wght", (900 - 260 * dsel).toFixed(1));
               rows[j].style.color = mix("#f3eeff", "#b4a8da", dsel);
             }
-            a = ent[i];
-            var from = i > 0 ? i - 1 : 0, cy = i > 0 ? MID(i) - P * (1 - a) : MID(0) - 12 * (1 - a);
-            var rNew = LX + adv(i, wdA[i]) + 61, rOld = LX + adv(from, wdA[from]) + 61;
-            var wdp = Math.round((i > 0 ? rOld + (rNew - rOld) * a : rNew) - PL);
+            var a = i > 0 ? expo((t - E[i]) / PM) : 1, cy = i > 0 ? MID(i - 1) + P * a : MID(0);
+            // the pill always holds the active word: never narrower than it, and it hands over from the outgoing width
+            var rIn = LX + adv(i, wdA[i]) + 61, rOut = i > 0 ? LX + adv(i - 1, wdA[i - 1]) + 61 : rIn;
+            // Tier B entrance on the cut (spring, 0.1 s in on frame 960): opacity and refraction only. No scale: the lens
+            // map lives in the pill's own space, so a scaled pill would bend the word's last letters out of register
+            var k = CHIP(c01((t + 0.1) / 0.7));
+            var wdp = Math.round(Math.max(rIn, rOut + (rIn - rOut) * a) - PL);
+            pill.style.opacity = Math.min(1, k).toFixed(4);
             pill.style.width = wdp + "px";
             pill.style.top = (cy - R).toFixed(2) + "px";
+            // the rising word is only ever seen inside the glass: its line mask stops at the pill's bottom edge
+            for (var q = 1; q < 7; q++) { var cut = q === i ? TOP(q) + P - (cy + R) : 0; rowEls[q].style.clipPath = cut > 0.5 ? "inset(0 0 " + cut.toFixed(1) + "px 0)" : "none"; }
             selF.setAttribute("width", wdp);
             mapMEl.setAttribute("width", wdp - PH);
             mapREl.setAttribute("x", wdp - R);
-            // refraction: condense spring from the cut, then one liquid wobble as it settles on the last word
-            var u = t - LW[6], wob = u > 0 ? Math.exp(-3.5 * u) * Math.sin(2 * Math.PI * 1.8 * u) : 0;
-            K.setRefraction(selF, 36 * (t <= 0 ? 0 : CHIP(c01(t / 0.7))) * (1 + 0.45 * wob));
-            // beam head: at pad 0 on the cut, steps one pad per word with the selector, hard stop, phosphor persistence;
+            // refraction: condense spring (already 0.1 s in on the cut), then one liquid wobble on the last word
+            var u = t - E[6], wob = u > 0 ? Math.exp(-3.5 * u) * Math.sin(2 * Math.PI * 1.8 * u) : 0;
+            var rs = 36 * k * (1 + 0.45 * wob);
+            selD[0].setAttribute("scale", rs.toFixed(2)); selD[1].setAttribute("scale", (rs * 0.96).toFixed(2)); selD[2].setAttribute("scale", (rs * 0.92).toFixed(2));
+            // beam head: on pad 0 at the cut, steps one pad per word with the selector, hard stop, phosphor persistence;
             // 1020 it fires down and out along the bottom (launch, power2.in, 0.6 s)
             var s = 20 + MID(0) + (i > 0 ? P * (i - 1) + P * a : 0), tf = t - F(60);
             if (tf > 0) s += (RL - s) * Math.pow(c01(tf / 0.6), 2);
             setBeam(s);
-            var st = tf > 0.6 ? tf - 0.6 : tf > 0 ? -1 : t - LW[6] - F(4); // time since the last hard stop (< 0: moving)
+            var st = tf > 0.6 ? tf - 0.6 : tf > 0 ? -1 : t - E[6] - PM; // time since the last hard stop (< 0: moving)
             so(BH, st > 0 ? 1 - out(st / 0.12, 1) : 1);
             so(BF, st > 0 ? 1 - 0.42 * out(st / 0.65, 2) : 1);
           }
@@ -186,13 +203,13 @@
           tl.fromTo("#f08-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
 
           // a pad pops as each word lands (pad 0 is already lit on the cut)
+          // a pad lights as the head lands on it, on the step's first frame (pad 0 is lit on the cut); its socket stays at 0.5
           var pads = Q(".f08-pad");
           tl.set(pads[0], { scale: 1, svgOrigin: RX + " " + MID(0) }, 0);
-          for (var p = 1; p < 7; p++) tl.fromTo(pads[p], { scale: 0, svgOrigin: RX + " " + MID(p) }, { scale: 1, duration: 0.18, ease: "power4.out" }, LW[p] + F(1));
-          // the selector condenses over the first word on the cut (Tier B entrance spring), rim light turns with it
-          tl.fromTo(pill, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, 0);
+          for (var p = 1; p < 7; p++) tl.fromTo(pads[p], { scale: 0, svgOrigin: RX + " " + MID(p) }, { scale: 1, duration: 0.18, ease: "power4.out" }, E[p]);
+          // the selector's rim light turns as it condenses on the cut (its entrance itself rides render())
           tl.fromTo("#f08-pill-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, 0);
-          tl.fromTo("#f08-pill-rim", { "--spec": "200deg" }, { "--spec": "250deg", duration: 1.5, ease: "power2.out", immediateRender: false }, LW[6]);
+          tl.fromTo("#f08-pill-rim", { "--spec": "200deg" }, { "--spec": "250deg", duration: 1.5, ease: "power2.out", immediateRender: false }, E[6]);
 
           // 1024-1053 the toolbox types along the beam behind its head (~2 characters a frame); caret blinks in eighths
           var tc = { n: 0 };

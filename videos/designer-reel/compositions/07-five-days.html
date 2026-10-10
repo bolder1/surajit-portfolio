@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <!-- F7 "Proof: five days" (film 780-960, 6 s). A 15-cell calendar strip (3 weeks of workdays) folds down to
          five glass day tiles that light in volt one per eighth, each typing its day inside the glass; "3 WEEKS -> 5 DAYS"
-         completes on the 840 stab and "~70% FASTER" lands exactly on 900 (Doto score, Mona Sans signs and unit).
+         completes on the 840 stab and "~70% FASTER" (all Mona Sans display, like F10's numbers) lands exactly on 900.
+         Volt is this frame's accent, so the beam and the drawn arrow stay at their persisted strength (0.5, no head).
          Hold 900-960: volt decays on the beat, the persisted beam re-draws under the row into a pad, one sheen
          crosses the stat on the riser, and the camera leans into the cut. Local time = film frame - 780. Needs ReelKit. -->
   </head>
@@ -13,7 +14,6 @@
       <style>
         @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
         @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
-        @font-face { font-family: "Doto"; src: url("assets/fonts/Doto-var.woff2") format("woff2"); font-weight: 100 900; }
         #f07-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
         #f07-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
         #f07-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
@@ -36,6 +36,8 @@
         /* Tier B day tiles: 5 x 320 + 4 x 20 = the 1680 px grid; each holds its day and what happened on it */
         .f07-tile { position: absolute; top: 392px; width: 320px; height: 156px; border-radius: 22px; box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9); opacity: 0; }
         .f07-tile .lg-tint { background: rgba(20, 12, 38, 0.42); }
+        /* five tiles share one row, so their rim keeps the white specular and only a trace of beam / cyan edge chroma */
+        .f07-tile .lg-rim { background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.3) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.18) 300deg, rgba(255, 255, 255, 0.95) 360deg); }
         .f07-day { position: absolute; left: 26px; top: 24px; font: 700 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #8c7eb8; }
         .f07-lab { position: absolute; left: 26px; top: 66px; font: 500 24px/31px "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: pre; }
         .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
@@ -43,16 +45,15 @@
         .lg-rim { padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
         .f07-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; vertical-align: -0.14em; background: #ff2e97; opacity: 0; }
 
-        /* the stat on the same grid: "70" is the Doto arcade score; "~", "%" and FASTER are Mona Sans display,
-           all on one baseline (flex baseline; the unit's mask is a clip-path so it keeps its baseline) */
-        .f07-st { position: absolute; left: 102px; top: 640px; display: flex; align-items: baseline; white-space: pre; transform-origin: 18px 260px; }
-        .f07-mo { font-family: "Mona Sans", sans-serif; font-size: 200px; line-height: 1; letter-spacing: -0.01em; font-variation-settings: "wdth" 125, "wght" 900; }
-        .f07-tl { position: relative; top: -34px; margin-right: 10px; }
-        .f07-dg { font: 900 300px/1 "Doto", monospace; font-variant-numeric: tabular-nums; margin-right: -26px; }
-        .f07-um { display: block; margin-left: 52px; clip-path: inset(-20px -40px -20px 0); }
-        #f07-stat { color: #b4a8da; opacity: 0; }
-        #f07-num { --glow: 0; text-shadow: 0 0 30px rgba(245, 255, 59, var(--glow)); }
-        #f07-unit { display: block; color: #f3eeff; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; }
+        /* the stat on the same grid, one Mona Sans display line (wdth 125, wght 900) like F10's numbers. The digits sit in
+           fixed slots (the advances of the landing "70"), so the count never shifts "~", "%" or FASTER; the font's own
+           tabular figures are not used because its tabular zero is slashed. Origin on the left baseline (0.885 em). */
+        .f07-st { position: absolute; left: 98px; top: 701px; font: 900 216px/1 "Mona Sans", sans-serif; font-variation-settings: "wdth" 125, "wght" 900; white-space: pre; transform-origin: 0px 191px; }
+        .f07-sl { display: inline-block; text-align: center; }
+        .f07-um { display: inline-block; margin-left: 0.205em; clip-path: inset(-20px -60px -20px 0); }
+        #f07-stat { color: #b4a8da; opacity: 0; --glow: 0; text-shadow: 0 0 34px rgba(245, 255, 59, var(--glow)); }
+        #f07-unit, .f07-u2 { display: inline-block; --wdth: 125; font-variation-settings: "wdth" var(--wdth), "wght" 900; }
+        #f07-unit { color: #f3eeff; text-shadow: none; } /* the landing glow is the number's; the word never glows */
         /* one specular sheen: a beam-core copy of the stat seen through a moving band */
         #f07-sheen { color: #ffd9ec; opacity: 0; -webkit-mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0) 42%, #000 50%, rgba(0, 0, 0, 0) 58%); mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0) 42%, #000 50%, rgba(0, 0, 0, 0) 58%); -webkit-mask-size: 300% 100%; mask-size: 300% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 
@@ -72,17 +73,17 @@
               <div class="f07-mask"><div class="f07-big f07-gl" id="f07-h1"><span class="f07-gr" data-layout-allow-overlap>3 WEEKS</span><span class="f07-gc" data-layout-allow-overlap>3 WEEKS</span><strong id="f07-h1s">3 WEEKS</strong></div></div>
               <svg id="f07-arrow" viewBox="0 0 150 64" aria-hidden="true">
                 <g id="f07-arrow-g" filter="url(#f07-arrow-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path class="f07-ar" d="M 6 32 H 140" stroke="#ff2e97" stroke-width="6" />
-                  <path class="f07-ar" d="M 6 32 H 140" stroke="#ffd9ec" stroke-width="2.2" />
-                  <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ff2e97" stroke-width="6" />
-                  <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ffd9ec" stroke-width="2.2" />
+                  <path class="f07-ar" d="M 6 32 H 140" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5" />
+                  <path class="f07-ar" d="M 6 32 H 140" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5" />
+                  <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5" />
+                  <path class="f07-ah" d="M 114 6 L 140 32 L 114 58" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5" />
                 </g>
               </svg>
               <div class="f07-mask"><div class="f07-big" id="f07-h2" data-layout-allow-overflow data-layout-allow-occlusion>5 DAYS</div></div>
             </div>
 
-            <div id="f07-stat" class="f07-st"><span class="f07-mo f07-tl">~</span><span class="f07-dg" id="f07-num">00</span><span class="f07-mo">%</span><span class="f07-um"><span class="f07-mo" id="f07-unit" data-layout-allow-overflow>FASTER</span></span></div>
-            <div id="f07-sheen" class="f07-st" aria-hidden="true" data-layout-ignore><span class="f07-mo f07-tl">~</span><span class="f07-dg">70</span><span class="f07-mo">%</span><span class="f07-um"><span class="f07-mo">FASTER</span></span></div>
+            <div id="f07-stat" class="f07-st">~<span class="f07-sl" id="f07-d1" style="width: 0.635em"></span><span class="f07-sl" id="f07-d2" style="width: 0.795em">0</span>%<span class="f07-um"><span id="f07-unit" data-layout-allow-overflow>FASTER</span></span></div>
+            <div id="f07-sheen" class="f07-st" aria-hidden="true" data-layout-ignore>~<span class="f07-sl" style="width: 0.635em">7</span><span class="f07-sl" style="width: 0.795em">0</span>%<span class="f07-um"><span id="f07-sheen-unit" class="f07-u2">FASTER</span></span></div>
           </div>
           <div id="f07-grain" data-layout-ignore></div>
 
@@ -118,7 +119,7 @@
           var TX = function (i) { return 120 + 340 * i; };
           var BY = TY + TH + 34; // the persisted beam's line under the row
           var LIT = [75, 82.5, 90, 97.5, 105].map(F); // 855, 862.5, 870, 877.5, 885
-          var TC = [52, 54, 56, 58, 60].map(F); // tiles condense 832-840
+          var TC = [51, 53, 55, 57, 59].map(F); // tiles condense, first showing on 832, 834 ... 840
           var CX = function (j) { return 120 + Math.floor(j / 5) * 576 + (j % 5) * 108; };
 
           var w = '<defs><radialGradient id="f07-haze-g" cx="860" cy="610" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(860 610) scale(1150 330) translate(-860 -610)">';
@@ -136,28 +137,42 @@
           w += '<g filter="url(#f07-bloom)" fill="none" stroke-linecap="round">';
           w += '<path class="f07-b" d="M -40 ' + BY + ' H 1800" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
           w += '<path class="f07-b" d="M -40 ' + BY + ' H 1800" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
-          w += '<circle id="f07-pad" cx="1800" cy="' + BY + '" r="11" stroke="#ff2e97" stroke-width="3.5" stroke-opacity="0.6" fill="#0b0716"/></g>';
+          w += '<circle id="f07-pad" cx="1800" cy="' + BY + '" r="11" stroke="#ff2e97" stroke-width="3.5" stroke-opacity="0.5" fill="#0b0716"/></g>';
           document.getElementById("f07-world").innerHTML = w;
 
-          // tiles: the day number and its label live inside the glass
+          // tiles: the day number and its label live inside the glass. One inward lens map for all five; the channels
+          // split R 1.00 / G 0.98 / B 0.96 (ReelKit's 1 / 0.9 / 0.8 tore the outline into red and blue bands)
+          var MAP = K.lensMap(TW, TH, 22, 28, -1, 1.8), CHS = [["r", 1, "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"], ["g", 0.98, "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"], ["b", 0.96, "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"]];
+          function lens(id) {
+            var f = '<filter id="' + id + '" x="0" y="0" width="' + TW + '" height="' + TH + '" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">';
+            f += '<feImage href="' + MAP + '" x="0" y="0" width="' + TW + '" height="' + TH + '" preserveAspectRatio="none" result="map"/>';
+            CHS.forEach(function (c) { f += '<feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G" result="d' + c[0] + '"/><feColorMatrix in="d' + c[0] + '" type="matrix" values="' + c[2] + '" result="' + c[0] + '"/>'; });
+            return f + '<feBlend in="r" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b" mode="screen"/></filter>';
+          }
           var tiles = "";
           for (var i = 0; i < 5; i++) {
             tiles += '<div class="f07-tile" id="f07-tile-' + i + '" style="left:' + TX(i) + "px;backdrop-filter:url(#f07-tf-" + i + ')"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>';
             tiles += '<div class="f07-day">D' + (i + 1) + '</div><div class="f07-lab"><span class="f07-lt"></span><span class="f07-caret"></span></div></div>';
-            defs.insertAdjacentHTML("beforeend", K.lensFilter("f07-tf-" + i, { w: TW, h: TH, r: 22, bezel: 28, dir: -1, power: 1.8 }));
+            defs.insertAdjacentHTML("beforeend", lens("f07-tf-" + i));
           }
           document.getElementById("f07-tiles").innerHTML = tiles;
-          var TF = [0, 1, 2, 3, 4].map(function (i) { return document.getElementById("f07-tf-" + i); });
+          var TF = [0, 1, 2, 3, 4].map(function (i) { return document.getElementById("f07-tf-" + i).querySelectorAll("feDisplacementMap"); });
           var tileEls = Q(".f07-tile"), dayEls = Q(".f07-day"), labT = Q(".f07-lt"), carets = Q(".f07-caret");
 
-          // glass: every tile has the same optics once lit. refraction = condense spring x (0.6 unlit -> 1 lit), so from
-          // 885 on all five share one state (no tile reads as selected); each bends the day outline under its rim
-          var CHIP = K.spring(0.45, 0.8, 0.7);
+          // glass, max 3 refracting at once. Each tile bends briefly as it condenses (a 6 f liquid settle, 2 f apart, so at
+          // most 3 overlap), then rests as calm tinted glass. Lighting a day brings its lens up (spring); when the 4th and
+          // 5th days light, D1 and D2 melt back to the calm tint (6 f, power2.in, done on that lighting frame), so the
+          // newest three days are the only refracting glass from 855 to the cut
+          var CHIP = K.spring(0.45, 0.8, 0.7), RIMS = Q(".f07-tile .lg-rim");
           function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
           function setGlass(t) {
             for (var i = 0; i < 5; i++) {
-              var p = (t - TC[i]) / 0.7, c = p <= 0 ? 0 : CHIP(Math.min(p, 1)), u = c01((t - LIT[i]) / 0.3);
-              K.setRefraction(TF[i], 30 * c * (0.6 + 0.4 * (1 - (1 - u) * (1 - u))));
+              var u = (t - TC[i]) / F(6), cond = u > 0 && u < 1 ? Math.sin(Math.PI * u) : 0;
+              var lit = t > LIT[i] ? CHIP(c01((t - LIT[i]) / 0.7)) : 0;
+              var melt = i < 2 ? c01((t - LIT[i + 3] + F(6)) / F(6)) : 0;
+              var sc = 26 * (0.8 * cond + lit * (1 - melt * melt));
+              for (var k = 0; k < 3; k++) TF[i][k].setAttribute("scale", (sc * CHS[k][1]).toFixed(2));
+              RIMS[i].style.opacity = (1 - 0.55 * melt * melt).toFixed(3);
             }
           }
           // 900-945 the beam re-draws at its persisted 50 % under the row (pen, power2.out) and stops on a pad at 1800
@@ -170,14 +185,21 @@
 
           var tl = gsap.timeline({ paused: true });
           var amb = { t: 0 };
-          tl.to(amb, { t: 6, duration: 6, ease: "none", onUpdate: function () { setGlass(amb.t); setBeam(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
+          tl.to(amb, { t: 6, duration: 6, ease: "none", onUpdate: function () { setGlass(amb.t); setBeam(amb.t); setTear(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
           tl.fromTo("#f07-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 5 }, 0);
 
-          // 780 hard cut: the opening type tears R/C for 2 steps of 2 f (+-6 px, then -+3 px) and is clean by 784
+          // 780 hard cut: the opening type tears R/C for 2 steps of 2 f (+-6 px on 780-781, -+3 px on 782-783), clean on 784.
+          // Driven by the frame number (like F10) so the cut frame itself tears however the renderer seeks
           var gr = Q("#f07-cap .f07-gr, #f07-h1 .f07-gr"), gc = Q("#f07-cap .f07-gc, #f07-h1 .f07-gc");
-          tl.set(gr, { x: -6, opacity: 1 }, 0).set(gc, { x: 6, opacity: 1 }, 0);
-          tl.set(gr, { x: 3 }, F(2)).set(gc, { x: -3 }, F(2));
-          tl.set([gr, gc], { x: 0, opacity: 0 }, F(4));
+          function setTear(t) {
+            var fr = Math.round(t * 30), off = fr < 2 ? 6 : fr < 4 ? -3 : 0; // nearest frame: float time never leaks a 5th frame
+            for (var q = 0; q < gr.length; q++) {
+              gr[q].style.transform = "translateX(" + -off + "px)";
+              gc[q].style.transform = "translateX(" + off + "px)";
+              gr[q].style.opacity = gc[q].style.opacity = off ? 1 : 0;
+            }
+          }
+          setTear(0);
 
           // 780-798 the strip draws on left to right like a beam pass (pen), one cell per 0.8 f
           var P = 2 * (CW + CH) - 96 + 24 * Math.PI; // rect perimeter with rx 12
@@ -207,13 +229,13 @@
             tl.fromTo(rim, { "--spec": "200deg" }, { "--spec": "220deg", duration: F(150) - TC[i] - 1.0, ease: "sine.inOut", immediateRender: false }, TC[i] + 1.0);
           });
 
-          // 840 the stab: the drawn arrow fires and 5 DAYS slams out of its mask, width axis opening 75 -> 125
-          tl.fromTo(Q(".f07-ar"), { strokeDasharray: "140 300", strokeDashoffset: 140 }, { strokeDashoffset: 0, duration: F(4), ease: "power3.out" }, F(60));
-          tl.fromTo(Q(".f07-ah"), { strokeDasharray: "80 200", strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: F(3), ease: "power2.out" }, F(63));
-          // volt is this frame's accent, so after it fires the arrow decays to the persisted beam level (phosphor)
-          tl.fromTo("#f07-arrow-g", { opacity: 1 }, { opacity: 0.55, duration: 0.65, ease: "power2.out", immediateRender: false }, F(66));
-          tl.fromTo("#f07-h2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, F(60));
-          tl.fromTo("#f07-h1s", { color: "#f3eeff" }, { color: "#b4a8da", duration: 0.3, ease: "power2.out", immediateRender: false }, F(60));
+          // 840 the stab: the drawn arrow fires and 5 DAYS slams out of its mask, width axis opening 75 -> 125 (both start
+          // one frame early so the stab frame itself shows them moving)
+          tl.fromTo(Q(".f07-ar"), { strokeDasharray: "140 300", strokeDashoffset: 140 }, { strokeDashoffset: 0, duration: F(4), ease: "power3.out" }, F(59));
+          tl.fromTo(Q(".f07-ah"), { strokeDasharray: "80 200", strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: F(3), ease: "power2.out" }, F(62));
+          // (volt is this frame's accent, so the arrow is drawn at the persisted beam level: no full-strength flash)
+          tl.fromTo("#f07-h2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, F(59));
+          tl.fromTo("#f07-h1s", { color: "#f3eeff" }, { color: "#b4a8da", duration: 0.3, ease: "power2.out", immediateRender: false }, F(59));
 
           // 855-885 the days light in volt one per eighth: the outline under the glass flashes volt (bloom) and decays to
           // ink in 0.5 s, the day number goes ink, and the label types inside the tile with a caret
@@ -231,18 +253,20 @@
           tl.fromTo(carets[4], { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true, immediateRender: false }, F(112.5));
           tl.set(carets[4], { opacity: 0 }, F(157.5));
 
-          // 886-899 the arcade score climbs 00 -> 70 in 14 steps of 5 and grows; 900 it lands volt and FASTER slams in
-          var num = document.getElementById("f07-num"), c = { n: 0 };
-          tl.set("#f07-stat", { opacity: 1 }, F(106));
-          tl.to(c, { n: 14, duration: F(14), ease: "steps(14)", onUpdate: function () { var v = Math.round(c.n) * 5; num.textContent = (v < 10 ? "0" : "") + v; } }, F(106));
+          // 886-899 the score climbs 0 -> 70 in 14 steps of 5 (Mona Sans digits in fixed slots) and grows; it shows from
+          // 888, the first two-digit step ("~10%"), so the slots never read as a gap; 900 it lands volt with FASTER
+          var d1 = document.getElementById("f07-d1"), d2 = document.getElementById("f07-d2"), c = { n: 0 };
+          tl.set("#f07-stat", { opacity: 1 }, F(108));
+          tl.to(c, { n: 14, duration: F(14), ease: "steps(14)", onUpdate: function () { var v = Math.round(c.n) * 5; d1.textContent = v >= 10 ? String(Math.floor(v / 10)) : ""; d2.textContent = String(v % 10); } }, F(106));
           tl.fromTo("#f07-stat", { scale: 0.84 }, { scale: 1, duration: F(14), ease: "steps(14)" }, F(106));
-          tl.fromTo("#f07-unit", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, F(120));
-          // volt is the hit: 1 beat, then ink (900 -> 915)
-          tl.set("#f07-stat", { color: "#f5ff3b" }, F(120)).set(num, { "--glow": 0.5 }, F(120));
+          // FASTER starts its slam one frame early so the whole stat is on screen on the 900 landing
+          tl.fromTo("#f07-unit, #f07-sheen-unit", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, F(119));
+          // volt is the hit, with the landing glow F10 uses: 1 beat, then ink (900 -> 915)
+          tl.set("#f07-stat", { color: "#f5ff3b", "--glow": 0.5 }, F(120));
           tl.fromTo("#f07-stat", { color: "#f5ff3b" }, { color: "#f3eeff", duration: F(15), ease: "power2.in", immediateRender: false }, F(120));
-          tl.fromTo(num, { "--glow": 0.5 }, { "--glow": 0, duration: F(12), ease: "power2.out", immediateRender: false }, F(121));
-          // 945 the re-drawn beam stops on its pad
-          tl.fromTo("#f07-pad", { scale: 0, svgOrigin: "1800 " + BY }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(165));
+          tl.fromTo("#f07-stat", { "--glow": 0.5 }, { "--glow": 0, duration: F(12), ease: "power2.out", immediateRender: false }, F(121));
+          // 945 the re-drawn beam stops on its pad (the pop starts at 944 so it shows on 945)
+          tl.fromTo("#f07-pad", { scale: 0, svgOrigin: "1800 " + BY }, { scale: 1, duration: 0.18, ease: "power4.out" }, F(164));
           // 903-917 one beam-core sheen crosses the stat left to right while it is still volt (the landing flash travels)
           tl.set("#f07-sheen", { opacity: 1 }, F(123));
           tl.fromTo("#f07-sheen", { webkitMaskPosition: "100% 0", maskPosition: "100% 0" }, { webkitMaskPosition: "0% 0", maskPosition: "0% 0", duration: F(14), ease: "power2.inOut" }, F(123));

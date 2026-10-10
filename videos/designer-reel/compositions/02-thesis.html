@@ -69,14 +69,15 @@
           position: absolute;
           left: 120px;
           font-family: "Mona Sans", sans-serif;
-          font-size: 64px;
+          font-size: 80px;
           line-height: 1.2;
           font-variation-settings: "wdth" 100, "wght" 380;
           color: #f3eeff;
           white-space: nowrap;
           clip-path: inset(0 100% 0 0);
         }
-        #f02-l1 { top: 104px; }
+        /* the film's thesis: statement axes at 80 px (line 1 is ~1410 px wide, x 120-1530) */
+        #f02-l1 { top: 92px; }
         #f02-l2 { top: 188px; }
         #f02-dot {
           position: absolute;
@@ -165,7 +166,7 @@
             s += '<rect id="f02-hole' + n + '" x="' + (t.x + 22) + '" y="' + (t.y + 22) + '" width="' + (t.w - 44) + '" height="' + (t.h - 44) + '" rx="6" fill="#000" opacity="0"/>';
           });
           s += '</mask><mask id="f02-knock" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect width="1920" height="1080" fill="#fff"/>';
-          s += '<rect id="f02-knockr" x="96" y="88" width="1196" height="112" fill="#000" opacity="0"/></mask></defs>';
+          s += '<rect id="f02-knockr" x="96" y="84" width="1480" height="112" fill="#000" opacity="0"/></mask></defs>';
           s += '<g id="f02-hazeg"><rect id="f02-haze" x="-200" y="100" width="2320" height="1100" fill="url(#f02-haze-g)"/></g>';
           s += '<g id="f02-grat" mask="url(#f02-knock)"><g stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5" fill="none"><path d="M0 156H1920M0 348H1920M0 732H1920M0 924H1920';
           for (var i = 1; i <= 9; i++) if (i !== 5) s += "M" + i * 192 + " 0V1080";

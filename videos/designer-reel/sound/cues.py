@@ -23,8 +23,9 @@ pan        0 = keep the file's own stereo image (centred UI sounds),
            (a, b) = fold to mono and travel from a to b over the sound (moving things: beam, screens).
 note       what happens on screen and the absolute frame the frame fixers measured it on.
 
-SYNC (polish pass 2): every frame is the one the six frame fixers measured from the rebuilt timelines.
-A cue sits on the first frame its visual shows, not nudged onto the 16th grid. A long-attack sound
+SYNC (re-synced after visual polish pass 2): every frame is the one the frame fixers measured from the
+rebuilt timelines. A cue sits on the first frame its visual shows, not nudged onto the 16th grid (the F4
+chip tinks sit on 376/391/406/421, where each chip first shows, a frame after its pad's beat). A long-attack sound
 (the fly-by whoosh, peak 13.8 f in) starts early so its peak lands on the fly-past.
 Tonal cues use F# minor pentatonic notes (F#, A, B, C#, E).
 
@@ -166,7 +167,7 @@ CUES = [
     # ===== F3 Name (240-360): the drop =====
     (240, "gated-snare-hit", -4, 0, "F3 240: SURAJIT slams on the downbeat (hero, near the bed's snare)"),
     (240, "boom-tight", -9, 0, "F3 240: sub under the slam, cut short (the bed has its own sub)"),
-    (255, "glass-tink", -8, 0, "F3 255: Tier H portrait slab condenses"),
+    (256, "glass-tink", -8, 0, "F3 256: Tier H portrait slab condenses (first visible on 256)"),
     *type_on(steps_chars(270, 18, len(F3_LABEL)), F3_LABEL, -10, "F3 270-288: label types"),
     (285, "laser", -12, -0.4, "F3 285-297: beam runs in under the name"),
     (296, "blip@F#6", -9, 0, "F3 296: pad pops at (960, 612)"),
@@ -175,20 +176,21 @@ CUES = [
 
     # ===== F4 Fortmindz (360-480): beam threads CART -> ADDRESS -> PAY -> DONE, then fires off right =====
     *type_on(steps_chars(372, 20, len(F4_MARK)), F4_MARK, -10, "F4 372-392: marker types top left"),
-    (374, "blip@E6", -8, -0.3, "F4 374: CART pad pops (head brakes into it on 375)"),
-    (375, "glass-tink", -11, 0, "F4 375: CART chip springs in, rim light"),
-    (375, "swish", -14, 0, "F4 375: soft air under CART"),
+    (374, "blip@E6", -8, -0.3, "F4 374: CART pad pops (head brakes into it on 375, chip shows 376)"),
+    (376, "glass-tink", -11, 0, "F4 376: CART chip first shows (springs in from 375), rim light"),
+    (376, "swish", -14, 0, "F4 376: soft air under CART"),
     (389, "blip@F#6", -8, -0.05, "F4 389: ADDRESS pad pops"),
-    (390, "glass-tink-2", -11, 0, "F4 390: ADDRESS chip springs in"),
-    (390, "swish", -14, 0, "F4 390: soft air under ADDRESS"),
+    (391, "glass-tink-2", -11, 0, "F4 391: ADDRESS chip first shows (springs in from 390), rim light"),
+    (391, "swish", -14, 0, "F4 391: soft air under ADDRESS"),
     (404, "blip@A6", -8, 0.2, "F4 404: PAY pad pops"),
-    (405, "glass-tink", -11, 0, "F4 405: PAY chip springs in"),
-    (405, "swish", -14, 0, "F4 405: soft air under PAY"),
+    (406, "glass-tink", -11, 0, "F4 406: PAY chip first shows (springs in from 405), rim light"),
+    (406, "swish", -14, 0, "F4 406: soft air under PAY"),
     (419, "blip@B6", -8, 0.4, "F4 419: DONE pad pops"),
-    (420, "glass-tink-2", -11, 0, "F4 420: DONE chip springs in"),
-    (420, "swish", -14, 0, "F4 420: soft air under DONE"),
-    (420, "arcade-blip", -8, 0, "F4 420: DONE lights, its edge light runs 420-442"),
-    (453, "laser", -9, (0.15, 0.9), "F4 453: beam fires right, head off the right edge ~463"),
+    (421, "glass-tink-2", -11, 0, "F4 421: DONE chip first shows (springs in from 420), rim light"),
+    (421, "swish", -14, 0, "F4 421: soft air under DONE"),
+    (420, "arcade-blip", -8, 0, "F4 420: head hard-stops on DONE, its edge light runs 420-442"),
+    (453, "laser", -9, (0.15, 0.9), "F4 453: beam fires right, head off the right edge on 465"),
+    # F4 422-436 his line wipes on, 461-476 marker + line exit at 1.7x camera speed: no SFX (the bed's pickup)
 
     # ===== F5 Impero IT (480-600): shells condense mid-pan, parts snap into a component sheet =====
     *type_on(steps_chars(480, 20, len(F5_MARK)), F5_MARK, -10, "F5 480-500: marker types"),
@@ -200,7 +202,7 @@ CUES = [
     (510, "swish", -14, (0.5, 0.1), "F5 510: soft air, p2 settles"),
     (518, "click", -8, 0, "F5 518: tap ring on the order button"),
     (526, "click", -8, 0, "F5 526: tap flips the reminder toggle"),
-    (540, "laser", -12, 0.2, "F5 540: parts light cyan, the sheet frame draws out of the pad (1180, 610)"),
+    (540, "laser", -12, 0.2, "F5 540: parts light cyan, the artboard frame lights out of the pad (1180, 610)"),
     (546, "snap", -7, 0, "F5 546: button lands in the sheet (guide flash)"),
     (550, "snap", -8, 0, "F5 550: chip lands"),
     (554, "snap", -7, 0, "F5 554: toggle lands"),
@@ -213,16 +215,18 @@ CUES = [
 
     # ===== F6 miniOrange (600-780): dolly over the floor, two glass captures fly past, hero plate =====
     (600, "whoosh-retro", -7, 0, "F6 600: chapter transition, dolly into the floor (file's own L->R sweep)"),
-    (600, "glass-tink", -10, 0, "F6 600: card C0 (UEM data discovery) condenses, rim light"),
-    (615, "glass-tink-2", -9, 0, "F6 615: card C1 (UEM designed screens) condenses"),
-    (630, "whoosh-flyby", -13, (-0.15, -0.9), "F6 638-646: C0 flies past up-left (peak lands ~644)"),
-    (645, "whoosh-flyby", -13, (0.15, 0.9), "F6 653-661: C1 flies past right (peak lands ~659)"),
-    (660, "glass-tink", -8, 0, "F6 660: hero plate condenses as Tier H"),
-    *type_on(steps_chars(662, 28, len(F6_MARK)), F6_MARK, -10, "F6 662-690: marker types top left"),
-    *type_on(steps_chars(725, 8, len(F6_TAG)), F6_TAG, -10, "F6 725-733: spec tag types, sparse", min_gap=2),
-    *type_on(steps_chars(733, 18, len(F6_S1)), F6_S1, -10, "F6 733-751: spec line 1 types, sparse", min_gap=2),
-    (735, "glass-tink-2", -9, 0, "F6 735: design-system cover card condenses"),
-    *type_on(steps_chars(751, 10, len(F6_S2)), F6_S2, -10, "F6 751-761: spec line 2 types, sparse", min_gap=2),
+    (600, "glass-tink", -10, 0, "F6 600: card C0 (UEM COMPONENTS capture) condenses, 56% on its tink, rim light"),
+    *type_on(steps_chars(600, 28, len(F6_MARK)), F6_MARK, -10, "F6 601-628: marker types top left"),
+    (615, "glass-tink-2", -9, 0, "F6 615: card C1 (UEM DESIGNED SCREENS capture) condenses"),
+    (630, "whoosh-flyby", -13, (-0.15, -0.9), "F6 638-646: C0 (COMPONENTS) flies past left (peak lands ~644)"),
+    (645, "whoosh-flyby", -13, (0.15, 0.9), "F6 653-661: C1 (DESIGNED SCREENS) flies past right (peak lands ~659)"),
+    # F6 645 / 653 the statement lines wipe on: no SFX (statements are silent, as in F2, F4, F5, F9)
+    (660, "glass-tink", -8, 0, "F6 660: hero plate condenses as Tier H (cover powers on 663, no SFX)"),
+    # F6 719-720 the beam pulls taut into one stroke and the cover punches in: the bed's 720 stab carries it
+    *type_on(steps_chars(725, 8, len(F6_TAG)), F6_TAG, -10, "F6 726-733: spec tag types, sparse", min_gap=2),
+    (731, "click", -13, 0, "F6 731: cyan selection closes round the Primary ramp (draws 726-731), handles land"),
+    *type_on(steps_chars(733, 18, len(F6_S1)), F6_S1, -10, "F6 734-751: spec line 1 types, sparse", min_gap=2),
+    *type_on(steps_chars(751, 10, len(F6_S2)), F6_S2, -10, "F6 752-761: spec line 2 types, sparse", min_gap=2),
 
     # ===== F7 Five days (780-960): 15 cells fold to 5, tiles condense, days light, counter lands on 900 =====
     *[(795 + 3 * m, "click-lo", -7 - (m % 2), 0, f"F7 {795 + 3 * m}: cell fold {m + 1}/10 snaps shut")
@@ -237,13 +241,13 @@ CUES = [
     (885, "blip@C#7", -3, 0, "F7 885: D5 lights (5/5, lands on C#, the 3rd of A)"),
     *[row for i, (lit, txt) in enumerate(zip(F7_LIT, F7_DAYS))
       for row in type_on(steps_chars(lit, 9, len(txt)), txt, -13, f"F7 D{i + 1} label types in its tile", min_gap=2)],
-    *ticks(range(887, 900, 2), -15, "F7 887-899: counter steps +5 a frame"),
-    (900, "snap", -7, 0, "F7 900: ~70% lands volt, FASTER slams (bed has the stab + crash)"),
+    *ticks(range(888, 899, 2), -15, "F7 888-899: counter shows from 888 (~10%), +5 a frame"),
+    (900, "snap", -7, 0, "F7 900: ~70% lands volt, FASTER fully up (bed has the stab + crash)"),
     (900, "hum-45f", -17, (-0.8, 0.85), "F7 900-945: soft hum as the persisted beam re-draws under the row"),
     (945, "blip@B6", -9, 0.7, "F7 945: beam stops on its pad at x 1800"),
 
     # ===== F8 What I do (960-1080): seven disciplines step in on the eighths, glass selector follows =====
-    (960, "blip-hi@F#6", -8, 0, "F8 960: PRODUCT DESIGN on the cut (skill run 1/7)"),
+    (960, "blip-hi@F#6", -8, 0, "F8 960: composed open, PRODUCT DESIGN on the cut, pad 0 lit (skill run 1/7)"),
     (967.5, "blip-hi@A6", -8, 0, "F8 967.5: INTERACTION DESIGN (2/7)"),
     (975, "blip-hi@B6", -8, 0, "F8 975: DESIGN SYSTEMS (3/7)"),
     (982.5, "blip-hi@C#7", -8, 0, "F8 982.5: UX RESEARCH (4/7)"),
@@ -270,14 +274,14 @@ CUES = [
     (1159, "swish", -12, (0.45, 1.0), "F9 1159-1167: pulse fires out right, accelerating"),
 
     # ===== F10 Numbers (1200-1320): four counters land on the bed's four stabs, then drop into the ledger =====
-    (1200, "glass-tink", -9, 0, "F10 1200: the Tier H plate condenses on the cut, rim light sweeps"),
+    (1201, "glass-tink", -9, 0, "F10 1201: the Tier H plate condenses on the cut (first visible on 1201), rim light sweeps"),
     *[row for i, (txt, t0) in enumerate(F10_LABS)
       for row in type_on(steps_chars(t0, math.ceil(len(txt) / 2), len(txt)), txt, -10,
                          f"F10 {t0}: label {i + 1} types", min_gap=2)],
-    *ticks([1221, 1223, 1226], -15, "F10 1221-1226: 4 YEARS counts 1, 2, 3"),
+    *ticks([1208, 1215, 1223], -15, "F10 1208-1223: 4 YEARS counts 1, 2, 3 on the eighths"),
     (1230, "snap", -7, 0, "F10 1230: 4 lands volt (bed stab)"),
     (1236, "swish-lp", -13, 0, "F10 1236-1245: 4 drops into ledger row 1"),
-    *ticks([1239, 1241], -15, "F10 1239-1241: 3 COMPANIES counts 1, 2"),
+    *ticks([1240, 1243], -15, "F10 1240-1243: 3 COMPANIES counts 1, 2"),
     (1245, "snap", -7, 0, "F10 1245: 3 lands volt (bed stab)"),
     (1251, "swish-lp", -13, 0, "F10 1251-1260: 3 drops into ledger row 2"),
     *ticks([1253, 1255, 1257, 1259], -15, "F10 1253-1259: 58 PROJECTS rolls (changes every frame)"),
@@ -295,8 +299,8 @@ CUES = [
 
     # ===== F12 Invitation (1380-1560): punch, end card, routed signature onto the final chord =====
     (1380, "whoosh-retro", -8, 0, "F12 1380: the punch line opens the tube, 8 dB under the bed's crash"),
-    (1388, "gated-snare-hit", -4, 0, "F12 1388: SURAJIT slams in (final lift)"),
-    (1410, "glass-tink", -8, 0, "F12 1410: status chip condenses on the floor, its rim light runs"),
+    (1389, "gated-snare-hit", -4, 0, "F12 1389: SURAJIT slams in (first visible on 1389, final lift)"),
+    (1411, "glass-tink", -8, 0, "F12 1411: status chip condenses (first visible on 1411), its rim light runs"),
     *type_on(rate_chars(1425.5, 0.5, len(F12_C1)), F12_C1, -10, "F12 1426-1435: email types"),
     (1440, "laser", -8, -0.35, "F12 1440: signature leg 1 launches out of the slab"),
     (1440, "hum-15f", -12, (-0.4, 0.2), "F12 1440-1455: soft hum under leg 1, follows it to pad A"),

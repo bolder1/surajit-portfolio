@@ -5,8 +5,9 @@
     <!-- F5 "Impero IT, 2023" (film 480-600, 4 s). Opens mid-pan: F4 leaves frame left at 2400 px/s, so the
          camera keeps that speed through the cut and three Tier B phone shells (food delivery, healthcare,
          events) enter from the right, threaded by the beam through their bottom rims, and settle on 510.
-         On the 540 downbeat their reusable parts lift out as cyan outlines and snap into a component sheet
-         that draws itself from the beam's pad as they arrive. Ends on the dolly into the floor.
+         An empty artboard (grid outline + ruler) rides in with them and waits at the beam's pad; on the 540
+         downbeat their reusable parts lift out as cyan outlines and snap into it while its frame lights cyan out
+         of the pad. The beam sits at its persisted 50 % (cyan is this frame's accent). Ends on the dolly.
          Local time = film frame - 480. Needs window.ReelKit (assets/lib/reel-kit.js). -->
   </head>
   <body>
@@ -124,13 +125,15 @@
           t += '<path d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
           t += '<path class="f05-b-fresh" d="' + BEAM + '" stroke="#ff2e97" stroke-width="6" stroke-opacity="0.6"/>';
           t += '<path class="f05-b-core" d="' + BEAM + '" stroke="#ffd9ec" stroke-width="2.2"/>';
-          t += '<circle class="f05-pad" cx="' + SH.x + '" cy="610" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/></g>';
-          // the sheet frame draws itself out of the pad at 540 (both ways round, meeting mid right edge)
+          t += '<circle class="f05-pad" cx="' + SH.x + '" cy="610" r="11" stroke="#ff2e97" stroke-width="3.5" stroke-opacity="0.5" fill="#0b0716"/></g>';
+          // the empty artboard waits at rest in grid colour (it rides in with the pan, so the right of the frame is
+          // never bare); at 540 its frame lights cyan out of the pad (both ways round, meeting mid right edge)
           var X0 = SH.x, Y0 = SH.y, X1 = SH.x + SH.w, Y1 = SH.y + SH.h, YM = SH.y + SH.h / 2;
+          t += R(SH.x, SH.y, SH.w, SH.h, 6).replace("<rect", '<rect fill="none" stroke="#4a2c8c" stroke-width="1.5"');
           t += '<g fill="none" stroke="#22e6ff" stroke-width="1.5" stroke-opacity="0.6">';
           t += '<path class="f05-edge" d="M' + X0 + " 610 V" + (Y0 + 6) + " Q" + X0 + " " + Y0 + " " + (X0 + 6) + " " + Y0 + " H" + (X1 - 6) + " Q" + X1 + " " + Y0 + " " + X1 + " " + (Y0 + 6) + " V" + YM + '"/>';
           t += '<path class="f05-edge" d="M' + X0 + " 610 V" + (Y1 - 6) + " Q" + X0 + " " + Y1 + " " + (X0 + 6) + " " + Y1 + " H" + (X1 - 6) + " Q" + X1 + " " + Y1 + " " + X1 + " " + (Y1 - 6) + " V" + YM + '"/></g>';
-          t += '<g fill="none" stroke-width="1.5">' + R(SH.x, SH.y, SH.w, SH.h, 6).replace("<rect", '<rect id="f05-lock" stroke="#22e6ff" opacity="0"') + '<path id="f05-ruler" opacity="0" stroke="#4a2c8c" d="';
+          t += '<g fill="none" stroke-width="1.5">' + R(SH.x, SH.y, SH.w, SH.h, 6).replace("<rect", '<rect id="f05-lock" stroke="#22e6ff" opacity="0"') + '<path id="f05-ruler" stroke="#4a2c8c" d="';
           for (var x = 20; x < SH.w; x += 20) t += "M" + (SH.x + x) + " " + SH.y + " v" + (x % 100 === 0 ? 12 : 6) + " ";
           t += '"/></g><g fill="none" stroke="#22e6ff" stroke-width="1.2" stroke-dasharray="3 5">';
           Object.keys(COMP).forEach(function (k) {
@@ -185,14 +188,15 @@
           var T_DOLLY = 110 / 30;
 
           var tl = gsap.timeline({ paused: true });
-          // ambient: the camera keeps F4's 2400 px/s (80 px/f) leftward pan through the cut, cruises to 495, then
-          // decelerates (power2.out, velocity-matched) to rest on 510; grain; floor scroll at x4 once it shows
+          // ambient: the camera keeps F4's 2400 px/s (80 px/f) leftward pan through the cut (p0's left rim already in
+          // frame on 480), cruises to 492.5, then decelerates (power2.out, velocity-matched) to rest on 510; grain;
+          // floor scroll at x4 once it shows
           function panX(t) {
-            if (t < 0.5) return 1800 - 2400 * t;
-            if (t < 1) { var u = (t - 0.5) / 0.5; return 600 * (1 - u) * (1 - u); }
+            if (t < 5 / 12) return 1700 - 2400 * t;
+            if (t < 1) { var u = (t - 5 / 12) / (7 / 12); return 700 * (1 - u) * (1 - u); }
             return 0;
           }
-          pan.style.transform = "translate3d(" + panX(0) + "px,0,0)"; // frame 480: the first shell waits at the right edge
+          pan.style.transform = "translate3d(" + panX(0) + "px,0,0)"; // frame 480: the first shell's rim at the right edge
           var amb = { t: 0 };
           tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () {
             var t = amb.t, px = panX(t);
@@ -212,11 +216,14 @@
           tl.to("#f05-caret", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 2 / 3);
           tl.set("#f05-caret", { opacity: 0 }, 2.2);
 
-          // 480, 495, 510 phone shells condense on the CHIP spring (Tier B entrance); each tag snaps on under it
+          // 480, 495, 510 phone shells condense on the CHIP spring (Tier B entrance); each tag snaps on under it.
+          // Opacity runs a 3 f ramp from 1 f before the beat, so every shell already reads (56 %) on its tink frame.
           var CHIP = K.spring(0.45, 0.8, 0.7);
           PHONES.forEach(function (p, i) {
             var el = document.getElementById("f05-p" + i), f = document.getElementById("f05-p" + i + "-f"), k = { v: 0 };
-            tl.fromTo(el, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, p.beat);
+            tl.fromTo(el, { scale: 0.86 }, { scale: 1, duration: 0.7, ease: CHIP }, p.beat);
+            if (p.beat > 0) tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power1.out" }, p.beat - 1 / 30);
+            else tl.fromTo(el, { opacity: 0.556 }, { opacity: 1, duration: 2 / 30, ease: "power1.out" }, 0);
             tl.to(k, { v: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(f, 48 * k.v); } }, p.beat);
             tl.fromTo(el.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, p.beat);
             tl.to("#f05-tag" + i, { clipPath: "inset(0 0% 0 0)", duration: 0.2, ease: "power4.out" }, p.beat + 0.1);
@@ -233,7 +240,6 @@
           var edges = root.querySelectorAll(".f05-edge"), dr = { u: 0 };
           edges.forEach(function (e) { e.__len = e.getTotalLength(); e.style.strokeDasharray = e.__len + " " + (e.__len + 10); e.style.strokeDashoffset = e.__len; });
           tl.to(dr, { u: 1, duration: 16 / 30, ease: "power2.out", onUpdate: function () { edges.forEach(function (e) { e.style.strokeDashoffset = (e.__len * (1 - dr.u)).toFixed(1); }); } }, 2.0);
-          tl.to("#f05-ruler", { opacity: 1, duration: 0.3, ease: "steps(6)" }, 2.1);
           // 540 every reusable part lights cyan; one per 4 f lifts out and snaps into its slot (lands 546 ... 570)
           var ORDER = ["btn", "chip", "tog", "input", "row", "card", "seg"];
           tl.set(root.querySelectorAll(".f05-copy"), { opacity: 1 }, 2.0);
