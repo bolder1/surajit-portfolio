@@ -8,6 +8,7 @@ export const sans = "Inter Tight";
 export const mono = "JetBrains Mono";
 export const display = "Mona Sans Var"; // variable: wdth 75–125, wght 200–900
 export const dots = "Doto Var"; // dot-matrix numerals
+export const bric = "Bricolage Grotesque"; // designer reel: THE one family (variable: opsz 12-96, wdth 75-100, wght 200-800)
 
 const f = (family: string, file: string, extra: Record<string, string> = {}) =>
   loadFont({ family, url: staticFile(`fonts/${file}`), format: "woff2", ...extra } as Parameters<typeof loadFont>[0]);
@@ -17,6 +18,7 @@ f(sans, "InterTight-normal.woff2", { weight: "100 900" });
 f(mono, "JetBrainsMono-normal.woff2", { weight: "100 800" });
 f(display, "MonaSans-var.woff2", { weight: "200 900", stretch: "75% 125%" });
 f(dots, "Doto-var.woff2", { weight: "100 900" });
+f(bric, "BricolageGrotesque-var.woff2", { weight: "200 800", stretch: "75% 100%" });
 
 /** Mona Sans at a given width/weight (both animatable). */
 export const mona = (wdth: number, wght: number): React.CSSProperties => ({

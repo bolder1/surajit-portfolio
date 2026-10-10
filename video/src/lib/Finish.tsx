@@ -15,6 +15,8 @@ export type FinishCfg = {
   activeAt: number;
   pending: string;
   active: string;
+  /** Optional HUD label style (font family etc.); defaults to the mono label of the v2 reel. */
+  labelStyle?: React.CSSProperties;
 };
 export const V2_CFG: FinishCfg = {
   sections: SECTIONS,
@@ -38,7 +40,7 @@ export const Finish: React.FC<{ offset?: number; cfg?: FinishCfg }> = ({ offset 
   const hudO = interpolate(g, [10, 30], [0, 1], clamp);
   // the end card fades to black: take the whole finishing layer down with it
   const endO = interpolate(g, [cfg.total - 16, cfg.total - 4], [1, 0], clamp);
-  const txt: React.CSSProperties = { position: "absolute", fontFamily: mono, fontSize: 15, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase" };
+  const txt: React.CSSProperties = { position: "absolute", fontFamily: mono, fontSize: 15, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase", ...cfg.labelStyle };
   const inset = 44;
   const top = Math.max(inset, barH + 26);
   const L = 30;

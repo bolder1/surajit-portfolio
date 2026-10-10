@@ -1,22 +1,13 @@
 import React from "react";
 import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { Audio } from "@remotion/media";
-import { D_LETTERBOX_OPEN, D_SECTIONS, D_TOTAL } from "./timeline";
+import { D_SECTIONS } from "./timeline";
 import { D_SCENES } from "./registry";
-import { Finish, type FinishCfg } from "../lib/Finish";
+import { FinishFunk } from "./FinishFunk";
 import { Glitch } from "../lib/FX";
 import { clamp, rand } from "../lib/anim";
-import { C, BEAT } from "../lib/theme";
+import { P } from "./tokens";
 import type { Cue } from "../lib/cues";
-
-export const D_CFG: FinishCfg = {
-  sections: D_SECTIONS,
-  total: D_TOTAL,
-  letterboxOpen: D_LETTERBOX_OPEN,
-  activeAt: D_LETTERBOX_OPEN + BEAT,
-  pending: "PROFILE LOADING",
-  active: "OPEN TO WORK",
-};
 
 /** All cues on the global timeline (each scene authors its own, in local frames). */
 export const D_CUES: (Cue & { g: number })[] = D_SECTIONS.flatMap((s) =>
@@ -85,11 +76,11 @@ export const Designer: React.FC = () => {
   const g = useCurrentFrame();
   const sh = useShake(g);
   return (
-    <AbsoluteFill style={{ background: C.void }}>
+    <AbsoluteFill style={{ background: P.void }}>
       <AbsoluteFill style={{ transform: `translate(${sh.x}px, ${sh.y}px) scale(${1 + Math.hypot(sh.x, sh.y) / 900})` }}>
         <DScenes />
       </AbsoluteFill>
-      <Finish cfg={D_CFG} />
+      <FinishFunk />
       <DSoundTrack />
     </AbsoluteFill>
   );
