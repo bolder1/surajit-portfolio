@@ -5,6 +5,21 @@ import { SECTIONS } from "./timeline";
 import { SCENES } from "./registry";
 import { Finish } from "./lib/Finish";
 import { C } from "./lib/theme";
+import { Designer, D_CFG } from "./designer/ReelD";
+import { D_SECTIONS, D_TOTAL } from "./designer/timeline";
+import { D_SCENES } from "./designer/registry";
+
+/** One designer-reel scene on its own, with the global finishing layer (for stills while building). */
+const DesignerPreview: React.FC<{ id: string }> = ({ id }) => {
+  const s = D_SECTIONS.find((x) => x.id === id)!;
+  const { Scene } = D_SCENES[s.id];
+  return (
+    <AbsoluteFill style={{ background: C.void }}>
+      <Scene />
+      <Finish offset={s.from} cfg={D_CFG} />
+    </AbsoluteFill>
+  );
+};
 
 /** One section on its own, with the global finishing layer (for stills while building). */
 const SectionPreview: React.FC<{ id: string }> = ({ id }) => {
@@ -21,6 +36,19 @@ const SectionPreview: React.FC<{ id: string }> = ({ id }) => {
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Reel" component={Reel} durationInFrames={REEL_DURATION} fps={30} width={1920} height={1080} />
+    <Composition id="Designer" component={Designer} durationInFrames={D_TOTAL} fps={30} width={1920} height={1080} />
+    {D_SECTIONS.map((s) => (
+      <Composition
+        key={s.id}
+        id={s.id}
+        component={DesignerPreview}
+        defaultProps={{ id: s.id }}
+        durationInFrames={s.dur}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+    ))}
     {SECTIONS.map((s) => (
       <Composition
         key={s.id}
