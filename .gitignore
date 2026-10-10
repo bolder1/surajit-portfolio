@@ -53,3 +53,4 @@ videos/designer-reel/.hosts/
 videos/designer-reel/snapshots/
 videos/designer-reel/.hyperframes/
 videos/designer-reel/.*.workflow.js
+__pycache__/
