@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F6 "miniOrange, 2024 -> now" (film 600-780, 6 s). Dolly in over the vector floor while the chapter marker
+         types; two crops of his real UEM Figma board (COMPONENTS, DESIGNED SCREENS) condense in tilted Tier B frames
+         and fly past; the hero lands as a Tier H plate holding the real MODS design-system cover. On the 720 stab the
+         beam pulls itself off the floor into one straight 2 px stroke while the cover pushes in on its token panels
+         and a cyan selection closes around them. Hard cut at 780. Local time = film frame - 600. Needs ReelKit.
+         Assets (all real, baked offline, exposure-only: one linear-light gain on R, G and B):
+           f06-mods-cover.png      public/projects/design-system/01-cover.png, full frame, -0.75 EV
+           f06-uem-components.png  public/projects/uem/01-overview.png crop (270,0)-(1010,282), -0.9 EV, shown 1:1
+           f06-uem-screens.png     public/projects/uem/01-overview.png crop (262,536)-(848,876), -0.9 EV, shown 1:1 -->
+  </head>
+  <body>
+    <template id="f06-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f06-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f06-stage, #f06-type { position: absolute; inset: 0; }
+        .f06-world, .f06-world svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        .f06-world { background: #0b0716; }
+        /* oversized so the 0.8 dolly-in scale never shows its edge; radii = 78% x 74% of the frame */
+        #f06-vignette { position: absolute; left: -480px; top: -270px; width: 2880px; height: 1620px; background: radial-gradient(ellipse 1497.6px 799.2px at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* type (above the world and its vignette; the marker holds still while the world dollies in) */
+        .f06-label { position: absolute; left: 120px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        #f06-marker { top: 176px; }
+        #f06-marker svg { width: 36px; height: 17px; margin: 0 14px 0 6px; vertical-align: 0; overflow: visible; opacity: 0; }
+        #f06-tag { top: 486px; font-size: 24px; }
+        #f06-spec1 { top: 528px; color: #f3eeff; }
+        #f06-spec2 { top: 568px; color: #f3eeff; }
+        .f06-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 0; }
+        .f06-line { position: absolute; left: 120px; font-family: "Mona Sans", sans-serif; font-size: 56px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        #f06-l1 { top: 250px; }
+        #f06-l2 { top: 317px; }
+
+        /* Tier B capture frames (backdrop-filter, inward rim; Tier B may scale and rotate). Crops show 1:1. */
+        .f06-card { position: absolute; border-radius: 34px; box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); opacity: 0; }
+        #f06-c0 { left: 150px; top: 419px; width: 780px; height: 322px; backdrop-filter: url(#f06-c0-f); }
+        #f06-c1 { left: 1077px; top: 410px; width: 626px; height: 380px; backdrop-filter: url(#f06-c1-f); }
+        .f06-card .lg-tint { background: rgba(20, 12, 38, 0.42); }
+        .f06-shot { position: absolute; left: 20px; top: 20px; right: 20px; bottom: 20px; border-radius: 16px; overflow: hidden; background: #0e0d10; }
+        .f06-shot img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+        .f06-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px); opacity: 0; }
+        .f06-flash { position: absolute; inset: 0; background: #ffd9ec; opacity: 0; }
+
+        /* Tier H liquid glass: the hero plate (lens over a duplicated world). Screen 712 x 427 = the cover at 0.445 */
+        #f06-plate, #f06-plate-shadow { position: absolute; left: 1024px; top: 250px; width: 776px; height: 491px; border-radius: 56px; }
+        #f06-plate { overflow: hidden; isolation: isolate; opacity: 0; }
+        #f06-plate-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
+        #f06-lens { position: absolute; inset: 0; filter: url(#f06-lens-f); }
+        #f06-lens > .f06-world { left: -1024px; top: -250px; }
+        #f06-screen { position: absolute; left: 32px; top: 32px; width: 712px; height: 427px; border-radius: 24px; overflow: hidden; background: #0e0d10; opacity: 0; }
+        #f06-cam { position: absolute; left: 0; top: 0; width: 712px; height: 427.2px; transform-origin: 0 0; }
+        #f06-cam img { position: absolute; left: 0; top: 0; width: 712px; height: 427.2px; display: block; }
+        #f06-sel { position: absolute; left: 0; top: 0; width: 712px; height: 427px; overflow: visible; }
+        .lg-tint { position: absolute; inset: 0; border-radius: inherit; background: rgba(180, 150, 255, 0.07); }
+        .lg-shade { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+        .f06-skin, .f06-pskin { opacity: 0; }
+
+        #f06-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f06-root" data-composition-id="f06" data-width="1920" data-height="1080" data-duration="6">
+        <div id="f06-scene" class="clip" data-start="0" data-duration="6" data-track-index="0">
+          <div id="f06-stage">
+            <div class="f06-world" id="f06-world-main" data-layout-allow-overflow></div>
+            <div id="f06-vignette" data-layout-ignore></div>
+
+            <div class="f06-card" id="f06-c0" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
+              <div class="f06-shot"><img src="assets/img/f06-uem-components.png" alt="UEM component library board" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
+            <div class="f06-card" id="f06-c1" data-layout-allow-overflow><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div>
+              <div class="f06-shot"><img src="assets/img/f06-uem-screens.png" alt="UEM designed screens board" /><div class="f06-scan"></div><div class="f06-flash"></div></div></div>
+
+            <div id="f06-plate-shadow" class="f06-skin"></div>
+            <div id="f06-plate">
+              <div id="f06-lens">
+                <div class="f06-world" id="f06-world-lens" data-layout-allow-overflow></div>
+                <div id="f06-screen">
+                  <!-- the real MODS cover, light, so no lift: it sits on capture-well with a baked exposure pull-down -->
+                  <div id="f06-cam" data-layout-allow-overflow><img src="assets/img/f06-mods-cover.png" alt="miniOrange central design system cover, tokens and variables" /></div>
+                  <svg id="f06-sel" viewBox="0 0 712 427" aria-hidden="true"><g fill="none" stroke="#22e6ff" stroke-width="2"><path id="f06-sel-box" d="M0 0" /><path id="f06-sel-h" d="M0 0" opacity="0" /></g></svg>
+                  <div class="f06-scan" id="f06-scan"></div>
+                  <div class="f06-flash" id="f06-flash"></div>
+                </div>
+              </div>
+              <div class="lg-tint f06-pskin"></div>
+              <div class="lg-shade f06-pskin"></div>
+              <div class="lg-rim f06-pskin" id="f06-rim"></div>
+            </div>
+          </div>
+
+          <div id="f06-type">
+            <div class="f06-label" id="f06-marker"><span id="f06-m1"></span><svg viewBox="0 0 34 16" aria-hidden="true"><path d="M1 8 H31 M24 1.5 L31 8 L24 14.5" fill="none" stroke="#b4a8da" stroke-width="2.4" stroke-linecap="square" /></svg><span id="f06-m2"></span><span class="f06-caret" id="f06-caret1" style="opacity: 1"></span></div>
+            <div class="f06-line" id="f06-l1">Enterprise software for IT,</div>
+            <div class="f06-line" id="f06-l2">identity &amp; security teams.</div>
+            <div class="f06-label" id="f06-tag"><span id="f06-tag-text"></span></div>
+            <div class="f06-label" id="f06-spec1"><span id="f06-spec1-text"></span><span class="f06-caret" id="f06-caret2"></span></div>
+            <div class="f06-label" id="f06-spec2"><span id="f06-spec2-text"></span><span class="f06-caret" id="f06-caret3"></span></div>
+          </div>
+          <div id="f06-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f06-defs">
+              <!-- bloom regions hug the beam: frame copy (floor trace + the straight stroke) and the lens copy (plate +- pad) -->
+              <filter id="f06-bloom" x="-400" y="390" width="2720" height="700" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="f06-bloom-lens" x="965" y="191" width="894" height="609" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <!-- floor caustic under the plate (frame.md: beam @ 30%, rx 0.56 x width, ry 30, sigma 22, 20 px below) -->
+              <filter id="f06-caustic-f" x="907" y="661" width="1010" height="200" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="22" /></filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f06-root");
+          var defs = document.getElementById("f06-defs");
+          // hero plate 776 x 491 at (1024, 250), r 56: bezel 0.1 x 491 = 49, scale 1.33 x 49 = 65, pad 65 x 0.6 + 20 = 59.
+          // Sized so the light cover (14.7 % of the frame) leaves the ground dark.
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-lens-f", { w: 776, h: 491, r: 56, bezel: 49, dir: 1, power: 2, pad: 59 }));
+          var lensF = document.getElementById("f06-lens-f");
+          var HZ = 690, FH = 1560, NH = 44, YS = 452; // horizon, floor height, rows; YS = the straight stroke
+
+          // world: haze, floor, scope-axis horizon, the plate's floor caustic, beam (persisted: 50 %, no head).
+          // Built twice (frame + inside the lens); setters target classes so both copies move together.
+          var copies = 0;
+          function world(bloom) {
+            var t = "f06-w" + copies++;
+            var s = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>';
+            s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ") scale(1150 330) translate(-960 -" + HZ + ')">';
+            s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+            s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="-600" y="0" width="3120" height="1600"><rect x="-600" y="' + HZ + '" width="3120" height="900" fill="url(#' + t + '-fade)"/></mask></defs>';
+            s += '<rect class="f06-haze" x="-600" y="200" width="3120" height="1200" fill="url(#' + t + '-haze)"/>';
+            s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
+            for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
+            for (var k = 0; k < NH; k++) s += '<line class="f06-hl" x1="-600" y1="1600" x2="2520" y2="1600"/>';
+            s += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="-600" y1="' + HZ + '" x2="2520" y2="' + HZ + '"/>';
+            for (var x = -480; x <= 2400; x += 48) { var tall = (x + 4800) % 240 === 0 ? 9 : 4; s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>'; }
+            s += '</g><ellipse class="f06-skin" cx="1412" cy="761" rx="435" ry="30" fill="#ff2e97" fill-opacity="0.3" filter="url(#f06-caustic-f)"/>';
+            s += '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+            s += '<path class="f06-b-old" d="M0 0" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+            s += '<path class="f06-b-core" d="M0 0" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
+            return s + "</g></svg>";
+          }
+          document.getElementById("f06-world-main").innerHTML = world("f06-bloom");
+          document.getElementById("f06-world-lens").innerHTML = world("f06-bloom-lens");
+
+          var rows = root.querySelectorAll(".f06-hl");
+          function setGrid(phase) {
+            for (var i = 0; i < rows.length; i++) { var y = K.gridRowY(i % NH, phase, HZ, FH); y = y > 1590 ? 1600 : y; rows[i].setAttribute("y1", y); rows[i].setAttribute("y2", y); }
+          }
+          // floor phase (cells): x4 rush (8/s) through the fly-by, eases to x1 (one cell per beat) as the plate lands
+          function phaseAt(t) {
+            if (t <= 1.7) return 8 * t;
+            if (t <= 2.1) { var u = t - 1.7; return 13.6 + 8 * u - 7.5 * u * u; }
+            return 15.6 + 2 * (t - 2.1);
+          }
+
+          // the beam lies across the floor as a PCB-routed trace (lateral runs joined by 45-degree jogs), in floor
+          // coords (i = radial-line index, Z = depth in cells), projected like gridRowY so it rides the scrolling rows.
+          var RUNS = [7, 4, 6, 3, 5, 8, 4, 6, 3, 5, 7, 4, 6, 5, 3, 6, 8, 4, 5, 6, 4, 7];
+          var TR = [], ti = -64, tz = 22.2;
+          RUNS.forEach(function (r, n) { TR.push([ti, tz]); ti += r; TR.push([ti, tz]); var j = n % 2 ? -0.8 : 0.8; ti += 0.8; tz += j; });
+          function tracePts(phase) {
+            return TR.map(function (q) { var zz = 3.2 + q[1] - phase; return [960 + (600 * q[0]) / zz, HZ + FH / zz]; });
+          }
+          function dOf(p) { return "M" + p.map(function (q) { return q[0].toFixed(1) + " " + q[1].toFixed(1); }).join(" L"); }
+          // 720: the trace lifts off the floor and pulls taut into one straight line (jogs flatten, x kept). Moves start
+          // on 719 so the stab frame itself already shows the pull at 44 % (expo.out), as every hit in the film does.
+          var T_HIT = 119 / 30, P0 = tracePts(phaseAt(T_HIT));
+          var beams = root.querySelectorAll(".f06-b-old, .f06-b-core");
+          function setBeam(t) {
+            var p;
+            if (t < T_HIT) p = tracePts(phaseAt(t));
+            else {
+              var m = t >= T_HIT + 0.4 ? 1 : 1 - Math.pow(2, (-10 * (t - T_HIT)) / 0.4);
+              p = P0.map(function (q) { return [q[0], q[1] + (YS - q[1]) * m]; });
+            }
+            var d = dOf(p);
+            for (var i = 0; i < beams.length; i++) beams[i].setAttribute("d", d);
+          }
+
+          // the camera inside the plate (image px of the 1600 x 960 cover; k0 = 0.445 fits it to the screen).
+          // 663-720 a slow push 1.00 -> 1.03 on the centre; 720 punches to 2.0 on the three token panels (expo.out
+          // 0.6 s), then drifts to 2.04 (0.89 to 0.91 of native: never upscaled). Every edge stays covered and the view
+          // ends above the big title (y 487), so no letter fragment hangs in the corner. The cyan selection then
+          // closes around one real token group, the Primary colour ramp (900 to 50), turned with its card (-12 deg)
+          // the way Figma draws a rotated selection.
+          var K0 = 0.445, SW = 712, SH = 427, cam = document.getElementById("f06-cam");
+          var SA = (-12 * Math.PI) / 180, SU = [Math.cos(SA), Math.sin(SA)], SV = [-Math.sin(SA), Math.cos(SA)];
+          var SELC = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (g) { return [1004 + 45 * g[0] * SU[0] + 100 * g[1] * SV[0], 295 + 45 * g[0] * SU[1] + 100 * g[1] * SV[1]]; });
+          var selBox = document.getElementById("f06-sel-box"), selH = document.getElementById("f06-sel-h");
+          function camAt(t) {
+            var s0 = 1 + (0.03 * Math.min(1.9, Math.max(0, t - 2.1))) / 1.9;
+            if (t < T_HIT) return [s0, 800, 480];
+            var p = t >= T_HIT + 0.6 ? 1 : 1 - Math.pow(2, (-10 * (t - T_HIT)) / 0.6), st = 2.0 + (0.04 * (t - 4)) / 2;
+            return [s0 + (st - s0) * p, 800 + 396 * p, 480 - 238 * p];
+          }
+          function setCam(t) {
+            var c = camAt(t), k = K0 * c[0], tx = SW / 2 - c[1] * k, ty = SH / 2 - c[2] * k;
+            cam.style.transform = "translate(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px) scale(" + c[0].toFixed(4) + ")";
+            // the cyan selection closes around the Primary ramp (from 725, first shows 726, power2.out), handles on 731
+            var q = Math.max(0, Math.min(1, (t - 125 / 30) / 0.2)), e = 1 - (1 - q) * (1 - q);
+            var P = SELC.map(function (c) { return [tx + c[0] * k, ty + c[1] * k]; }), L = 2 * (90 + 200) * k;
+            selBox.setAttribute("d", "M" + P.map(function (c) { return c[0].toFixed(1) + " " + c[1].toFixed(1); }).join(" L") + " Z");
+            selBox.style.strokeDasharray = L.toFixed(1) + " " + (L + 10).toFixed(1);
+            selBox.style.strokeDashoffset = (L * (1 - e)).toFixed(1);
+            selBox.style.opacity = q > 0 ? 1 : 0;
+            selH.setAttribute("d", P.map(function (c) { return "M" + [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (g) { return (c[0] + 4 * g[0] * SU[0] + 4 * g[1] * SV[0]).toFixed(1) + " " + (c[1] + 4 * g[0] * SU[1] + 4 * g[1] * SV[1]).toFixed(1); }).join(" L") + " Z"; }).join(""));
+            selH.setAttribute("opacity", t >= 131 / 30 ? 1 : 0);
+          }
+
+          // fly-by: the camera's approach drifts each frame outward from the vanishing point (s 0.84 -> 1 over its life),
+          // then it flies past in 8 f (power2.in). Each frame is already showing on its tink frame (a 3 f fade that
+          // starts 1 f early reads 56 % on the tink) and powers on there; clear from on + 21 f to `out`.
+          var VP = [960, 690];
+          var CARDS = [
+            { on: 0, out: 38 / 30, cx: 540, cy: 580, w: 780, h: 322, rot: -3 },
+            { on: 15 / 30, out: 53 / 30, cx: 1390, cy: 600, w: 626, h: 380, rot: 3 },
+          ];
+          var CHIP = K.spring(0.45, 0.8, 0.7), EXIT = 8 / 30;
+          CARDS.forEach(function (c, i) {
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f06-c" + i + "-f", { w: c.w, h: c.h, r: 34, bezel: 30, dir: -1, power: 1.6 }));
+            c.f = document.getElementById("f06-c" + i + "-f");
+            c.el = document.getElementById("f06-c" + i);
+          });
+          function setCards(t) {
+            CARDS.forEach(function (c) {
+              var a = Math.max(0, Math.min(1, (t - c.on + 1 / 30) / 0.1)), live = a > 0 && t < c.out + EXIT;
+              c.el.style.opacity = "0";
+              if (!live) return;
+              var age = Math.max(0, t - c.on), s = 0.84 + 0.16 * Math.min(1, age / (c.out - c.on)), u = Math.max(0, (t - c.out) / EXIT), u2 = u * u;
+              var sz = s * (1 + 1.3 * u2), sp = s * (1 + 2.2 * u2);
+              var x = VP[0] + (c.cx - VP[0]) * sp - c.cx, y = VP[1] + (c.cy - VP[1]) * sp - c.cy;
+              c.el.style.opacity = ((1 - (1 - a) * (1 - a)) * (u > 0.4 ? Math.max(0, 1 - (u - 0.4) / 0.6) : 1)).toFixed(3);
+              c.el.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) rotate(" + c.rot + "deg) scale(" + sz.toFixed(4) + ")";
+              K.setRefraction(c.f, 48 * CHIP(Math.min(1, age / 0.7)) * (1 - u2));
+            });
+          }
+
+          var stage = document.getElementById("f06-stage");
+          var grain = document.getElementById("f06-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          setGrid(0); setBeam(0); setCards(0); setCam(0);
+
+          var tl = gsap.timeline({ paused: true });
+          // ambient: floor, beam on the floor, fly-by cards, the plate's camera + selection, grain
+          var amb = { t: 0 };
+          tl.to(amb, { t: 6, duration: 6, ease: "none", onUpdate: function () {
+            var t = amb.t;
+            setGrid(phaseAt(t)); setBeam(t); setCards(t); setCam(t);
+            grain.style.backgroundPosition = K.grainPos(t);
+          } }, 0);
+          tl.fromTo(root.querySelectorAll(".f06-haze"), { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 5 }, 0);
+
+          // 600 dolly in: scale 0.8 -> 1 out of the vanishing point (12 f, expo.out), floor already at x4
+          tl.fromTo(stage, { scale: 0.8, transformOrigin: "960px 690px" }, { scale: 1, duration: 0.4, ease: "expo.out" }, 0);
+
+          // CRT power-on of a raster (frame.md): dot -> line -> frame, a white-hot flash, scanlines for 21 f only
+          function powerOn(box, flash, scan, t0) {
+            tl.fromTo(box, { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out", immediateRender: t0 < 0.01 }, t0);
+            tl.to(box, { scaleY: 1, duration: 0.24, ease: "expo.out" }, t0 + 0.12);
+            tl.fromTo(flash, { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out", immediateRender: false }, t0);
+            tl.fromTo(scan, { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false }, t0);
+          }
+          CARDS.forEach(function (c) {
+            powerOn(c.el.querySelector(".f06-shot"), c.el.querySelector(".f06-flash"), c.el.querySelector(".f06-scan"), c.on);
+            tl.fromTo(c.el.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, c.on);
+          });
+
+          // 600 the chapter marker types (the arrow is drawn, it counts as one character), caret blinks then goes dark
+          var M1 = "2024", M2 = "NOW · PRODUCT DESIGNER, MINIORANGE · PUNE", NM = M1.length + 1 + M2.length;
+          var m1 = document.getElementById("f06-m1"), m2 = document.getElementById("f06-m2"), arrow = root.querySelector("#f06-marker svg");
+          var mk = { n: 0 };
+          tl.to(mk, { n: NM, duration: 28 / 30, ease: "steps(" + NM + ")", onUpdate: function () {
+            var n = Math.round(mk.n);
+            m1.textContent = M1.slice(0, n);
+            arrow.style.opacity = n > M1.length ? 1 : 0;
+            m2.textContent = M2.slice(0, Math.max(0, n - M1.length - 1));
+          } }, 0);
+          tl.to("#f06-caret1", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 28 / 30);
+          tl.set("#f06-caret1", { opacity: 0 }, 2.5);
+
+          // 645 his statement wipes on as the first frame clears (two lines, the second an eighth behind)
+          tl.to("#f06-l1", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 1.5);
+          tl.to("#f06-l2", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 1.75);
+
+          // 660 the hero plate condenses (Tier H: refraction spring, skin up, rim light sweeps; no move, no scale).
+          // Its skin is already at 45 % on the tink frame (the plate itself is hidden until 660, so nothing leaks early).
+          var GLASS = K.spring(0.55, 0.62, 1.2);
+          var lens = { k: 0 };
+          tl.set("#f06-plate", { opacity: 1 }, 2.0);
+          tl.to(lens, { k: 1, duration: 1.2, ease: GLASS, onUpdate: function () { K.setRefraction(lensF, 65 * lens.k); } }, 2.0);
+          tl.fromTo(root.querySelectorAll(".f06-pskin"), { opacity: 0.45 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 2.0);
+          tl.fromTo(root.querySelectorAll(".f06-skin"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 2.0);
+          tl.fromTo("#f06-rim", { "--spec": "110deg" }, { "--spec": "210deg", duration: 1.6, ease: "power3.out" }, 2.0);
+          tl.to("#f06-rim", { "--spec": "250deg", duration: 2.4, ease: "sine.inOut" }, 3.6);
+          // 663 the cover powers on inside it (the camera push runs in setCam)
+          tl.set("#f06-screen", { opacity: 1 }, 2.1);
+          powerOn("#f06-screen", "#f06-flash", "#f06-scan", 2.1);
+
+          // 720 the stab: the beam is pulled taut (setBeam), thins to one 2 px stroke and burns to its core for a beat,
+          // then decays back to its persisted 50 % (phosphor, power2.out) so the cyan selection holds the focus
+          tl.to(root.querySelectorAll(".f06-b-old"), { attr: { "stroke-width": 2 }, duration: 0.4, ease: "expo.out" }, T_HIT);
+          tl.to(root.querySelectorAll(".f06-b-core"), { attr: { "stroke-width": 2 }, strokeOpacity: 1, duration: 0.4, ease: "expo.out" }, T_HIT);
+          tl.to(root.querySelectorAll(".f06-b-core"), { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, 4.5);
+
+          // 725 the tag types under the stroke, then the spec (733-761, two lines); caret blinks out on the hold
+          var TAG = "MODS DESIGN SYSTEM", S1 = "ONE STROKE WEIGHT · TWO CORNER RADII", S2 = "THREE SPACING SCALES";
+          function typeOn(el, str, t0, frames) {
+            var o = { n: 0 };
+            tl.to(o, { n: str.length, duration: frames / 30, ease: "steps(" + str.length + ")", onUpdate: function () { el.textContent = str.slice(0, Math.round(o.n)); } }, t0);
+          }
+          typeOn(document.getElementById("f06-tag-text"), TAG, 125 / 30, 8);
+          typeOn(document.getElementById("f06-spec1-text"), S1, 133 / 30, 18);
+          typeOn(document.getElementById("f06-spec2-text"), S2, 151 / 30, 10);
+          tl.set("#f06-caret2", { opacity: 1 }, 133 / 30);
+          tl.set("#f06-caret2", { opacity: 0 }, 151 / 30);
+          tl.set("#f06-caret3", { opacity: 1 }, 151 / 30);
+          tl.to("#f06-caret3", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 4, yoyo: true }, 161 / 30);
+          tl.set("#f06-caret3", { opacity: 0 }, 5.95);
+
+          window.__timelines["f06"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

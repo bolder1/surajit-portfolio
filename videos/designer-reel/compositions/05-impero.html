@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F5 "Impero IT, 2023" (film 480-600, 4 s). Opens mid-pan: F4 leaves frame left at 2400 px/s, so the
+         camera keeps that speed through the cut and three Tier B phone shells (food delivery, healthcare,
+         events) enter from the right, threaded by the beam through their bottom rims, and settle on 510.
+         An empty artboard (grid outline + ruler) rides in with them and waits at the beam's pad; on the 540
+         downbeat their reusable parts lift out as cyan outlines and snap into it while its frame lights cyan out
+         of the pad. The beam sits at its persisted 50 % (cyan is this frame's accent). Ends on the dolly.
+         Local time = film frame - 480. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="f05-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f05-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        #f05-stage { position: absolute; inset: 0; }
+        .f05-layer, .f05-layer > svg, #f05-world > svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f05-world { position: absolute; inset: 0; }
+        #f05-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* type */
+        #f05-marker { position: absolute; left: 120px; top: 176px; font: 500 26px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        #f05-caret { display: inline-block; width: 0.6em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: #ff2e97; opacity: 1; }
+        .f05-tag { position: absolute; font: 500 24px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+        #f05-quote { position: absolute; left: 120px; top: 884px; font-family: "Mona Sans", sans-serif; font-size: 54px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; clip-path: inset(0 100% 0 0); }
+
+        /* Tier B liquid glass phone shells (backdrop-filter, inward rim); outline-only screens sit on the glass */
+        .f05-phone { position: absolute; width: 258px; height: 520px; border-radius: 44px; box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); opacity: 0; }
+        #f05-p0 { backdrop-filter: url(#f05-p0-f); }
+        #f05-p1 { backdrop-filter: url(#f05-p1-f); }
+        #f05-p2 { backdrop-filter: url(#f05-p2-f); }
+        .f05-phone .lg-tint { background: rgba(20, 12, 38, 0.42); }
+        /* outline-only screens ride on the glass (inside the shell, over its tint) */
+        .f05-phone > svg { position: absolute; inset: 0; width: 258px; height: 520px; overflow: visible; }
+        .f05-ui * { vector-effect: non-scaling-stroke; fill: none; stroke-width: 1.5; stroke-linecap: round; }
+        .f05-ui .g, .f05-ui .g * { stroke: #4a2c8c; }
+        .f05-ui .a, .f05-ui .a * { stroke: #8c7eb8; }
+        .f05-copy { position: absolute; transform-origin: 0 0; opacity: 0; }
+        .f05-copy svg { position: absolute; left: 0; top: 0; overflow: visible; }
+        .f05-copy * { vector-effect: non-scaling-stroke; fill: none; stroke: #22e6ff; stroke-width: 2; stroke-linecap: round; }
+        .lg-tint { position: absolute; inset: 0; border-radius: inherit; }
+        .lg-shade { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { position: absolute; inset: 0; border-radius: inherit; padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+
+        #f05-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f05-root" data-composition-id="f05" data-width="1920" data-height="1080" data-duration="4">
+        <div id="f05-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div id="f05-stage">
+            <div id="f05-world" data-layout-allow-overflow></div>
+            <!-- the pan layer: everything that rides the F4 camera move (beam, sheet, phones, parts) -->
+            <div class="f05-layer" id="f05-pan" data-layout-allow-overflow>
+              <svg id="f05-track" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+              <div id="f05-phones"></div>
+              <svg id="f05-fx" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+              <div id="f05-copies"></div>
+              <div class="f05-tag" id="f05-tag0" style="left: 124px; top: 812px">FOOD DELIVERY</div>
+              <div class="f05-tag" id="f05-tag1" style="left: 438px; top: 780px">HEALTHCARE</div>
+              <div class="f05-tag" id="f05-tag2" style="left: 752px; top: 812px">EVENTS</div>
+              <div class="f05-tag" id="f05-tag3" style="left: 1180px; top: 812px">COMPONENT LIBRARIES</div>
+            </div>
+            <div id="f05-vignette" data-layout-ignore></div>
+            <div id="f05-marker"><span id="f05-marker-text"></span><span id="f05-caret"></span></div>
+            <div id="f05-quote">Felt the pull toward enterprise.</div>
+          </div>
+          <div id="f05-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f05-defs">
+              <filter id="f05-bloom" x="-1860" y="550" width="3100" height="270" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f05-root");
+          var defs = document.getElementById("f05-defs");
+          var HZ = 690, FH = 1560, NH = 44, S = 0.4; // horizon, floor height, rows; phone UI = sheet component x 0.4
+          var PW = 258, PH = 520;
+
+          // svg helpers (outline only)
+          function R(x, y, w, h, r, c) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + r + '"' + (c ? ' class="' + c + '"' : "") + "/>"; }
+          function L(x1, y1, x2, y2) { return '<path d="M' + x1 + " " + y1 + " L" + x2 + " " + y2 + '"/>'; }
+          function C(x, y, r, c) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '"' + (c ? ' class="' + c + '"' : "") + "/>"; }
+          function X(x, y, w, h, r) { return R(x, y, w, h, r) + '<path stroke-opacity="0.6" d="M' + (x + 6) + " " + (y + 6) + " L" + (x + w - 6) + " " + (y + h - 6) + " M" + (x + w - 6) + " " + (y + 6) + " L" + (x + 6) + " " + (y + h - 6) + '"/>'; }
+
+          // the seven components at sheet scale: real sizes, not a uniform grid. sx/sy = slot in the sheet.
+          var COMP = {
+            btn: { w: 240, h: 60, sx: 36, sy: 48, d: R(0, 0, 240, 60, 30) + L(84, 30, 156, 30) },
+            chip: { w: 150, h: 52, sx: 300, sy: 52, d: R(0, 0, 150, 52, 26) + C(30, 26, 8) + L(50, 26, 120, 26) },
+            tog: { w: 100, h: 56, sx: 474, sy: 50, d: R(0, 0, 100, 56, 28) + C(28, 28, 20, "f05-knob") },
+            input: { w: 540, h: 68, sx: 36, sy: 136, d: R(0, 0, 540, 68, 16) + C(40, 32, 11) + L(48, 40, 56, 48) + L(76, 34, 250, 34) },
+            row: { w: 540, h: 92, sx: 36, sy: 232, d: R(0, 0, 540, 92, 18) + C(52, 46, 24) + L(96, 36, 300, 36) + L(96, 58, 220, 58) + '<path d="M500 32 L514 46 L500 60"/>' },
+            card: { w: 260, h: 164, sx: 36, sy: 352, d: R(0, 0, 260, 164, 18) + L(0, 100, 260, 100) + '<path stroke-opacity="0.6" d="M14 14 L246 88 M246 14 L14 88"/>' + L(20, 124, 170, 124) + L(20, 144, 110, 144) },
+            seg: { w: 256, h: 56, sx: 320, sy: 352, d: R(0, 0, 256, 56, 28) + R(5, 5, 82, 46, 23) + L(170, 16, 170, 40) + L(30, 28, 62, 28) + L(114, 28, 146, 28) + L(198, 28, 232, 28) },
+          };
+          // phones: position, ghost UI (grid) and the parts that lift out (ink-faint, phone-local coords)
+          var TAB = L(0, 460, PW, 460) + R(34, 472, 12, 12, 3) + R(94, 472, 12, 12, 3) + R(154, 472, 12, 12, 3) + R(214, 472, 12, 12, 3);
+          var TOP = R(101, 14, 56, 10, 5) + L(20, 48, 110, 48) + C(226, 48, 10);
+          var PHONES = [
+            { x: 120, y: 268, beat: 0, ghost: TOP + TAB + R(20, 112, 52, 20, 10) + R(78, 112, 64, 20, 10) + R(148, 112, 44, 20, 10) + X(134, 148, 104, 65.6, 7) + L(20, 228, 100, 228) + L(134, 228, 210, 228) + L(20, 242, 70, 242) + L(134, 242, 180, 242) + X(20, 264, 104, 65.6, 7) + X(134, 264, 104, 65.6, 7) + L(20, 432, 80, 432),
+              parts: [["input", 20, 70], ["card", 20, 148], ["btn", 122, 420]] },
+            { x: 434, y: 236, beat: 0.5, ghost: TOP + TAB + R(20, 70, 218, 80, 12) + R(34, 84, 40, 40, 6) + L(88, 92, 190, 92) + L(88, 110, 160, 110) + R(20, 210, 216, 36.8, 7) + C(41, 228, 9.6) + L(58, 224, 140, 224) + R(20, 254, 216, 36.8, 7) + C(41, 272, 9.6) + L(58, 268, 120, 268) + L(20, 316, 100, 316) + L(20, 346, 120, 346) + L(20, 384, 140, 384) + R(196, 372, 40, 22.4, 11.2) + C(207.2, 383.2, 8),
+              parts: [["row", 20, 166], ["tog", 196, 334]] },
+            { x: 748, y: 268, beat: 1.0, ghost: TOP + TAB + X(20, 70, 218, 120, 12) + L(20, 244, 200, 244) + L(20, 260, 150, 260) + R(20, 318, 218, 34, 10) + R(20, 360, 218, 34, 10) + R(20, 404, 218, 28, 14),
+              parts: [["chip", 20, 204], ["seg", 20, 282]] },
+          ];
+          var SH = { x: 1180, y: 236, w: 620, h: 552 }; // the component sheet (vector artboard)
+
+          // beam (persisted): enters at y 610 from F4 and threads the shells BEHIND their glass. A 45-degree
+          // drop crosses p0's left rim, then each rail runs 28 px above a shell's bottom edge, inside its
+          // inward rim band, so the lens magnifies and fringes it; it ends on a pad at the sheet's left edge.
+          var BEAM = "M -2400 610 H 120 L 270 760 H 392 L 424 728 H 702 L 734 760 H 1016 L 1166 610 H " + SH.x;
+          var t = '<g filter="url(#f05-bloom)" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+          t += '<path d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          t += '<path class="f05-b-fresh" d="' + BEAM + '" stroke="#ff2e97" stroke-width="6" stroke-opacity="0.6"/>';
+          t += '<path class="f05-b-core" d="' + BEAM + '" stroke="#ffd9ec" stroke-width="2.2"/>';
+          t += '<circle class="f05-pad" cx="' + SH.x + '" cy="610" r="11" stroke="#ff2e97" stroke-width="3.5" stroke-opacity="0.5" fill="#0b0716"/></g>';
+          // the empty artboard waits at rest in grid colour (it rides in with the pan, so the right of the frame is
+          // never bare); at 540 its frame lights cyan out of the pad (both ways round, meeting mid right edge)
+          var X0 = SH.x, Y0 = SH.y, X1 = SH.x + SH.w, Y1 = SH.y + SH.h, YM = SH.y + SH.h / 2;
+          t += R(SH.x, SH.y, SH.w, SH.h, 6).replace("<rect", '<rect fill="none" stroke="#4a2c8c" stroke-width="1.5"');
+          t += '<g fill="none" stroke="#22e6ff" stroke-width="1.5" stroke-opacity="0.6">';
+          t += '<path class="f05-edge" d="M' + X0 + " 610 V" + (Y0 + 6) + " Q" + X0 + " " + Y0 + " " + (X0 + 6) + " " + Y0 + " H" + (X1 - 6) + " Q" + X1 + " " + Y0 + " " + X1 + " " + (Y0 + 6) + " V" + YM + '"/>';
+          t += '<path class="f05-edge" d="M' + X0 + " 610 V" + (Y1 - 6) + " Q" + X0 + " " + Y1 + " " + (X0 + 6) + " " + Y1 + " H" + (X1 - 6) + " Q" + X1 + " " + Y1 + " " + X1 + " " + (Y1 - 6) + " V" + YM + '"/></g>';
+          t += '<g fill="none" stroke-width="1.5">' + R(SH.x, SH.y, SH.w, SH.h, 6).replace("<rect", '<rect id="f05-lock" stroke="#22e6ff" opacity="0"') + '<path id="f05-ruler" stroke="#4a2c8c" d="';
+          for (var x = 20; x < SH.w; x += 20) t += "M" + (SH.x + x) + " " + SH.y + " v" + (x % 100 === 0 ? 12 : 6) + " ";
+          t += '"/></g><g fill="none" stroke="#22e6ff" stroke-width="1.2" stroke-dasharray="3 5">';
+          Object.keys(COMP).forEach(function (k) {
+            var c = COMP[k], gx = SH.x + c.sx, gy = SH.y + c.sy;
+            t += '<path id="f05-guide-' + k + '" opacity="0" d="M' + gx + " " + SH.y + " V" + gy + " M" + (gx + c.w) + " " + SH.y + " V" + gy + " M" + SH.x + " " + (gy + c.h / 2) + " H" + gx + '"/>';
+          });
+          document.getElementById("f05-track").innerHTML = t + "</g>";
+
+          // phones + their parts; a cyan copy of every part waits at its sheet slot, parked over its phone
+          var ph = "", cp = "", fx = "";
+          PHONES.forEach(function (p, i) {
+            var s = '<div class="f05-phone" id="f05-p' + i + '" style="left:' + p.x + "px;top:" + p.y + 'px"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div><svg class="f05-ui" viewBox="0 0 ' + PW + " " + PH + '" aria-hidden="true"><g class="g">' + p.ghost + '</g><g class="a">';
+            p.parts.forEach(function (q) {
+              var c = COMP[q[0]];
+              c.px = p.x + q[1]; c.py = p.y + q[2];
+              s += '<g id="f05-part-' + q[0] + '" transform="translate(' + q[1] + " " + q[2] + ") scale(" + S + ')">' + c.d + "</g>";
+              cp += '<div class="f05-copy" id="f05-copy-' + q[0] + '" style="left:' + (SH.x + c.sx) + "px;top:" + (SH.y + c.sy) + "px;width:" + c.w + "px;height:" + c.h + 'px"><svg width="' + c.w + '" height="' + c.h + '" viewBox="0 0 ' + c.w + " " + c.h + '">' + c.d.replace('cx="28"', 'cx="72"') + "</svg></div>";
+            });
+            ph += s + "</g></svg></div>";
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f05-p" + i + "-f", { w: PW, h: PH, r: 44, bezel: 34, dir: -1, power: 1.6 }));
+          });
+          document.getElementById("f05-phones").innerHTML = ph;
+          document.getElementById("f05-copies").innerHTML = cp;
+          // tap rings (518 on the order button, 526 on the reminder toggle)
+          fx += C(COMP.btn.px + 48, COMP.btn.py + 12, 4).replace("<circle", '<circle id="f05-tap0" fill="none" stroke="#f3eeff" stroke-width="2" opacity="0"');
+          fx += C(COMP.tog.px + 20, COMP.tog.py + 11.2, 4).replace("<circle", '<circle id="f05-tap1" fill="none" stroke="#f3eeff" stroke-width="2" opacity="0"');
+          document.getElementById("f05-fx").innerHTML = fx;
+
+          // world: haze, and the floor that tilts up into view for the dolly (590-600)
+          var w = '<svg viewBox="0 0 1920 1080" aria-hidden="true"><defs>';
+          w += '<radialGradient id="f05-haze-g" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ") scale(1150 330) translate(-960 -" + HZ + ')"><stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+          w += '<linearGradient id="f05-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
+          w += '<mask id="f05-floor-m" maskUnits="userSpaceOnUse" x="-600" y="0" width="3120" height="1600"><rect x="-600" y="' + HZ + '" width="3120" height="900" fill="url(#f05-fade)"/></mask></defs>';
+          w += '<rect id="f05-haze" x="-600" y="200" width="3120" height="980" fill="url(#f05-haze-g)"/>';
+          w += '<g id="f05-floor" visibility="hidden"><g mask="url(#f05-floor-m)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
+          for (var i = -16; i <= 16; i++) w += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
+          for (var k = 0; k < NH; k++) w += '<line class="f05-hl" x1="-600" y1="1600" x2="2520" y2="1600"/>';
+          w += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="-600" y1="' + HZ + '" x2="2520" y2="' + HZ + '"/>';
+          for (var hx = -480; hx <= 2400; hx += 48) { var tall = (hx + 4800) % 240 === 0 ? 9 : 4; w += '<line x1="' + hx + '" y1="' + (HZ - tall) + '" x2="' + hx + '" y2="' + (HZ + tall) + '"/>'; }
+          document.getElementById("f05-world").innerHTML = w + "</g></g></svg>";
+          var rows = root.querySelectorAll(".f05-hl");
+          function setGrid(phase) {
+            for (var i = 0; i < rows.length; i++) { var y = K.gridRowY(i, phase, HZ, FH); y = y > 1590 ? 1600 : y; rows[i].setAttribute("y1", y); rows[i].setAttribute("y2", y); }
+          }
+          setGrid(0);
+
+          var pan = document.getElementById("f05-pan"), floor = document.getElementById("f05-floor");
+          var grain = document.getElementById("f05-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var MARK = "2023 · UX/UI DESIGNER, IMPERO IT";
+          var markEl = document.getElementById("f05-marker-text");
+          var T_DOLLY = 110 / 30;
+
+          var tl = gsap.timeline({ paused: true });
+          // ambient: the camera keeps F4's 2400 px/s (80 px/f) leftward pan through the cut (p0's left rim already in
+          // frame on 480), cruises to 492.5, then decelerates (power2.out, velocity-matched) to rest on 510; grain;
+          // floor scroll at x4 once it shows
+          function panX(t) {
+            if (t < 5 / 12) return 1700 - 2400 * t;
+            if (t < 1) { var u = (t - 5 / 12) / (7 / 12); return 700 * (1 - u) * (1 - u); }
+            return 0;
+          }
+          pan.style.transform = "translate3d(" + panX(0) + "px,0,0)"; // frame 480: the first shell's rim at the right edge
+          var amb = { t: 0 };
+          tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () {
+            var t = amb.t, px = panX(t);
+            pan.style.transform = px > 0.01 ? "translate3d(" + px.toFixed(2) + "px,0,0)" : "none";
+            grain.style.backgroundPosition = K.grainPos(t);
+            floor.setAttribute("visibility", t >= T_DOLLY ? "visible" : "hidden");
+            if (t >= T_DOLLY) setGrid(8 * (t - T_DOLLY));
+          } }, 0);
+          tl.fromTo("#f05-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+          // the beam drops to its persisted state (cyan is this frame's accent): fresh trail decays, core dims
+          tl.to(root.querySelectorAll(".f05-b-fresh"), { strokeOpacity: 0, duration: 0.6, ease: "power2.out" }, 0);
+          tl.to(root.querySelectorAll(".f05-b-core"), { strokeOpacity: 0.5, duration: 0.6, ease: "power2.out" }, 0);
+
+          // 480 marker types (steps), caret blinks in eighths, then goes dark
+          var mk = { n: 0 };
+          tl.to(mk, { n: MARK.length, duration: 2 / 3, ease: "steps(" + MARK.length + ")", onUpdate: function () { markEl.textContent = MARK.slice(0, Math.round(mk.n)); } }, 0);
+          tl.to("#f05-caret", { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 2 / 3);
+          tl.set("#f05-caret", { opacity: 0 }, 2.2);
+
+          // 480, 495, 510 phone shells condense on the CHIP spring (Tier B entrance); each tag snaps on under it.
+          // Opacity runs a 3 f ramp from 1 f before the beat, so every shell already reads (56 %) on its tink frame.
+          var CHIP = K.spring(0.45, 0.8, 0.7);
+          PHONES.forEach(function (p, i) {
+            var el = document.getElementById("f05-p" + i), f = document.getElementById("f05-p" + i + "-f"), k = { v: 0 };
+            tl.fromTo(el, { scale: 0.86 }, { scale: 1, duration: 0.7, ease: CHIP }, p.beat);
+            if (p.beat > 0) tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power1.out" }, p.beat - 1 / 30);
+            else tl.fromTo(el, { opacity: 0.556 }, { opacity: 1, duration: 2 / 30, ease: "power1.out" }, 0);
+            tl.to(k, { v: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(f, 48 * k.v); } }, p.beat);
+            tl.fromTo(el.querySelector(".lg-rim"), { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, p.beat);
+            tl.to("#f05-tag" + i, { clipPath: "inset(0 0% 0 0)", duration: 0.2, ease: "power4.out" }, p.beat + 0.1);
+          });
+
+          // 518 tap on the order button, 526 tap flips the reminder toggle on
+          [[38, "#f05-tap0"], [46, "#f05-tap1"]].forEach(function (a) {
+            tl.fromTo(a[1], { attr: { r: 4 }, opacity: 0.9 }, { attr: { r: 30 }, opacity: 0, duration: 0.33, ease: "power2.out", immediateRender: false }, a[0] / 30);
+          });
+          tl.to("#f05-part-btn", { opacity: 0.4, duration: 0.05, ease: "none", yoyo: true, repeat: 1 }, 38 / 30);
+          tl.to("#f05-part-tog .f05-knob", { attr: { cx: 72 }, duration: 0.16, ease: "power4.out" }, 46 / 30);
+
+          // 540 the sheet frame draws out of the pad (16 f, power2.out) as the first parts fly; its ruler follows
+          var edges = root.querySelectorAll(".f05-edge"), dr = { u: 0 };
+          edges.forEach(function (e) { e.__len = e.getTotalLength(); e.style.strokeDasharray = e.__len + " " + (e.__len + 10); e.style.strokeDashoffset = e.__len; });
+          tl.to(dr, { u: 1, duration: 16 / 30, ease: "power2.out", onUpdate: function () { edges.forEach(function (e) { e.style.strokeDashoffset = (e.__len * (1 - dr.u)).toFixed(1); }); } }, 2.0);
+          // 540 every reusable part lights cyan; one per 4 f lifts out and snaps into its slot (lands 546 ... 570)
+          var ORDER = ["btn", "chip", "tog", "input", "row", "card", "seg"];
+          tl.set(root.querySelectorAll(".f05-copy"), { opacity: 1 }, 2.0);
+          ORDER.forEach(function (k, i) {
+            var c = COMP[k], dx = c.px - (SH.x + c.sx), dy = c.py - (SH.y + c.sy), t0 = 2 + (4 * i) / 30;
+            tl.fromTo("#f05-copy-" + k, { x: dx, y: dy, scale: S }, { x: 0, duration: 0.2, ease: "power2.in" }, t0);
+            tl.to("#f05-copy-" + k, { y: 0, duration: 0.2, ease: "sine.inOut" }, t0);
+            tl.to("#f05-copy-" + k, { scale: 1, duration: 0.2, ease: "power2.out" }, t0);
+            // snap ticks: guides drop from the sheet ruler to the part's edges as it lands
+            tl.fromTo("#f05-guide-" + k, { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.in", immediateRender: false }, t0 + 0.2);
+          });
+
+          // 570 the sheet locks (frame flashes cyan, settles) and its tag snaps on; 575 his line wipes on
+          tl.fromTo("#f05-lock", { opacity: 1 }, { opacity: 0.45, duration: 0.5, ease: "power2.out", immediateRender: false }, 3.0);
+          tl.to("#f05-tag3", { clipPath: "inset(0 0% 0 0)", duration: 0.32, ease: "steps(19)" }, 3.0);
+          tl.to("#f05-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 95 / 30);
+
+          // 590-600 the floor tilts up into view and the dolly starts: scale 1 -> 1.25 into the vanishing point
+          tl.fromTo("#f05-floor", { y: 420 }, { y: 0, duration: 1 / 3, ease: "power2.out" }, T_DOLLY);
+          tl.fromTo("#f05-stage", { scale: 1, transformOrigin: "960px 690px" }, { scale: 1.25, duration: 1 / 3, ease: "power3.in" }, T_DOLLY);
+
+          window.__timelines["f05"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

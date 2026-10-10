@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F9 "How I work" (film 1080-1200, 4 s). The bench scope again: the beam lies across the optical centre as the scope's
+         ticked x axis under a graticule that fades upward. Cyan is this frame's accent, so the beam stays at its persisted
+         50 % (no head) and only the travelling pulse burns. Continue upward in (y 300 -> 0, 9 f expo.out): five Tier B beads
+         (120 px) ride in on the trace. Each bead is a lens over its step number (01-05, mono, in a layer UNDER the glass)
+         and the beam runs through its lower bezel, 34 px below the bead's centre, where the inward lens bends it into a
+         smile and splits it R/G/B (the number sits in the flat centre, so the bezel never smears it). Only the bead
+         holding the pulse refracts at full strength, its neighbours at half, the rest are skin alone (never more than 3
+         refracting). A white-hot pulse enters from the left and hard-stops in one bead per beat (1095, 1110, 1125, 1140,
+         1155): the bead grabs it (refraction kick, rim catches the light), its number lights to ink, a cyan cursor drops
+         and the step's label lights cyan, then settles to ink-dim. His line lands in two halves under the steps they
+         name: "Research-led." as RESEARCH & TEST lights (1110), "Decision-first." as DEFINE THE SYSTEM lights (1125, the
+         snare). The pulse fires out right (1159-1168); the full composition holds 1139-1200 (F10 owns the chroma cut).
+         Local time = film frame - 1080. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="f09-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f09-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        .f09-stage { position: absolute; inset: 0; }
+        #f09-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        #f09-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* step numbers sit UNDER the beads, so each bead's backdrop lens magnifies them (a real thing behind real glass) */
+        .f09-num { position: absolute; width: 120px; height: 30px; text-align: center; text-indent: 0.08em; font: 500 30px/30px "JetBrains Mono", monospace; letter-spacing: 0.08em; color: #b4a8da; }
+        /* Tier B beads (120 px): inward rim lens over the trace, the numbers and the pulse; skin scaled to bead size */
+        .f09-bead { position: absolute; width: 120px; height: 120px; border-radius: 60px; box-shadow: 0 24px 36px -18px rgba(7, 4, 16, 0.92); }
+        .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
+        .lg-tint { background: rgba(180, 150, 255, 0.07); }
+        .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 14px 18px -13px rgba(255, 255, 255, 0.32), inset 0 -15px 22px -15px rgba(34, 230, 255, 0.28), inset 0 0 16px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { padding: 2px; --spec: 150deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+
+        /* step labels: true system text, set from the cut in ink-faint; cyan while lit, then ink-dim */
+        .f09-lab { position: absolute; font: 500 36px/1.3 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #8c7eb8; white-space: pre; }
+        /* his line at statement size (64 px), in two halves aligned to the steps they describe */
+        #f09-quote { position: absolute; left: 0; top: 0; width: 1240px; height: 80px; font-family: "Mona Sans", sans-serif; font-size: 64px; line-height: 1.2; font-variation-settings: "wdth" 100, "wght" 380; color: #f3eeff; white-space: nowrap; }
+        #f09-quote > span { position: absolute; left: 0; top: 0; padding-right: 8px; clip-path: inset(0 100% 0 0); }
+        #f09-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f09-root" data-composition-id="f09" data-width="1920" data-height="1080" data-duration="4">
+        <div id="f09-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div class="f09-stage" id="f09-wstage"><svg id="f09-world" viewBox="0 0 1920 1080" aria-hidden="true" data-layout-allow-overflow></svg></div>
+          <div id="f09-vignette" data-layout-ignore></div>
+          <div class="f09-stage" id="f09-ustage">
+            <div id="f09-nums"></div>
+            <div id="f09-beads"></div>
+            <div id="f09-labs"></div>
+            <div id="f09-quote"><span id="f09-q1">Research-led.</span><span id="f09-q2">Decision-first.</span></div>
+          </div>
+          <div id="f09-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f09-defs"></defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f09-root");
+          var defs = document.getElementById("f09-defs");
+          var Q = function (s) { return root.querySelectorAll(s); };
+          var F = function (n) { return n / 30; }; // local frame -> seconds
+
+          // geometry. Y = 480 (optical centre) puts the trace at 780 on the cut, above where F8's last run leaves the frame
+          // (821 on 1079), so the line keeps rising through the cut. The beads sit 34 px above the trace (BCY), so it
+          // crosses their lower bezel; beads every 330 px, each label hangs right of its cursor (row spans 145 -> 1789).
+          var Y = 480, R = 60, BCY = Y - 34, SP = 330, BX = [205, 535, 865, 1195, 1525];
+          var HIT = [15, 30, 45, 60, 75]; // 1095, 1110, 1125, 1140, 1155: the pulse hard-stops in bead i
+          var STEPS = ["DISCOVER &\nFRAME", "RESEARCH &\nTEST", "DEFINE THE\nSYSTEM", "DESIGN &\nREFINE", "DELIVER &\nSUPPORT"];
+          var GP = SP / 2, GX0 = BX[0] - GP / 2; // graticule pitch and x origin (every bead sits mid-division)
+          var LAB_X = 24, LAB_Y = Y + 40, CUR_A = Y + 38, CUR_B = Y + 124, QUOTE_Y = Y + 196, S_FULL = 40;
+
+          // world: haze, graticule above the trace (fades upward), scope ticks, trace + pulse (bloom), cursors (crisp)
+          var w = '<defs><radialGradient id="f09-haze-g" cx="960" cy="' + Y + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + Y + ") scale(1150 330) translate(-960 -" + Y + ')">';
+          w += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+          w += '<linearGradient id="f09-grat-g" x1="0" y1="' + (Y - 640) + '" x2="0" y2="' + Y + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient>';
+          w += '<mask id="f09-grat-m" maskUnits="userSpaceOnUse" x="0" y="-400" width="1920" height="' + (Y + 400) + '"><rect x="0" y="-400" width="1920" height="' + (Y + 400) + '" fill="url(#f09-grat-g)"/></mask>';
+          // bloom hugs the trace and the pulse (beam bbox + 60 px)
+          w += '<filter id="f09-bloom" x="-100" y="' + (Y - 90) + '" width="2120" height="180" filterUnits="userSpaceOnUse"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2"/>';
+          w += '<feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+          w += '<rect id="f09-haze" x="-200" y="-140" width="2320" height="1260" fill="url(#f09-haze-g)"/>';
+          w += '<g mask="url(#f09-grat-m)" stroke="#4a2c8c" stroke-opacity="0.35" stroke-width="1.5">';
+          for (var gx = GX0; gx < 1920; gx += GP) w += '<line x1="' + gx.toFixed(1) + '" y1="-400" x2="' + gx.toFixed(1) + '" y2="' + Y + '"/>';
+          for (var gy = Y - GP; gy > -400; gy -= GP) w += '<line x1="0" y1="' + gy.toFixed(1) + '" x2="1920" y2="' + gy.toFixed(1) + '"/>';
+          w += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6">';
+          for (var tk = -4; GX0 + (tk * GP) / 4 <= 1920; tk++) { var x = (GX0 + (tk * GP) / 4).toFixed(1), tall = tk % 4 === 0 ? 9 : 4; w += '<line x1="' + x + '" y1="' + (Y - tall) + '" x2="' + x + '" y2="' + (Y + tall) + '"/>'; }
+          w += "</g>";
+          // the trace at its persisted state (50 %, no head), then the pulse: fresh tail, core tail, white head
+          w += '<g filter="url(#f09-bloom)" fill="none" stroke-linecap="round">';
+          w += '<path d="M -40 ' + Y + ' H 1960" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+          w += '<path d="M -40 ' + Y + ' H 1960" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
+          w += '<path class="f09-pt" d="M0 0" stroke="#ff2e97" stroke-width="7" stroke-opacity="0.85"/>';
+          w += '<path class="f09-pc" d="M0 0" stroke="#ffd9ec" stroke-width="4"/>';
+          w += '<path class="f09-ph" d="M0 0" stroke="#ffffff" stroke-width="13"/></g>';
+          w += '<g stroke="#22e6ff" stroke-width="2.4" stroke-linecap="square">';
+          BX.forEach(function (bx) { w += '<line class="f09-cur" x1="' + bx + '" y1="' + CUR_A + '" x2="' + bx + '" y2="' + CUR_B + '" stroke-dasharray="' + (CUR_B - CUR_A) + ' 200" stroke-dashoffset="' + (CUR_B - CUR_A) + '"/>'; });
+          document.getElementById("f09-world").innerHTML = w + "</g>";
+
+          // numbers (under the glass), beads, labels
+          var nums = "", beads = "", labs = "";
+          BX.forEach(function (bx, i) {
+            nums += '<div class="f09-num" data-layout-allow-occlusion style="left:' + (bx - R) + "px;top:" + (BCY - 17) + 'px">0' + (i + 1) + "</div>";
+            beads += '<div class="f09-bead" style="left:' + (bx - R) + "px;top:" + (BCY - R) + "px;backdrop-filter:url(#f09-bd-" + i + ')"><div class="lg-tint"></div><div class="lg-shade"></div><div class="lg-rim"></div></div>';
+            labs += '<div class="f09-lab" style="left:' + (bx + LAB_X) + "px;top:" + LAB_Y + 'px">' + STEPS[i] + "</div>";
+            defs.insertAdjacentHTML("beforeend", K.lensFilter("f09-bd-" + i, { w: 120, h: 120, r: R, bezel: 36, dir: -1, power: 1.6 }));
+          });
+          document.getElementById("f09-nums").innerHTML = nums;
+          document.getElementById("f09-beads").innerHTML = beads;
+          document.getElementById("f09-labs").innerHTML = labs;
+          // his line in two halves: "Research-led." under the research steps, "Decision-first." from the decide step
+          var quote = document.getElementById("f09-quote");
+          quote.style.left = BX[0] - 5 + "px";
+          quote.style.top = QUOTE_Y + "px";
+          document.getElementById("f09-q2").style.left = BX[2] - BX[0] + "px";
+          var BF = BX.map(function (_, i) { return document.getElementById("f09-bd-" + i); });
+          var beadEls = Q(".f09-bead"), numEls = Q(".f09-num"), labEls = Q(".f09-lab"), curs = Q(".f09-cur");
+          var tail = Q(".f09-pt")[0], core = Q(".f09-pc")[0], head = Q(".f09-ph")[0];
+
+          function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+          function p2o(u) { u = c01(u); return 1 - Math.pow(1 - u, 3); } // GSAP power2.out
+          function p2i(u) { u = c01(u); return u * u * u; } // power2.in
+          function p2io(u) { u = c01(u); return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(2 - 2 * u, 3) / 2; } // power2.inOut
+          // pulse x as a pure function of local frame: enters fast and stops in bead 0, then per beat a 4 f hold and
+          // an 11 f launch-and-stop to the next bead, then fires out right through the frame edge
+          function pulseX(f) {
+            if (f < 3) return -240;
+            if (f < HIT[0]) return -240 + (BX[0] + 240) * p2o((f - 3) / 12);
+            for (var i = 0; i < 4; i++) {
+              if (f < HIT[i] + 4) return BX[i];
+              if (f < HIT[i + 1]) return BX[i] + SP * p2io((f - HIT[i] - 4) / 11);
+            }
+            if (f < 79) return BX[4];
+            return BX[4] + (2160 - BX[4]) * p2i((f - 79) / 9);
+          }
+          function seg(a, b) { return "M " + a.toFixed(1) + " " + Y + " H " + (b + 0.01).toFixed(1); }
+          var CHIP = K.spring(0.45, 0.8, 0.7);
+
+          // everything that depends on the pulse: the dot and its phosphor tails (they collapse onto the dot when it stops)
+          // and the bead lenses. The lit neighbourhood follows the pulse (clamped to the row, so it waits on bead 0 and
+          // stays on bead 4 after the pulse leaves): full strength in the pulse's bead, half next door, skin alone beyond.
+          // The move's landing adds one settle wobble; a landing adds a short grab.
+          function render(t) {
+            var f = t * 30, x = pulseX(f), on = x > -200 && x < 2100;
+            head.setAttribute("d", on ? seg(x - 3, x) : "M0 0");
+            core.setAttribute("d", on ? seg(Math.min(pulseX(f - 2), x - 3), x) : "M0 0");
+            tail.setAttribute("d", on ? seg(Math.min(pulseX(f - 6), x - 3), x) : "M0 0");
+            var pos = Math.min(4, Math.max(0, (x - BX[0]) / SP)), settle = 1 + 0.35 * (1 - CHIP(c01(t / 0.7)));
+            for (var i = 0; i < 5; i++) {
+              var grab = f >= HIT[i] && f < HIT[i] + 9 ? 0.25 * (1 - (f - HIT[i]) / 9) : 0;
+              var k = c01(1.5 - Math.abs(i - pos)) * settle + grab; // the grab only fires on the pulse's own bead
+              beadEls[i].style.backdropFilter = k > 0.001 ? "url(#f09-bd-" + i + ")" : "none";
+              K.setRefraction(BF[i], S_FULL * k);
+            }
+          }
+          render(0);
+
+          var grain = document.getElementById("f09-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var tl = gsap.timeline({ paused: true });
+          var amb = { t: 0 };
+          tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () { render(amb.t); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
+          tl.fromTo("#f09-haze", { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+
+          // 1080 continue upward: both stage layers rise y 300 -> 0 in 9 f, expo.out (F8 did the out); the beads, their
+          // numbers and the labels ride in already set, the glass rims catch the light as the move stops
+          tl.fromTo(".f09-stage", { y: 300 }, { y: 0, duration: F(9), ease: "expo.out" }, 0);
+          beadEls.forEach(function (b, i) {
+            tl.fromTo(b.querySelector(".lg-rim"), { "--spec": 80 + 12 * i + "deg" }, { "--spec": 200 + "deg", duration: 1.0, ease: "power3.out" }, 0);
+          });
+
+          // per beat: the pulse lands in bead i -> its rim catches the light, its number lights to ink, a cyan cursor drops
+          // (step measured) and the label lights cyan, settling to ink-dim a beat later
+          HIT.forEach(function (h, i) {
+            var t0 = F(h);
+            tl.fromTo(beadEls[i].querySelector(".lg-rim"), { "--spec": "200deg" }, { "--spec": "290deg", duration: 0.4, ease: "power3.out", immediateRender: false }, t0);
+            tl.set(numEls[i], { color: "#f3eeff" }, t0);
+            tl.fromTo(curs[i], { strokeDashoffset: CUR_B - CUR_A }, { strokeDashoffset: 0, duration: F(4), ease: "power4.out" }, t0);
+            tl.set(labEls[i], { color: "#22e6ff" }, t0);
+            tl.fromTo(labEls[i], { color: "#22e6ff" }, { color: "#b4a8da", duration: 0.5, ease: "power2.out", immediateRender: false }, F(h + 15));
+          });
+
+          // his line, half by half, wipes on under the step it names as that step lights: "Research-led." at 1110,
+          // "Decision-first." at 1125 (the snare); the key composition is complete by 1139 and holds to the cut
+          tl.to("#f09-q1", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(HIT[1]));
+          tl.to("#f09-q2", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, F(HIT[2]));
+
+          window.__timelines["f09"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

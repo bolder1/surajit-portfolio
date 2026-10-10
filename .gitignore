@@ -41,3 +41,20 @@ Thumbs.db
 .claude/
 
 .vercel
+previews/
+
+# hyperframes render temp
+videos/**/review/work-*/
+videos/**/review/.*hf-transaction*/
+videos/**/.hf-transaction*/
+videos/**/review/*.mp4
+videos/designer-reel/renders/
+videos/designer-reel/.hosts/
+videos/designer-reel/snapshots/
+videos/designer-reel/.hyperframes/
+videos/designer-reel/.*.workflow.js
+__pycache__/
+
+# v6 planning docs and design-system exports stay out of the public repo
+video/v6/
+video/public/v6/figma/

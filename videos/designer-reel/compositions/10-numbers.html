@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- F10 "By the numbers" (film 1200-1320, 4 s). Hard cut in with a 3 f chroma split on the opening zero, which is
+         the first count's start: it steps on the eighths (1208, 1215, 1223) and lands on the stab.
+         A Tier H plate stands on the vector floor on the left; four counters roll up in it like an arcade score
+         (Mona Sans display, 360 px) and land volt on the bed's stabs (1230, 1245, 1260, 1275). A counter is invisible
+         until its count starts, and its final value first shows on its landing frame (explicit frame steps, no GSAP
+         steps() look-ahead). Six frames after each of the first three lands, it drops into the score ledger on the
+         right as itself (scaled to 136 px Mona Sans display, right-aligned on one digit edge, label on the same
+         baseline). The fourth, 12+ ENTERPRISE PRODUCTS SHIPPED, stays in the glass as the hero, so the final hold is
+         one lockup: hero plate + three-row ledger, sharing the hero's cap line and label baseline. The plate never moves. 1290 the beam head runs in along the
+         rail; 1305-1320 tape-stop: one clock (warp) slows the floor, haze, grain and the beam head to a freeze while the
+         frame sags 4 px (power2.out). Hard cut at 1320. All type lives in the world, which is built twice (frame +
+         inside the lens) so the glass bends it. Local time = film frame - 1200. Needs window.ReelKit. -->
+  </head>
+  <body>
+    <template id="f10-template">
+      <style>
+        @font-face { font-family: "Mona Sans"; src: url("assets/fonts/MonaSans-var.woff2") format("woff2"); font-weight: 200 900; font-stretch: 75% 125%; }
+        @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2"); font-weight: 100 800; }
+        #f10-root { position: absolute; inset: 0; overflow: hidden; background: #0b0716; }
+        .f10-stage { position: absolute; inset: 0; }
+        .f10-world, .f10-world svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+        .f10-world { background: #0b0716; }
+        #f10-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%); }
+
+        /* hero counter: Mona Sans display, proportional figures (the tabular zero is slashed), left-aligned so a count
+           grows to the right; origin on the left baseline (0.885 em down a 1.0 line box) */
+        .f10-num { position: absolute; font: 900 360px/1 "Mona Sans", sans-serif; font-variation-settings: "wdth" 125, "wght" 900; color: #b4a8da; white-space: nowrap; transform-origin: 0% 88.5%; --glow: 0; text-shadow: 0 0 34px rgba(245, 255, 59, var(--glow)); opacity: 0; }
+        .f10-num > span { position: absolute; left: 0; top: 0; opacity: 0; }
+        .f10-num > .f10-gr { color: #ff2e97; }
+        .f10-num > .f10-gc { color: #22e6ff; }
+        .f10-num > strong { position: relative; display: block; font-weight: inherit; }
+        .f10-lab { position: absolute; font: 500 28px/1 "JetBrains Mono", monospace; letter-spacing: 0.14em; color: #b4a8da; white-space: nowrap; }
+        .f10-car { display: inline-block; width: 0.6em; height: 1em; margin-left: 4px; vertical-align: -0.14em; background: #ff2e97; opacity: 0; }
+
+        /* Tier H plate: an outward lens over the duplicated world (floor, beam and all the type) */
+        #f10-plate, #f10-shadow { position: absolute; left: 215px; top: 216px; width: 800px; height: 574px; border-radius: 56px; }
+        #f10-plate { overflow: hidden; isolation: isolate; }
+        #f10-shadow { box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95); }
+        #f10-lens { position: absolute; inset: 0; filter: url(#f10-lens-f); }
+        #f10-lens > .f10-world { left: -215px; top: -216px; }
+        .lg-tint, .lg-shade, .lg-rim { position: absolute; inset: 0; border-radius: inherit; }
+        .lg-tint { background: rgba(180, 150, 255, 0.07); }
+        .lg-shade { box-shadow: inset 0 2px 1px -1px rgba(255, 255, 255, 0.7), inset 0 26px 40px -30px rgba(255, 255, 255, 0.35), inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28), inset 0 0 36px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(243, 238, 255, 0.1); }
+        .lg-rim { padding: 2px; --spec: 110deg; background: conic-gradient(from var(--spec), rgba(255, 255, 255, 0.95) 0deg, rgba(255, 255, 255, 0.18) 46deg, rgba(255, 255, 255, 0) 90deg, rgba(255, 46, 151, 0.7) 168deg, rgba(255, 255, 255, 0) 214deg, rgba(34, 230, 255, 0.45) 300deg, rgba(255, 255, 255, 0.95) 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+        .f10-skin { opacity: 0; }
+        #f10-grain { position: absolute; inset: 0; opacity: 0.1; mix-blend-mode: overlay; }
+      </style>
+
+      <div id="f10-root" data-composition-id="f10" data-width="1920" data-height="1080" data-duration="4">
+        <div id="f10-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div class="f10-stage" id="f10-wstage"><div class="f10-world" id="f10-world-main" data-layout-allow-overflow data-layout-allow-occlusion></div></div>
+          <div id="f10-vignette" data-layout-ignore></div>
+          <div class="f10-stage" id="f10-gstage">
+            <div id="f10-shadow" class="f10-skin"></div>
+            <div id="f10-plate">
+              <div id="f10-lens"><div class="f10-world" id="f10-world-lens" data-layout-ignore></div></div>
+              <div class="lg-tint f10-skin"></div>
+              <div class="lg-shade f10-skin"></div>
+              <div class="lg-rim f10-skin" id="f10-rim"></div>
+            </div>
+          </div>
+          <div id="f10-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="f10-defs">
+              <!-- one bloom for both world copies: it hugs the rail beam (bbox + 60 px) -->
+              <filter id="f10-bloom" x="-100" y="750" width="2120" height="140" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" /><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("f10-root");
+          var defs = document.getElementById("f10-defs");
+          var Q = function (s) { return root.querySelectorAll(s); };
+          var F = function (n) { return n / 30; }; // local frame -> seconds
+          // plate 800 x 574 at (215, 216): bezel 0.1 x min = 57, scale 1.33 x bezel = 76, pad 76 x 0.6 + 20 = 66
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("f10-lens-f", { w: 800, h: 574, r: 56, bezel: 57, dir: 1, power: 2, pad: 66 }));
+          var lensF = document.getElementById("f10-lens-f");
+
+          // facts (FACTS.md), in story order: time, places, volume, then the enterprise number as the hero
+          var VAL = [4, 3, 58, 12], SUF = ["", "", "", "+"];
+          var LABS = ["YEARS DESIGNING", "COMPANIES, 2 CITIES", "PROJECTS", "ENTERPRISE PRODUCTS SHIPPED"];
+          var C = [0, 37, 52, 67], L = [30, 45, 60, 75]; // count windows (arcade ticks) and landings on the stabs
+          var MOVE = [36, 51, 66]; // the first three drop into the ledger 6 f after landing (volt holds in the glass)
+          var TYPE = [4, 38, 53, 68]; // labels type at 60 cps under the hero number
+          // geometry: hero cap line 296 = ledger row 1 cap line; hero label baseline 650 = ledger row 3 baseline
+          var HZ = 740, FH = 1560, NH = 44, RY = 818;
+          var PX = 295, NB = 558, LBX = 299, LB = 650, SC = 136 / 360, XD = 1275, LX = 1315; // lockup spans 215 -> 1705
+          var RB = [395, 522.5, 650]; // ledger baselines (Mona Sans 136 px, cap 0.729 em = 99: rows 127.5 apart, 0.94 em)
+          // Mona Sans figure advances at wdth 125 / wght 900 (units per em), for the flight onto the digit edge
+          var ADV = { 0: 795, 1: 464, 2: 647, 3: 692, 4: 721, 5: 698, 6: 725, 7: 634, 8: 701, 9: 725 };
+          function monaW(str) { var w = 0; for (var c = 0; c < str.length; c++) w += ADV[str[c]]; return (w / 1000) * 360 * SC; }
+
+          // world: haze, floor, scope-axis horizon, the plate's floor caustic, the rail beam, then all the type
+          var copies = 0;
+          // world type is duplicated under the glass and stacked for the cut's chroma split: tell the layout audit
+          var LA = " data-layout-allow-occlusion data-layout-allow-overlap";
+          function world() {
+            var t = "f10-w" + copies++;
+            var s = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>';
+            s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ") scale(1150 330) translate(-960 -" + HZ + ')">';
+            s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+            s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1100"><rect x="0" y="' + HZ + '" width="1920" height="' + (1100 - HZ) + '" fill="url(#' + t + '-fade)"/></mask>';
+            s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#ff2e97" stop-opacity="0.24"/><stop offset="1" stop-color="#ff2e97" stop-opacity="0"/></radialGradient></defs>';
+            s += '<rect class="f10-haze" x="-200" y="300" width="2320" height="900" fill="url(#' + t + '-haze)"/>';
+            s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
+            for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
+            for (var k = 0; k < NH; k++) s += '<line class="f10-hl" x1="0" y1="1200" x2="1920" y2="1200"/>';
+            s += '</g><g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6"><line x1="0" y1="' + HZ + '" x2="1920" y2="' + HZ + '"/>';
+            for (var x = 0; x <= 1920; x += 48) { var tall = x % 240 === 0 ? 9 : 4; s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>'; }
+            s += '</g><ellipse cx="615" cy="810" rx="448" ry="30" fill="url(#' + t + '-caustic)"/>';
+            s += '<g filter="url(#f10-bloom)" fill="none" stroke-linecap="round">';
+            var B = "M -40 " + RY + " H 1960";
+            s += '<path class="f10-b-old" d="' + B + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+            s += '<path class="f10-b-core" d="' + B + '" stroke="#ffd9ec" stroke-width="2.2" stroke-opacity="0.5"/>';
+            s += '<path class="f10-b-fresh" d="' + B + '" stroke="#ff2e97" stroke-width="6" stroke-opacity="0.85"/>';
+            s += '<path class="f10-b-head" d="' + B + '" stroke="#ffffff" stroke-width="7"/></g></svg>';
+            for (var n = 0; n < 4; n++) {
+              s += '<div class="f10-num f10-n' + n + '" data-layout-allow-occlusion style="left:' + PX + "px;top:" + (NB - 318.6).toFixed(1) + "px" + (n === 0 ? ";opacity:1" : "") + '"><span class="f10-gr"' + LA + '></span><span class="f10-gc"' + LA + "></span><strong" + LA + "></strong></div>";
+              s += '<div class="f10-lab f10-l' + n + '" data-layout-allow-occlusion style="left:' + LBX + "px;top:" + (LB - 24.1).toFixed(1) + 'px"><span class="f10-lt"' + LA + '></span><span class="f10-car"></span></div>';
+            }
+            return s;
+          }
+          document.getElementById("f10-world-main").innerHTML = world();
+          document.getElementById("f10-world-lens").innerHTML = world();
+
+          var rows = Q(".f10-hl");
+          function setGrid(phase) {
+            for (var i = 0; i < rows.length; i++) { var y = K.gridRowY(i % NH, phase, HZ, FH); y = y > 1090 ? 1200 : y; rows[i].setAttribute("y1", y); rows[i].setAttribute("y2", y); }
+          }
+          function setNum(i, str) { var els = Q(".f10-n" + i + " > *"); for (var e = 0; e < els.length; e++) els[e].textContent = str; }
+          function setLab(i, str) { var els = Q(".f10-l" + i + " .f10-lt"); for (var e = 0; e < els.length; e++) els[e].textContent = str; }
+          for (var n0 = 0; n0 < 4; n0++) { setNum(n0, "0"); setLab(n0, ""); }
+
+          function c01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+          function p3o(u) { u = c01(u); return 1 - Math.pow(1 - u, 4); } // power3.out
+          // the tape clock: real time until 1305, then it slows to a stop over 15 f (power2.out, velocity-matched)
+          function warp(t) { if (t <= 3.5) return t; var u = c01((t - 3.5) / 0.5); return 3.5 + (0.5 / 3) * (1 - Math.pow(1 - u, 3)); }
+
+          var BLEN = 2002, oldB = Q(".f10-b-old, .f10-b-core"), fresh = Q(".f10-b-fresh"), head = Q(".f10-b-head");
+          var rim = document.getElementById("f10-rim"), haze = Q(".f10-haze"), grain = document.getElementById("f10-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var GLASS = K.spring(0.55, 0.62, 1.2);
+          K.dash(oldB, BLEN, BLEN, null);
+          var gr = Q(".f10-n0 .f10-gr"), gc = Q(".f10-n0 .f10-gc");
+
+          // one pure function of local time for the ambient world, the glass and the beam head
+          function render(t) {
+            var tau = warp(t), fr = Math.floor(t * 30 + 1e-6);
+            // 1200 hard cut: the opening zero tears beam/cyan for 2 steps (+-6 px on 1200-1201, -+3 px on 1202), clean at 1203
+            var off = fr < 2 ? 6 : fr < 3 ? -3 : 0;
+            for (var q = 0; q < gr.length; q++) {
+              gr[q].style.transform = "translateX(" + -off + "px)";
+              gc[q].style.transform = "translateX(" + off + "px)";
+              gr[q].style.opacity = gc[q].style.opacity = off ? 1 : 0;
+            }
+            setGrid(2 * tau);
+            for (var h = 0; h < haze.length; h++) haze[h].style.opacity = (0.75 + 0.125 * (1 - Math.cos(Math.PI * tau))).toFixed(3);
+            grain.style.backgroundPosition = K.grainPos(tau);
+            // Tier H condense from the cut (one liquid wobble), rim light sweeps once, then drifts 10 deg/s
+            K.setRefraction(lensF, 76 * GLASS(c01(t / 1.2)));
+            rim.style.setProperty("--spec", (tau < 1.6 ? 110 + 100 * p3o(tau / 1.6) : 210 + 10 * (tau - 1.6)).toFixed(1) + "deg");
+            // 1290 the beam head runs in along the rail at pen speed (1350 px/s) and freezes with the tape
+            var s = tau < 3 ? 0 : 1350 * (tau - 3);
+            K.dash(fresh, BLEN, s, 560);
+            K.dash(head, BLEN, s, 70);
+          }
+          render(0);
+
+          var tl = gsap.timeline({ paused: true });
+          var amb = { t: 0 };
+          tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () { render(amb.t); } }, 0);
+          tl.to(".f10-skin", { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
+
+          VAL.forEach(function (v, i) {
+            var num = ".f10-n" + i, lab = ".f10-l" + i, txt = LABS[i], c = { v: 0 }, ty = { n: 0 }, tf = Math.ceil(txt.length / 2);
+            // the label types under the hero number (caret on while typing)
+            tl.to(ty, { n: txt.length, duration: F(tf), ease: "steps(" + txt.length + ")", onUpdate: function () { setLab(i, txt.slice(0, Math.round(ty.n))); } }, F(TYPE[i]));
+            tl.set(lab + " .f10-car", { opacity: 1 }, F(TYPE[i]));
+            tl.set(lab + " .f10-car", { opacity: 0 }, F(TYPE[i] + tf + 4));
+            // the count: arcade score in explicit steps, growing 0.84 -> 1 in the same steps. Value k = floor(v * p), so
+            // the final value shows only at p = 1, the landing frame (GSAP's steps(n) reaches its end a step early)
+            if (i > 0) tl.set(num, { opacity: 1 }, F(C[i]));
+            var stepE = function (p) { return p >= 1 - 1e-9 ? 1 : Math.floor(v * p + 1e-4) / v; };
+            tl.to(c, { v: v, duration: F(L[i] - C[i]), ease: stepE, onUpdate: function () { var k = Math.round(c.v); setNum(i, k + (k >= v ? SUF[i] : "")); } }, F(C[i]));
+            tl.fromTo(num, { scale: 0.84 }, { scale: 1, duration: F(L[i] - C[i]), ease: stepE }, F(C[i]));
+            // the landing on the stab: volt with a glow (360 px), held in the glass. The hero holds it a full beat; the
+            // first three cool to ink as they drop into the ledger
+            tl.set(num, { color: "#f5ff3b", "--glow": 0.55 }, F(L[i]));
+            var cool = i < 3 ? [MOVE[i], 4] : [L[i] + 6, 9];
+            tl.fromTo(num, { color: "#f5ff3b", "--glow": 0.55 }, { color: "#f3eeff", "--glow": 0, duration: F(cool[1]), ease: "power2.out", immediateRender: false }, F(cool[0]));
+            if (i === 3) return;
+            // into the ledger: the number itself shrinks onto the digit edge XD and its row baseline (136 px, the same
+            // face as the hero, so the lockup reads as one weight); the label joins the column on the same baseline
+            var mv = { duration: F(9), ease: "expo.out", immediateRender: false };
+            tl.fromTo(num, { x: 0, y: 0, scale: 1 }, Object.assign({ x: XD - monaW(String(v)) - PX, y: RB[i] - NB, scale: SC }, mv), F(MOVE[i]));
+            tl.fromTo(lab, { x: 0, y: 0 }, Object.assign({ x: LX - LBX, y: RB[i] - LB }, mv), F(MOVE[i]));
+          });
+
+          // 1305-1320 tape-stop: the frame sags 4 px with the slowing clock (power2.out); render() freezes the rest
+          tl.fromTo(".f10-stage", { y: 0 }, { y: 4, duration: F(15), ease: "power2.out" }, F(105));
+
+          window.__timelines["f10"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

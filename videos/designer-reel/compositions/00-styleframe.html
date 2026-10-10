@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Style frame (4 s, 2 bars at 120 BPM). Proves frame.md: violet-black void + vector floor,
+         one magenta phosphor beam, a Tier H liquid-glass device holding a real capture,
+         a Tier B glass chip, and the title type. Needs window.ReelKit (assets/lib/reel-kit.js). -->
+  </head>
+  <body>
+    <template id="styleframe-template">
+      <style>
+        @font-face {
+          font-family: "Mona Sans";
+          src: url("assets/fonts/MonaSans-var.woff2") format("woff2");
+          font-weight: 200 900;
+          font-stretch: 75% 125%;
+        }
+        @font-face {
+          font-family: "JetBrains Mono";
+          src: url("assets/fonts/JetBrainsMono-normal.woff2") format("woff2");
+          font-weight: 100 800;
+        }
+        #sf-root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          background: #0b0716;
+        }
+        .sf-world,
+        .sf-world svg {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 1920px;
+          height: 1080px;
+          overflow: visible;
+        }
+        .sf-world {
+          background: #0b0716;
+        }
+        #sf-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(7, 4, 16, 0) 58%, rgba(7, 4, 16, 0.72) 100%);
+        }
+
+        /* type */
+        .sf-label {
+          position: absolute;
+          left: 120px;
+          top: 176px;
+          font: 500 24px/1 "JetBrains Mono", monospace;
+          letter-spacing: 0.14em;
+          color: #b4a8da;
+          white-space: nowrap;
+        }
+        #sf-caret {
+          display: inline-block;
+          width: 0.6em;
+          height: 1em;
+          margin-left: 6px;
+          vertical-align: -0.12em;
+          background: #ff2e97;
+        }
+        .sf-line-mask {
+          position: absolute;
+          left: 112px;
+          height: 170px;
+          overflow: hidden;
+          padding: 0 8px;
+        }
+        #sf-m1 {
+          top: 214px;
+        }
+        #sf-m2 {
+          top: 386px;
+        }
+        .sf-name {
+          display: block;
+          font-family: "Mona Sans", sans-serif;
+          font-size: 176px;
+          line-height: 0.92;
+          letter-spacing: -0.01em;
+          color: #f3eeff;
+          --wdth: 125;
+          font-variation-settings: "wdth" var(--wdth), "wght" 900;
+          white-space: nowrap;
+        }
+        .sf-sheen {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(100deg, rgba(255, 217, 236, 0) 40%, rgba(255, 217, 236, 0.85) 50%, rgba(255, 217, 236, 0) 60%);
+          background-size: 300% 100%;
+          background-position: 120% 0;
+          mix-blend-mode: soft-light;
+        }
+        #sf-quote {
+          position: absolute;
+          left: 120px;
+          top: 896px;
+          font-family: "Mona Sans", sans-serif;
+          font-size: 44px;
+          line-height: 1.2;
+          font-variation-settings: "wdth" 100, "wght" 380;
+          color: #f3eeff;
+          white-space: nowrap;
+          clip-path: inset(0 100% 0 0);
+        }
+
+        /* Tier H liquid glass: device (lens over a duplicated world) */
+        #sf-device,
+        #sf-device-shadow {
+          position: absolute;
+          left: 1250px;
+          top: 100px;
+          width: 480px;
+          height: 880px;
+          border-radius: 76px;
+        }
+        #sf-device {
+          overflow: hidden;
+          isolation: isolate;
+        }
+        #sf-device-shadow {
+          box-shadow: 0 60px 90px -40px rgba(7, 4, 16, 0.95);
+        }
+        #sf-lens {
+          position: absolute;
+          inset: 0;
+          filter: url(#sf-lens-f);
+        }
+        #sf-lens .sf-world {
+          left: -1250px;
+          top: -100px;
+        }
+        #sf-screen {
+          position: absolute;
+          left: 40px;
+          top: 40px;
+          width: 400px;
+          height: 800px;
+          border-radius: 40px;
+          overflow: hidden;
+          background: #0e0d10;
+        }
+        #sf-shot {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 400px;
+          display: block;
+        }
+        #sf-scan {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(180deg, rgba(7, 4, 16, 0.55) 0 1px, rgba(7, 4, 16, 0) 1px 3px);
+          opacity: 0;
+        }
+        #sf-flash {
+          position: absolute;
+          inset: 0;
+          background: #ffd9ec;
+          opacity: 0;
+        }
+        .lg-tint {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: rgba(180, 150, 255, 0.07);
+        }
+        .lg-shade {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          box-shadow:
+            inset 0 2px 1px -1px rgba(255, 255, 255, 0.7),
+            inset 0 26px 40px -30px rgba(255, 255, 255, 0.35),
+            inset 0 -34px 54px -34px rgba(34, 230, 255, 0.28),
+            inset 0 0 36px rgba(255, 255, 255, 0.05),
+            inset 0 0 0 1px rgba(243, 238, 255, 0.1);
+        }
+        .lg-rim {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          padding: 2px;
+          --spec: 150deg;
+          background: conic-gradient(
+            from var(--spec),
+            rgba(255, 255, 255, 0.95) 0deg,
+            rgba(255, 255, 255, 0.18) 46deg,
+            rgba(255, 255, 255, 0) 90deg,
+            rgba(255, 46, 151, 0.7) 168deg,
+            rgba(255, 255, 255, 0) 214deg,
+            rgba(34, 230, 255, 0.45) 300deg,
+            rgba(255, 255, 255, 0.95) 360deg
+          );
+          -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+        }
+        .sf-skin {
+          opacity: 0;
+        }
+
+        /* Tier B liquid glass: chip (backdrop-filter, inward rim) */
+        #sf-chip {
+          position: absolute;
+          left: 996px;
+          top: 810px;
+          width: 470px;
+          height: 76px;
+          border-radius: 38px;
+          backdrop-filter: url(#sf-chip-f);
+          box-shadow: 0 24px 40px -20px rgba(7, 4, 16, 0.9);
+          opacity: 0;
+          transform-origin: 30% 50%;
+        }
+        #sf-chip .lg-tint {
+          background: rgba(20, 12, 38, 0.42);
+        }
+        #sf-chip-text {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
+          font: 500 22px/1 "JetBrains Mono", monospace;
+          letter-spacing: 0.14em;
+          color: #f3eeff;
+          white-space: nowrap;
+        }
+        #sf-chip-text svg {
+          width: 34px;
+          height: 16px;
+          overflow: visible;
+        }
+
+        /* finishing: grain over everything */
+        #sf-grain {
+          position: absolute;
+          inset: 0;
+          opacity: 0.1;
+          mix-blend-mode: overlay;
+        }
+      </style>
+
+      <div id="sf-root" data-composition-id="styleframe" data-width="1920" data-height="1080" data-duration="4">
+        <div id="sf-scene" class="clip" data-start="0" data-duration="4" data-track-index="0">
+          <div class="sf-world" id="sf-world-main"></div>
+          <div id="sf-vignette" data-layout-ignore></div>
+
+          <div class="sf-label"><span id="sf-label-text"></span><span id="sf-caret"></span></div>
+          <div class="sf-line-mask" id="sf-m1"><span class="sf-name" id="sf-n1" data-layout-allow-overflow data-layout-allow-occlusion>SURAJIT</span><div class="sf-sheen" data-layout-ignore></div></div>
+          <div class="sf-line-mask" id="sf-m2"><span class="sf-name" id="sf-n2" data-layout-allow-overflow data-layout-allow-occlusion>DUTTA</span><div class="sf-sheen" data-layout-ignore></div></div>
+          <div id="sf-quote">I make complex software feel simple.</div>
+
+          <div id="sf-device-shadow" class="sf-skin"></div>
+          <div id="sf-device">
+            <div id="sf-lens">
+              <div class="sf-world" id="sf-world-lens" data-layout-allow-overflow></div>
+              <div id="sf-screen">
+                <!-- exposure-only lift baked offline (frame.md, Asset treatment): runtime WebGL grading costs ~6.6 s/frame here -->
+                <img id="sf-shot" src="assets/img/uem-mobile-m.lift.jpg" alt="" data-layout-allow-overflow />
+                <div id="sf-scan"></div>
+                <div id="sf-flash"></div>
+              </div>
+            </div>
+            <div class="lg-tint sf-skin"></div>
+            <div class="lg-shade sf-skin"></div>
+            <div class="lg-rim sf-skin" id="sf-rim"></div>
+          </div>
+
+          <div id="sf-chip">
+            <div class="lg-tint"></div>
+            <div class="lg-shade"></div>
+            <div class="lg-rim" id="sf-chip-rim"></div>
+            <div id="sf-chip-text">
+              <span>MINIORANGE · 2024</span>
+              <svg viewBox="0 0 34 16" aria-hidden="true"><path d="M1 8 H31 M24 1.5 L31 8 L24 14.5" fill="none" stroke="#f3eeff" stroke-width="2.4" stroke-linecap="square" /></svg>
+              <span>NOW</span>
+            </div>
+          </div>
+
+          <div id="sf-grain" data-layout-ignore></div>
+
+          <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs id="sf-defs">
+              <!-- bloom regions hug the beam (frame copy) and the device (lens copy) -->
+              <filter id="sf-bloom" x="-100" y="-110" width="1860" height="782" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="sf-bloom-lens" x="1160" y="10" width="660" height="660" filterUnits="userSpaceOnUse">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b2" />
+                <feMerge><feMergeNode in="b2" /><feMergeNode in="b1" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var K = window.ReelKit;
+          var root = document.getElementById("sf-root");
+          var defs = document.getElementById("sf-defs");
+          // glass filters (frame.md: Tier H device, Tier B chip)
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("sf-lens-f", { w: 480, h: 880, r: 76, bezel: 84, dir: 1, power: 2, pad: 90 }));
+          defs.insertAdjacentHTML("beforeend", K.lensFilter("sf-chip-f", { w: 470, h: 76, r: 38, bezel: 32, dir: -1, power: 1.6 }));
+          var lensF = document.getElementById("sf-lens-f");
+          var chipF = document.getElementById("sf-chip-f");
+
+          // world: haze, floor grid, horizon axis, floor caustic, beam. Built twice (frame + inside the lens).
+          var HZ = 690, FH = 1560, NH = 44;
+          var BEAM = "M -40 612 H 1040 L 1652 0 L 1700 -48";
+          var copies = 0;
+          function world(bloom) {
+            var t = "sf" + copies++; // unique gradient/mask ids per copy
+            var s = '<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>';
+            s += '<radialGradient id="' + t + '-haze" cx="960" cy="' + HZ + '" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 ' + HZ + ') scale(1150 330) translate(-960 -' + HZ + ')">';
+            s += '<stop offset="0" stop-color="#3b1e6e" stop-opacity="0.85"/><stop offset="0.45" stop-color="#3b1e6e" stop-opacity="0.32"/><stop offset="1" stop-color="#3b1e6e" stop-opacity="0"/></radialGradient>';
+            s += '<linearGradient id="' + t + '-fade" x1="0" y1="' + HZ + '" x2="0" y2="1080" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.18" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0.9"/></linearGradient>';
+            s += '<mask id="' + t + '-floor" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect x="0" y="' + HZ + '" width="1920" height="' + (1080 - HZ) + '" fill="url(#' + t + '-fade)"/></mask>';
+            s += '<radialGradient id="' + t + '-caustic"><stop offset="0" stop-color="#ff2e97" stop-opacity="0.34"/><stop offset="1" stop-color="#ff2e97" stop-opacity="0"/></radialGradient></defs>';
+            s += '<rect class="sf-haze" x="-200" y="200" width="2320" height="980" fill="url(#' + t + '-haze)"/>';
+            s += '<g mask="url(#' + t + '-floor)" stroke="#4a2c8c" stroke-width="1.5" fill="none">';
+            for (var i = -16; i <= 16; i++) s += '<line x1="960" y1="' + HZ + '" x2="' + (960 + i * 300) + '" y2="' + (HZ + 780) + '"/>';
+            for (var k = 0; k < NH; k++) s += '<line class="sf-hl" x1="0" y1="1200" x2="1920" y2="1200"/>';
+            s += "</g>";
+            // horizon = the scope's x axis: hairline with minor and major ticks
+            s += '<g stroke="#22e6ff" stroke-opacity="0.42" stroke-width="1.6">';
+            s += '<line x1="0" y1="' + HZ + '" x2="1920" y2="' + HZ + '"/>';
+            for (var x = 0; x <= 1920; x += 48) {
+              var tall = x % 240 === 0 ? 9 : 4;
+              s += '<line x1="' + x + '" y1="' + (HZ - tall) + '" x2="' + x + '" y2="' + (HZ + tall) + '"/>';
+            }
+            s += "</g>";
+            s += '<ellipse cx="1490" cy="1000" rx="330" ry="46" fill="url(#' + t + '-caustic)"/>';
+            s += '<g filter="url(#' + bloom + ')" fill="none" stroke-linecap="round" stroke-linejoin="round">';
+            s += '<path class="sf-b-old" d="' + BEAM + '" stroke="#ff2e97" stroke-width="5" stroke-opacity="0.5"/>';
+            s += '<path class="sf-b-fresh" d="' + BEAM + '" stroke="#ff2e97" stroke-width="6"/>';
+            s += '<path class="sf-b-core" d="' + BEAM + '" stroke="#ffd9ec" stroke-width="2.2"/>';
+            s += '<path class="sf-b-head" d="' + BEAM + '" stroke="#ffffff" stroke-width="7"/>';
+            s += '<circle class="sf-pad" cx="1040" cy="612" r="11" stroke="#ff2e97" stroke-width="3.5" fill="#0b0716"/>';
+            return s + "</g></svg>";
+          }
+          document.getElementById("sf-world-main").innerHTML = world("sf-bloom");
+          document.getElementById("sf-world-lens").innerHTML = world("sf-bloom-lens");
+
+          var rows = root.querySelectorAll(".sf-hl");
+          function setGrid(phase) {
+            for (var i = 0; i < rows.length; i++) {
+              var y = K.gridRowY(i % NH, phase, HZ, FH);
+              y = y > 1090 ? 1200 : y;
+              rows[i].setAttribute("y1", y);
+              rows[i].setAttribute("y2", y);
+            }
+          }
+          var LEN = Math.ceil(root.querySelector(".sf-b-old").getTotalLength()) + 2;
+          var drawn = root.querySelectorAll(".sf-b-old, .sf-b-core"),
+            fresh = root.querySelectorAll(".sf-b-fresh"),
+            head = root.querySelectorAll(".sf-b-head");
+          function setBeam(s) {
+            K.dash(drawn, LEN, s, null);
+            K.dash(fresh, LEN, s, 560);
+            K.dash(head, LEN, s, 70);
+          }
+          var grain = document.getElementById("sf-grain");
+          grain.style.backgroundImage = K.grainURL(1337);
+          var LABEL = "PRODUCT DESIGNER · UX / UI";
+          var labelEl = document.getElementById("sf-label-text");
+          setGrid(0);
+          setBeam(0);
+          labelEl.textContent = "";
+
+          var tl = gsap.timeline({ paused: true });
+
+          // ambient: floor scrolls one cell per beat, grain re-rolls every frame, the capture scrolls
+          var amb = { t: 0 };
+          tl.to(amb, { t: 4, duration: 4, ease: "none", onUpdate: function () { setGrid(amb.t * 2); grain.style.backgroundPosition = K.grainPos(amb.t); } }, 0);
+          tl.fromTo("#sf-shot", { y: 0 }, { y: -300, duration: 4, ease: "none" }, 0);
+          tl.fromTo(root.querySelectorAll(".sf-haze"), { opacity: 0.75 }, { opacity: 1, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+
+          // beam: trace under the name and a hard stop on the pad (beat 2), then a speed-ramped shot through the glass (bar 2 downbeat)
+          var b = { s: 0 };
+          tl.to(b, { s: 1080, duration: 0.8, ease: "power2.out", onUpdate: function () { setBeam(b.s); } }, 0.1);
+          tl.fromTo(root.querySelectorAll(".sf-pad"), { scale: 0, svgOrigin: "1040 612" }, { scale: 1, duration: 0.18, ease: "power4.out" }, 0.86);
+          tl.to(head, { strokeOpacity: 0, duration: 0.12, ease: "power1.out" }, 0.9);
+          tl.to(fresh, { strokeOpacity: 0.6, duration: 0.6, ease: "power2.out" }, 0.9);
+          tl.set(head, { strokeOpacity: 1 }, 1.84);
+          tl.set(fresh, { strokeOpacity: 1 }, 1.84);
+          tl.to(b, { s: LEN, duration: 0.34, ease: "power2.in", onUpdate: function () { setBeam(b.s); } }, 1.84);
+          tl.to(head, { strokeOpacity: 0, duration: 0.1, ease: "none" }, 2.18);
+          tl.to(fresh, { strokeOpacity: 0.55, duration: 0.7, ease: "power2.out" }, 2.25);
+
+          // label types on beat 2 (steps), caret blinks in eighths, then goes dark
+          var lab = { n: 0 };
+          tl.to(lab, { n: LABEL.length, duration: 0.42, ease: "steps(" + LABEL.length + ")", onUpdate: function () { labelEl.textContent = LABEL.slice(0, Math.round(lab.n)); } }, 0.5);
+          tl.fromTo("#sf-caret", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "steps(1)", repeat: 5, yoyo: true }, 0.92);
+          tl.set("#sf-caret", { opacity: 0 }, 2.5);
+
+          // name slams on beat 3 and its eighth; width axis sweeps 75 -> 125 like a filter opening
+          tl.fromTo("#sf-n1", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 1.0);
+          tl.fromTo("#sf-n2", { yPercent: 105, "--wdth": 75 }, { yPercent: 0, "--wdth": 125, duration: 0.42, ease: "expo.out" }, 1.25);
+          tl.fromTo(root.querySelectorAll(".sf-sheen"), { backgroundPosition: "120% 0" }, { backgroundPosition: "-20% 0", duration: 0.6, ease: "power2.inOut", stagger: 0.06 }, 1.95);
+
+          // glass condenses on beat 3: refraction ramps with a liquid spring, skin fades up, rim light sweeps
+          var GLASS = K.spring(0.55, 0.62, 1.2);
+          var lens = { k: 0 };
+          tl.to(lens, { k: 1, duration: 1.2, ease: GLASS, onUpdate: function () { K.setRefraction(lensF, 112 * lens.k); } }, 1.0);
+          tl.to(root.querySelectorAll(".sf-skin"), { opacity: 1, duration: 0.3, ease: "power2.out" }, 1.0);
+          tl.fromTo("#sf-rim", { "--spec": "110deg" }, { "--spec": "210deg", duration: 1.6, ease: "power3.out" }, 1.0);
+
+          // the capture powers on like a tube on beat 4: dot -> line -> frame, a white-hot flash, scanlines fade off
+          tl.fromTo("#sf-screen", { scaleX: 0.02, scaleY: 0.006 }, { scaleX: 1, duration: 0.12, ease: "power4.out" }, 1.5);
+          tl.to("#sf-screen", { scaleY: 1, duration: 0.24, ease: "expo.out" }, 1.62);
+          tl.fromTo("#sf-flash", { opacity: 0.95 }, { opacity: 0, duration: 0.36, ease: "power2.out" }, 1.62);
+          tl.fromTo("#sf-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.in" }, 1.62);
+
+          // chip snaps in on bar 2 beat 2 (iOS-register spring); its rim refraction ramps with it
+          var CHIP = K.spring(0.45, 0.8, 0.7);
+          var chip = { k: 0 };
+          tl.fromTo("#sf-chip", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: CHIP }, 2.5);
+          tl.to(chip, { k: 1, duration: 0.7, ease: CHIP, onUpdate: function () { K.setRefraction(chipF, 44 * chip.k); } }, 2.5);
+          tl.fromTo("#sf-chip-rim", { "--spec": "60deg" }, { "--spec": "200deg", duration: 1.0, ease: "power3.out" }, 2.5);
+
+          // his line wipes on bar 2 beat 3
+          tl.to("#sf-quote", { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 3.0);
+
+          window.__timelines["styleframe"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

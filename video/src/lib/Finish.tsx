@@ -1,0 +1,74 @@
+import React from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { BEAT, C, mono } from "./theme";
+import { clamp, EIO } from "./anim";
+import { Grain, Scanlines, Vignette } from "./FX";
+import { LETTERBOX_OPEN, SECTIONS, TOTAL } from "../timeline";
+
+const BAR_H = 138; // 2.39:1 inside 1920×1080
+
+/** Section map, letterbox opening and HUD wording. Defaults to the "Access Granted" reel. */
+export type FinishCfg = {
+  sections: readonly { from: number; label: string }[];
+  total: number;
+  letterboxOpen: number;
+  activeAt: number;
+  pending: string;
+  active: string;
+  /** Optional HUD label style (font family etc.); defaults to the mono label of the v2 reel. */
+  labelStyle?: React.CSSProperties;
+};
+export const V2_CFG: FinishCfg = {
+  sections: SECTIONS,
+  total: TOTAL,
+  letterboxOpen: LETTERBOX_OPEN,
+  // S7 opens on DENIED; the session only goes active on the GRANTED burst one beat later.
+  activeAt: LETTERBOX_OPEN + BEAT,
+  pending: "AUTH PENDING",
+  active: "SESSION ACTIVE",
+};
+
+/** Global finishing layer: letterbox, HUD chrome, grain, vignette. `offset` maps local→global frames. */
+export const Finish: React.FC<{ offset?: number; cfg?: FinishCfg }> = ({ offset = 0, cfg = V2_CFG }) => {
+  const g = useCurrentFrame() + offset;
+  const open = interpolate(g, [cfg.letterboxOpen, cfg.letterboxOpen + 14], [0, 1], { ...clamp, easing: EIO });
+  const intro = interpolate(g, [0, 18], [0, 1], { ...clamp, easing: EIO });
+  const barH = BAR_H * intro * (1 - open);
+  const sec = [...cfg.sections].reverse().find((s) => g >= s.from) ?? cfg.sections[0];
+  const s = Math.floor(g / 30);
+  const tc = `00:${String(s).padStart(2, "0")}:${String(g % 30).padStart(2, "0")}`;
+  const hudO = interpolate(g, [10, 30], [0, 1], clamp);
+  // the end card fades to black: take the whole finishing layer down with it
+  const endO = interpolate(g, [cfg.total - 16, cfg.total - 4], [1, 0], clamp);
+  const txt: React.CSSProperties = { position: "absolute", fontFamily: mono, fontSize: 15, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase", ...cfg.labelStyle };
+  const inset = 44;
+  const top = Math.max(inset, barH + 26);
+  const L = 30;
+  const corner = (style: React.CSSProperties, d: string) => (
+    <svg style={{ position: "absolute", ...style }} width={L} height={L}>
+      <path d={d} stroke={C.dim} strokeWidth={1.5} fill="none" />
+    </svg>
+  );
+  const granted = g >= cfg.activeAt;
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", opacity: endO }}>
+      <Scanlines opacity={0.035} />
+      <Vignette strength={0.7} />
+      <Grain opacity={0.11} />
+      <AbsoluteFill style={{ opacity: hudO }}>
+        {corner({ left: inset, top }, `M 0 ${L} L 0 0 L ${L} 0`)}
+        {corner({ right: inset, top }, `M 0 0 L ${L} 0 L ${L} ${L}`)}
+        {corner({ left: inset, bottom: top }, `M 0 0 L 0 ${L} L ${L} ${L}`)}
+        {corner({ right: inset, bottom: top }, `M ${L} 0 L ${L} ${L} L 0 ${L}`)}
+        <div style={{ ...txt, left: inset + 48, top: top + 6 }}>{sec.label}</div>
+        <div style={{ ...txt, right: inset + 48, top: top + 6, color: granted ? C.acc : C.dim }}>
+          {granted ? `${cfg.active} ●` : g % 30 < 15 ? `${cfg.pending} ●` : `${cfg.pending} ○`}
+        </div>
+        <div style={{ ...txt, left: inset + 48, bottom: top + 6 }}>SURAJIT DUTTA · PORTFOLIO ’26</div>
+        <div style={{ ...txt, right: inset + 48, bottom: top + 6 }}>{tc}</div>
+      </AbsoluteFill>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: barH, background: "#000" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: barH, background: "#000" }} />
+    </AbsoluteFill>
+  );
+};
