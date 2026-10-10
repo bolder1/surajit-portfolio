@@ -54,3 +54,7 @@ videos/designer-reel/snapshots/
 videos/designer-reel/.hyperframes/
 videos/designer-reel/.*.workflow.js
 __pycache__/
+
+# v6 planning docs and design-system exports stay out of the public repo
+video/v6/
+video/public/v6/figma/
