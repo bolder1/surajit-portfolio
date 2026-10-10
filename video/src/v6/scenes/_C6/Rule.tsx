@@ -1,8 +1,10 @@
 // C6 B7, the rule, measured (local 1417..1674; global 4081..4338). Lane 4b.
 // The panel recedes into the dark; the Alert slides back in and sits beside the orange button, both flat to
-// camera, both at 2x. Three dimension lines snap on 18 f apart, each a 1 px Support line with end ticks and a
-// Label 28 px value: the stroke on the Alert's inner button border, the control radius on the orange button's
-// corner, the container radius on the Alert's corner. His rule fades up in quotation marks beneath the pair and
+// camera, both at 2x. The Alert's slot is empty (lift 1): its button is the orange one beside it, lifted out in
+// B4 and dropped back in B8, so nothing pops in or out of the slot at 4338. Three dimension lines snap on 18 f
+// apart, each a 1 px Support line with end ticks and a Label 28 px value: the stroke (borderWidth/thin, the same
+// 1 px border the Alert's inner button carries) measured on the orange button's top border, the control radius
+// on the orange button's corner, the container radius on the Alert's corner. His rule fades up in quotation marks beneath the pair and
 // holds with the dimension group; then the quote fades and the lines sink. Spacing is not drawn: the sentence
 // carries it. Values from RULE in artefact.ts. The rebuild (lane 4a) takes the pair over from 1674 at PAIR.
 // Source: v6/V1-DIRECTION.md 4.6 B7, 5.2 B7; ILLUSTRATION.md 3.7.
@@ -10,7 +12,7 @@ import React from "react";
 import { Easing, useCurrentFrame } from "remotion";
 import type { Cue } from "../../../lib/cues";
 import { EO, prog } from "../../../lib/anim";
-import { ALERT, ALERT_BUTTON_SLOT, AlertCard, BUTTON, ButtonAtom, RULE } from "../../illus";
+import { ALERT, AlertCard, BUTTON, ButtonAtom, RULE } from "../../illus";
 import { Dimension } from "../../lib/Dimension";
 import type { Pt } from "../../lib/Leader";
 import type { Quiet } from "../../registry";
@@ -62,18 +64,18 @@ const A = PAIR.alert;
 const B = PAIR.button;
 const S = ALERT_SCALE;
 const ALERT_SLIDE_PX = 240;
-// The Alert's inner button in frame px: its slot at 2x inside the card.
-const INNER = { x: A.x + ALERT_BUTTON_SLOT.x * S, y: A.y + ALERT_BUTTON_SLOT.y * S, w: BUTTON.w * S, h: BUTTON.h * S };
 // A rounded corner's arc midpoint, from the corner's outer point toward the centre by r(1 - 1/sqrt2) each way.
 const arcMid = (cx: number, cy: number, r: number, sx: number, sy: number): Pt => [cx + sx * r * (1 - Math.SQRT1_2), cy + sy * r * (1 - Math.SQRT1_2)];
 // The three callouts: a line from the measured feature out onto the floor, the value at its far end.
-const VALUE_Y = 760; // the top of the two values that sit beneath the pair
-const STROKE_FROM: Pt = [INNER.x + INNER.w, INNER.y + INNER.h];
-const STROKE_TO: Pt = [STROKE_FROM[0], VALUE_Y - 16];
+const VALUE_Y = 760; // the top of the value that sits beneath the pair
+const ABOVE_Y = A.y - 68; // the far end of the two lines that run up (their values share one line above the pair)
 const R4_FROM = arcMid(B.x + B.w, B.y + B.h, BUTTON.radius * BUTTON_2X_SCALE, -1, -1);
 const R4_TO: Pt = [R4_FROM[0], VALUE_Y - 16];
 const R8_FROM = arcMid(A.x, A.y, ALERT.radius * S, 1, 1);
-const R8_TO: Pt = [R8_FROM[0], A.y - 68];
+const R8_TO: Pt = [R8_FROM[0], ABOVE_Y];
+// The stroke on the orange button's top border, mid-edge (its bottom-right corner carries the radius callout).
+const STROKE_FROM: Pt = [B.x + B.w / 2, B.y];
+const STROKE_TO: Pt = [STROKE_FROM[0], ABOVE_Y];
 const QUOTE_Y = 830;
 
 /** `along` that puts the value's line box `gap` px past the line's far end (the box's top for a downward line). */
@@ -97,12 +99,12 @@ export const Beat: React.FC = () => {
       {gone > 0 ? <PanelView mode={1} theme={1} opacity={gone} /> : null}
       {/* The Alert slides back in from below and sits beside the orange button. */}
       <div style={{ position: "absolute", inset: 0, transform: slide ? `translateY(${slide.toFixed(2)}px)` : undefined, opacity: arrive, pointerEvents: "none" }}>
-        <AlertCard x={A.x} y={A.y} emphasis="subtle" color="positive" scale={S} scaleOrigin="0 0" elevation={ALERT_ELEVATION} seed={7} />
+        <AlertCard x={A.x} y={A.y} emphasis="subtle" color="positive" scale={S} scaleOrigin="0 0" elevation={ALERT_ELEVATION} lift={1} seed={7} />
       </div>
       <ButtonAtom x={B.x} y={B.y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme="orange" elevation="low" />
 
-      {/* The stroke, measured on the Alert's inner button border: the line runs down from its corner to the floor. */}
-      <Dimension from={STROKE_FROM} to={STROKE_TO} block={blocks[0]} along={past(STROKE_FROM, STROKE_TO, 16)} offset={0} align="center" drawDur={DIM_DRAW} />
+      {/* The stroke, measured on the orange button's top border: the line runs up, the value sits above it, centred. */}
+      <Dimension from={STROKE_FROM} to={STROKE_TO} block={blocks[0]} along={past(STROKE_FROM, STROKE_TO, 12)} offset={0} align="center" drawDur={DIM_DRAW} />
       {/* The control radius on the orange button's corner. */}
       <Dimension from={R4_FROM} to={R4_TO} block={blocks[1]} along={past(R4_FROM, R4_TO, 16)} offset={0} align="center" drawDur={DIM_DRAW} />
       {/* The container radius on the Alert's corner: the line runs up, the value sits above it, left-aligned. */}

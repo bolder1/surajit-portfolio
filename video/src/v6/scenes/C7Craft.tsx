@@ -100,10 +100,14 @@ const TOKEN_ROWS: TokenRow[] = [
   { greek: true },
   { greek: true },
 ];
-const TABLE = { w: 1200, h: 444, scale: 0.55, x: 840, y: 318 };
+// The table at 0.55 and 60 percent (the storyboard's figures) was too faint to read as an object on the integration
+// still (4700), so it sits at 80 percent with the mid shadow: a lit table in the pool, its greeked rows still texture.
+const TABLE = { w: 1200, h: 444, scale: 0.55, x: 840, y: 318, opacity: 0.8 };
 
 // Card 4: the fan. Each alert at 2x, cropped to its title band (the top 48 px at 1x), pivoting on its right end.
-const FAN = { pivot: { x: 1780, y: 620 }, scale: 2, step: 7, band: 48 };
+// The last chip turns 28 degrees, so its top corner swings 96 px x sin(28) = 45 px right of the pivot: the pivot
+// sits at 1754 so that tip ends at 1799, inside the 120 px margin.
+const FAN = { pivot: { x: 1754, y: 620 }, scale: 2, step: 7, band: 48 };
 
 const Card1: React.FC<{ f: number }> = ({ f }) => {
   const slide = prog(f, 6, 30, EO);
@@ -124,7 +128,7 @@ const Card1: React.FC<{ f: number }> = ({ f }) => {
             opacity: on,
           }}
         >
-          <Slab w={TABLE.w} h={TABLE.h} elevation="low" opacity={0.6} pool={{ cx: 180, cy: 40, r: 1100, a: 0.08 }}>
+          <Slab w={TABLE.w} h={TABLE.h} elevation="mid" opacity={TABLE.opacity} pool={{ cx: 180, cy: 40, r: 1100, a: 0.08 }}>
             <TokenTable rows={TOKEN_ROWS} colA={MODES.theme[0]} colB={MODES.theme[1]} lit="a" far seed={61} />
           </Slab>
         </div>
@@ -134,19 +138,39 @@ const Card1: React.FC<{ f: number }> = ({ f }) => {
   );
 };
 
-// Three pages chosen for shape (carrying only bars) stay lit when the canvas falls to 15 percent.
+// Three pages chosen for shape (carrying only bars) stay lit when the canvas falls. The storyboard's 15 percent
+// left the canvas reading as empty on the integration still (4950), so it falls to 30 percent, and each lit page
+// carries a low shadow and its own clipped pool (a kit Slab with no surface of its own) so it reads as lifted and lit.
 const LIT_PAGES = [4, 15, 27];
+const CANVAS_DIM = 0.3;
 
 const Card2: React.FC<{ f: number }> = ({ f }) => {
   const on = prog(f, 216, 222, EO);
   const fall = prog(f, 234, 252, EO);
-  const dim = 1 - 0.85 * fall;
+  const dim = 1 - (1 - CANVAS_DIM) * fall;
   return (
     <>
       <TextBlock block={B73} x={LINE_X} y={120} />
       <div style={{ position: "absolute", left: 900, top: 40, transform: "scale(0.5)", transformOrigin: "top left", opacity: on }}>
         <Slab w={CANVAS_AD.w} h={CANVAS_AD.h} elevation={on} pool={{ cx: 360, cy: 240, r: 1500, a: 0.08 }}>
           <CanvasThumbs layout={CANVAS_AD} lit={LIT_PAGES} dim={dim} seed={71} />
+          {LIT_PAGES.map((i) => {
+            const r = CANVAS_AD.pages[i];
+            return (
+              <Slab
+                key={i}
+                x={r.x}
+                y={r.y}
+                w={r.w}
+                h={r.h}
+                radius={0}
+                elevation="low"
+                shadow={fall}
+                style={{ background: "transparent" }}
+                pool={{ cx: r.w * 0.25, cy: r.h * 0.2, r: Math.max(r.w, r.h) * 1.3, a: 0.16 * fall }}
+              />
+            );
+          })}
         </Slab>
       </div>
       <TextBlock block={B74} x={LINE_X} y={430} width={760} />
@@ -155,9 +179,11 @@ const Card2: React.FC<{ f: number }> = ({ f }) => {
 };
 
 // Card 3: the three light-mode screens as slabs stepping forward, each from a little behind and below its place.
+// The top screen's edge sat on y 20 (integration still 5120), so the stack starts at 44 with a 278 px step: the
+// bottom screen keeps its foot at 1033 (866 at 0.5 from 600).
 const BANKING = [
-  { layout: BANKING_CONFIGURE, x: 660, y: 20, elevation: "low" as const },
-  { layout: BANKING_PROCESS, x: 710, y: 310, elevation: "mid" as const },
+  { layout: BANKING_CONFIGURE, x: 660, y: 44, elevation: "low" as const },
+  { layout: BANKING_PROCESS, x: 710, y: 322, elevation: "mid" as const },
   { layout: BANKING_REPORT, x: 760, y: 600, elevation: "high" as const },
 ];
 

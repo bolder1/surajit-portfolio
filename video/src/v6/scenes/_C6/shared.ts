@@ -64,6 +64,13 @@ export const LIFT_PER_PX = 1 / SCREEN.s;
 
 /** The screen's own clipped light pool (ILLUSTRATION.md 1.2: lit corner upper-left), in screen px. */
 export const SCREEN_POOL = { cx: Math.round(DASHBOARD.w * 0.2), cy: Math.round(DASHBOARD.h * 0.15), r: Math.round(DASHBOARD.w * 0.8), a: 0.08 };
+/**
+ * The same pool with the key light up on hit 3 (B9, L1800 on): the payoff screen is the brightest the dashboard
+ * ever is (chapter 3 and B1 sit at 0.08; 0.22 at 1.05 w lifted only the upper-left corner, and the slab's mean
+ * read as dark as B1). At 0.4 over 1.4 w the pool covers the whole slab. Only the light changes; the drawing
+ * under it is B1's pixels.
+ */
+export const HIT_POOL = { ...SCREEN_POOL, r: Math.round(DASHBOARD.w * 1.4), a: 0.4 };
 
 /** The region order of the explode: planes lift 18 f apart in this order; the table rides with the charts. */
 export const LIFT_ORDER: Region[] = ["nav", "header", "tiles", "charts"];
@@ -149,7 +156,10 @@ const LIGHT_KEYS: [number, Light][] = [
   [BEATS.rule[0] + 12, { cx: 980, cy: 520, r: 1000, intensity: 0.9 }],
   [BEATS.rebuild[0] + 78, { cx: 980, cy: 520, r: 1000, intensity: 0.9 }],
   [BEATS.rebuild[0] + 102, { cx: 760, cy: 300, r: 1040, intensity: 0.9 }],
-  [C6_END, { cx: 760, cy: 300, r: 1040, intensity: 0.9 }],
+  // Hit 3: the floor pool steps to full over the rebuilt screen and stays (the slab's own pool steps with it).
+  [BEATS.reach[0] - 1, { cx: 760, cy: 300, r: 1040, intensity: 0.9 }],
+  [BEATS.reach[0], { cx: 760, cy: 300, r: 1040, intensity: 1 }],
+  [C6_END, { cx: 760, cy: 300, r: 1040, intensity: 1 }],
 ];
 
 export const lightAt = (f: number): Light => {

@@ -2,8 +2,9 @@
 // for 78 f (a breath, no text), then the fast reverse: six steps of 8 f, EIO, in reverse order from 1752. The
 // button drops into the Alert's slot (the status button takes its place); the Alert flies into the charts plane's
 // donut card and fades as the exploded screen returns on the stage; charts (with the table), tiles, header and
-// navigation re-seat onto the slab, shadows high to mid to low, blip-down per step. The riser runs from 1752; the
-// last step (1792..1800) is near-silence, so it carries no blip. HIT 3 at 1800 as the screen lands pixel-identical
+// navigation re-seat onto the slab, shadows high to mid to low, blip-down per step. The riser file is 60 f, so it
+// is cued at 1732 (20 f before the steps; the table says 1752) and ends at 1792, where the near-silence begins;
+// the last step (1792..1800) is near-silence, so it carries no blip. HIT 3 at 1800 as the screen lands pixel-identical
 // to B1 (same seed, same placement, every lift 0). The exploded screen is the same object as B2's, drawn again:
 // it fades back in under the Alert's flight (1760..1768) so the planes are there to re-seat.
 // Source: V1-DIRECTION.md 4.6 (settle, B8), 5.2; ILLUSTRATION.md 3.6.
@@ -21,13 +22,15 @@ export const SETTLE: readonly [number, number] = [1674, 1752];
 export const STEP = 8;
 export const STEPS_START = 1752;
 export const HIT = 1800;
+/** The riser's start: the 60 f file must end by the near-silence at 1792 (G4456), so 20 f ahead of the steps. */
+export const RISER_AT = STEPS_START - 20;
 /** Step i runs [start, start + 8): 0 button, 1 Alert, 2 charts, 3 tiles, 4 header, 5 nav. */
 const step = (i: number): [number, number] => [STEPS_START + i * STEP, STEPS_START + (i + 1) * STEP];
 
 export const blocks: BlockSpec[] = [];
 
 export const cues: Cue[] = [
-  { f: STEPS_START, sfx: "riser", vol: 0.5 },
+  { f: RISER_AT, sfx: "riser", vol: 0.5 },
   ...[0, 1, 2, 3, 4].map((i) => ({ f: step(i)[0], sfx: "blip-down" as const, vol: 0.4 })),
   { f: HIT, sfx: "impact", vol: 0.9 },
 ];

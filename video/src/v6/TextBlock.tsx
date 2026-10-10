@@ -11,6 +11,7 @@ import { clamp, EO, prog } from "../lib/anim";
 import { K, MAX_CHARS, MAX_CHARS_TOKEN_PATH, SIDE_MARGIN, W, supportRgba } from "./tokens";
 import { baselineAt, capHeight, fitLine, roleStyle, useArchivo } from "./type";
 import { TypeShadow } from "./stage";
+import { usePullScale } from "./lib/Pull";
 import {
   type BlockSpec,
   defaultEnter,
@@ -40,6 +41,8 @@ export type TextBlockProps = {
   real?: boolean;
   /** Display: draw the TypeShadow (on by default). */
   shadow?: boolean;
+  /** Display: the TypeShadow's soft edge in px. By default 2 divided by the enclosing Pull's scale, so the edge stays 2 px on screen (2 outside a Pull); 0 for a hard edge. */
+  shadowBlur?: number;
   /** Label leader: a 1 px hairline above the label, drawn over the 6 f before it lands. `false` for none. */
   leader?: { len?: number; color?: string } | false;
   /** Per-line colours (a readout's lit and unlit columns, the struck word). */
@@ -83,12 +86,15 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   wght,
   real,
   shadow = true,
+  shadowBlur,
   leader,
   lineColors,
   style,
 }) => {
   const f = useCurrentFrame();
   const ready = useArchivo();
+  const pullScale = usePullScale();
+  const blur = shadowBlur ?? 2 / pullScale;
   assertReadable(block);
   const role = roleOf(block.kind);
   const lines = linesOf(block);
@@ -168,7 +174,7 @@ export const TextBlock: React.FC<TextBlockProps> = ({
           <div style={{ position: "absolute", inset: 0, transform: `translateY(${yShift.toFixed(2)}px)`, opacity: fadeIn * fadeOut }}>
             {lines.map((line, i) => (
               <div key={`s${i}`} style={{ position: "absolute", left: 0, right: 0, top: i * lineH, height: baselineAt(size) }}>
-                <TypeShadow text={line} size={size} style={{ ...base, lineHeight: `${lineH}px`, textAlign: align, whiteSpace: "pre" }} />
+                <TypeShadow text={line} size={size} blur={blur} style={{ ...base, lineHeight: `${lineH}px`, textAlign: align, whiteSpace: "pre" }} />
               </div>
             ))}
           </div>

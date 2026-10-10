@@ -7,7 +7,7 @@
 //   L171..183 3.3 "2019" rises at frame right (impact-soft); L192 3.4 lands beneath (snap)
 //   L261..273 2019 and its label sink (whoosh-rev); L273..291 the light pans to centre-left (whoosh-long)
 //   L291..301 line 1 of 3.5 fades up; L319..329 line 2; L329..515 breath; L515..525 fade out
-//   L525..561 the operator's screen slides in from the right at 0.6, tilted 8 degrees, assembling, dimmed 0.4
+//   L525..561 the operator's screen slides in from the right at 0.6, tilted 8 degrees, assembling, dimmed 0.55
 //   L561..579 the pool narrows onto the active sidebar row (the assembly's state phase: its marker goes Hero)
 //   L579..589 3.6 fades up left of the slab; L607 3.7 lands beneath (snap 0.3); both hold to L747
 //   L747..759 3.6 and 3.7 fade; the slab falls into the dark as the pool widens (whoosh-rev); L759..792 settle
@@ -20,6 +20,7 @@ import { Stage3Q, project3Q, type Stage3QSpec } from "../lib/explode";
 import { Leader } from "../lib/Leader";
 import type { Quiet } from "../registry";
 import { Floor, KeyLight } from "../stage";
+import { K, inkRgba } from "../tokens";
 import { TextBlock } from "../TextBlock";
 import { defineBlock, type BlockSpec } from "../text-manifest";
 
@@ -87,22 +88,31 @@ const ORIGIN_B: BlockSpec = { ...ORIGIN, id: "3.5b", text: ORIGIN_L2, enterDone:
 const STATEMENT_LINE = 48 * 1.15;
 
 // The operator's screen: the kit's dashboard (1530 x 853) at 0.6 lying on the floor right of the text, tilted
-// 8 degrees around the vertical axis (its right edge away), dimmed to 0.4 as opacity on the whole group.
+// 8 degrees around the vertical axis (its right edge away), dimmed to 0.55 as opacity on the whole group (the
+// direction's 0.4 left the regions a few levels above Ground; at 0.55 they read as regions at 100 percent while
+// nothing inside is readable: the content is greek).
 const SLAB_SCALE = 0.6;
 const SLAB = { x: 960, y: 300, w: Math.round(DASHBOARD.w * SLAB_SCALE), h: Math.round(DASHBOARD.h * SLAB_SCALE) };
-const SLAB_DIM = 0.4;
+const SLAB_DIM = 0.55;
 const SLAB_SEED = 3; // the same drawing as chapter 6 (shared seeds)
 const TILT: Stage3QSpec = { perspective: 2400, rotateX: 0, rotateY: 8, w: SLAB.w, h: SLAB.h };
 // The active sidebar row (row 2 of 8, groups 3 and 5) in the screen's own px, and where it lands on the frame.
 const NAV = DASHBOARD.regions.nav!;
-const ROW = { x: NAV.x + 120, y: NAV.y + sidebarRows(8, [3, 5]).tops[2] + SIDEBAR_PITCH / 2 };
+const ROW_TOP = NAV.y + sidebarRows(8, [3, 5]).tops[2];
+const ROW = { x: NAV.x + 120, y: ROW_TOP + SIDEBAR_PITCH / 2 };
 const ROW_ON_FRAME = (() => {
   const p = project3Q(ROW.x * SLAB_SCALE, ROW.y * SLAB_SCALE, 0, TILT);
   return { x: SLAB.x + p.x, y: SLAB.y + p.y };
 })();
-// The slab's own clipped pool: the default wide pool (ILLUSTRATION 1.2) narrowing to the row (140 px on the frame).
-const POOL_WIDE = { cx: Math.round(DASHBOARD.w * 0.2), cy: Math.round(DASHBOARD.h * 0.15), r: Math.round(DASHBOARD.w * 0.8), a: 0.08 };
-const POOL_ROW = { cx: ROW.x, cy: ROW.y, r: Math.round(180 / SLAB_SCALE), a: 0.14 };
+// The slab's own clipped pool: a wide pool (the kit's default position, lifted to 0.14 so the regions read under
+// the dim) narrowing onto the row (about 290 px on the frame, at 0.3), so "a dashboard, one row lit" reads in the
+// first second of the hold.
+const POOL_WIDE = { cx: Math.round(DASHBOARD.w * 0.2), cy: Math.round(DASHBOARD.h * 0.15), r: Math.round(DASHBOARD.w * 0.8), a: 0.14 };
+const POOL_ROW = { cx: ROW.x, cy: ROW.y, r: Math.round(480 / SLAB_SCALE), a: 0.3 };
+// The lit row, drawn over the kit's own 2 px tick (the kit is untouched): a 3 px Hero marker on the frame (5 px
+// in the screen's px at 0.6) and a row highlight, both in the sidebar's rect, appearing with the state phase.
+const ROW_MARK = { x: NAV.x, y: ROW_TOP + 8, w: 5, h: SIDEBAR_PITCH - 16 };
+const ROW_LIGHT = { x: NAV.x, y: ROW_TOP, w: NAV.w, h: SIDEBAR_PITCH };
 // The assembly: phases 1 to 4 (44 of 48 units) over the slide, the state phase (the marker) over the narrowing.
 const STATE_AT = 44 / 48;
 
@@ -139,6 +149,8 @@ export const Scene: React.FC = () => {
     r: lerp(POOL_WIDE.r, POOL_ROW.r, narrow),
     a: lerp(POOL_WIDE.a, POOL_ROW.a, narrow),
   };
+  // The marker and the row highlight appear over the state phase (the last 4 of 48 assembly units), with the kit's own tick.
+  const rowLit = Math.max(0, Math.min(1, (assemble - STATE_AT) / (1 - STATE_AT)));
 
   return (
     <Floor>
@@ -162,6 +174,8 @@ export const Scene: React.FC = () => {
           <Stage3Q x={SLAB.x} y={SLAB.y} w={SLAB.w} h={SLAB.h} perspective={TILT.perspective} rotateX={TILT.rotateX} rotateY={TILT.rotateY}>
             <div style={{ position: "absolute", left: 0, top: 0, width: DASHBOARD.w, height: DASHBOARD.h, transform: `scale(${SLAB_SCALE})`, transformOrigin: "top left" }}>
               <Screen layout={DASHBOARD} seed={SLAB_SEED} assemble={assemble} dim={SLAB_DIM} pool={pool} lit="nav" />
+              <div style={{ position: "absolute", left: ROW_LIGHT.x, top: ROW_LIGHT.y, width: ROW_LIGHT.w, height: ROW_LIGHT.h, background: inkRgba(0.1), opacity: rowLit }} />
+              <div style={{ position: "absolute", left: ROW_MARK.x, top: ROW_MARK.y, width: ROW_MARK.w, height: ROW_MARK.h, background: K.hero, opacity: rowLit }} />
             </div>
           </Stage3Q>
         </div>

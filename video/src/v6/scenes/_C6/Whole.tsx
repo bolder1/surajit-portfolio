@@ -8,7 +8,7 @@ import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
 import type { Cue } from "../../../lib/cues";
 import { clamp } from "../../../lib/anim";
-import { DASHBOARD, Screen, type Region } from "../../illus";
+import { DASHBOARD, Screen, type Pool, type Region } from "../../illus";
 import { DockLabel } from "../../lib/explode";
 import type { Quiet } from "../../registry";
 import { defineBlock, type BlockSpec } from "../../text-manifest";
@@ -27,6 +27,12 @@ export type StageScreenProps = {
   lift?: Partial<Record<Region, number>>;
   /** Opacity of the whole stage (a fade-up or a recede into the dark). */
   opacity?: number;
+  /**
+   * The screen's clipped key-light pool: SCREEN_POOL by default (the same pool as chapter 3). Reach raises its
+   * intensity on hit 3 so the rebuilt screen is the brightest the dashboard ever is; the drawing underneath is
+   * the same pixels either way.
+   */
+  pool?: Pool;
 };
 
 /** The kit's dashboard on the 3/4 stage at the shared placement and seed. */
@@ -37,7 +43,7 @@ const scaledLift = (lift?: Partial<Record<Region, number>>) => {
   return out;
 };
 
-export const StageScreen: React.FC<StageScreenProps> = ({ lift, opacity = 1 }) =>
+export const StageScreen: React.FC<StageScreenProps> = ({ lift, opacity = 1, pool = SCREEN_POOL }) =>
   opacity <= 0 ? null : (
     <div style={{ position: "absolute", inset: 0, opacity, pointerEvents: "none" }}>
       {/* The tilted stage: Stage3Q's transform with the perspective origin at the shared vanishing point. */}
@@ -55,7 +61,7 @@ export const StageScreen: React.FC<StageScreenProps> = ({ lift, opacity = 1 }) =
               transformStyle: "preserve-3d",
             }}
           >
-            <Screen layout={DASHBOARD} seed={SCREEN.seed} lift={scaledLift(lift)} pool={SCREEN_POOL} lit="nav" />
+            <Screen layout={DASHBOARD} seed={SCREEN.seed} lift={scaledLift(lift)} pool={pool} lit="nav" />
           </div>
         </div>
       </div>

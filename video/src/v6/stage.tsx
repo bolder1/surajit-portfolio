@@ -59,15 +59,17 @@ export type TypeShadowProps = {
   /** "offset" (default): the copy skewed and shifted down-right by the cap height times `depth`, behind the lit text. "floor": a mirrored, flattened copy lying in front of the baseline (a floor reflection; not the direction's look). */
   mode?: "floor" | "offset";
   color?: string;
+  /** The soft edge in px (default 2); 0 draws no text-shadow. */
+  blur?: number;
 };
 
 /**
  * TypeShadow: a second copy of the text in the shadow colour (#050506 at 85 percent), skewed 24 degrees around
  * its baseline (the top leans right, away from the light), offset down-right by the cap height times 0.35,
- * softened with a 2 px edge from text-shadow. Place it in the same box as the lit text, before it in the DOM,
+ * softened with a 2 px edge from text-shadow (`blur`; 0 for none). Place it in the same box as the lit text, before it in the DOM,
  * so the letters sit on top; `amount` 0..1 pulls it in while a word is still inside the floor.
  */
-export const TypeShadow: React.FC<TypeShadowProps> = ({ text, style, size, skew = 24, depth = 0.35, amount = 1, mode = "offset", color }) => {
+export const TypeShadow: React.FC<TypeShadowProps> = ({ text, style, size, skew = 24, depth = 0.35, amount = 1, mode = "offset", color, blur = 2 }) => {
   const cap = capHeight(size);
   const c = color ?? shadowRgba();
   const off = (cap * depth * amount).toFixed(1);
@@ -82,7 +84,7 @@ export const TypeShadow: React.FC<TypeShadowProps> = ({ text, style, size, skew 
         color: c,
         transformOrigin: mode === "floor" ? "50% 100%" : "0% 100%",
         transform,
-        textShadow: `0 0 2px ${c}`,
+        ...(blur > 0 ? { textShadow: `0 0 ${blur.toFixed(2)}px ${c}` } : {}),
         pointerEvents: "none",
         userSelect: "none",
         opacity: amount > 0 ? 1 : 0,

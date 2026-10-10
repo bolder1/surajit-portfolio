@@ -114,8 +114,9 @@ export const Beat: React.FC = () => {
       <Marker at={BORDER_PT} dir="right" length={MARKER_LEN} dot={MARKER_DOT} draw={borderMarker} />
       {/* 6.7a above the FILL marker's dot, centred on the button. */}
       <MarkerLabel block={blocks[0]} x={FILL_DOCK.x} y={FILL_DOCK.y - PITCH - LINE_H} align="center" />
-      {/* 6.7b above the wire's last run, from the terminal. */}
-      <TextBlock block={blocks[1]} x={TERMINAL_X} y={WIRE_Y2 - 12 - LINE_H} real />
+      {/* 6.7b above the wire's last run, from the terminal: the wire's terminal node is its leader, so the
+          TextBlock's own hairline is off (one line to the primitive, not two). */}
+      <TextBlock block={blocks[1]} x={TERMINAL_X} y={WIRE_Y2 - 12 - LINE_H} real leader={false} />
       {/* 6.7c beyond the BORDER marker's dot, its two lines centred on the button's mid height. */}
       <MarkerLabel block={blocks[2]} x={BORDER_DOCK.x} y={BORDER_DOCK.y - (PITCH + LINE_H) / 2} align="left" />
     </>

@@ -119,14 +119,15 @@ export const Scene: React.FC = () => {
         <>
           {/* 5.1 as a readable block until the strike. */}
           <TextBlock block={B51} x={960} y={WEEKS_BASELINE} align="center" wdth={WEEKS_WDTH} />
-          <TextBlock block={B52} x={960} y={WEEKS_BASELINE + 40} align="center" width={1200} />
-          {/* The revision and the compress: grey, struck, narrowing to a sliver as the light goes out. */}
+          {/* The revision and the compress: grey, struck, narrowing to a sliver as the light goes out.
+              Painted before 5.2 so the sinking label stays above the struck copy's shadow. */}
           {f >= STRIKE_AT && f < COMPRESS.to ? (
             <div style={{ position: "absolute", inset: 0, transform: `scaleX(${sliver.toFixed(4)})`, transformOrigin: "50% 50%", opacity: sliver > 0 ? 1 : 0 }}>
               <TextBlock block={STRUCK} x={960} y={WEEKS_BASELINE} align="center" wdth={wdth} color={struckInk(f, STRIKE_AT)} />
               <Strike x={960 - weeksW / 2} width={weeksW} baseline={WEEKS_BASELINE} size={B51.size} at={STRIKE_AT} dur={12} exitStart={COMPRESS.to} />
             </div>
           ) : null}
+          <TextBlock block={B52} x={960} y={WEEKS_BASELINE + 40} align="center" width={1200} />
           {/* The floor falls into shadow with the light: black by 204, held through the near-silence. */}
           <div style={{ position: "absolute", inset: 0, background: K.shadow, opacity: dark, pointerEvents: "none" }} />
         </>
@@ -139,7 +140,7 @@ export const Scene: React.FC = () => {
           <TextBlock block={B54} x={960} y={DAYS_BASELINE + 40} align="center" width={1200} />
 
           {/* The day list in a row beneath, each with its Hero index and a tick on the floor line. */}
-          <ListStack block={B55} x={120} y={DAYS_BASELINE + 150} columns={5} fill="row" colWidth={336} wght={500} index={{}} />
+          <ListStack block={B55} x={120} y={DAYS_BASELINE + 150} columns={5} fill="row" colWidth={368} wght={500} index={{}} />
 
           {/* The count and its caption, centred, into the dead stop. */}
           <Count block={B56} start={COUNT_START} dur={30} from={0} to={70} x={960} y={600} align="center" color={K.hero} />

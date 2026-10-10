@@ -1,8 +1,10 @@
 // C6 B6, variables and modes (local 948..1417; global 3612..4081). Lane 4b.
 // A 600 x 360 surface panel slides in, flat to camera, light mode, with the 2x blue button on it, one line of
-// sample text above the button and two textless switches on its lower edge. The Theme readout (R1) lands and
-// holds (a breath); the THEME switch flips and the button tweens Blue to Orange over 6 f while the readout's lit
-// column moves; his statement fades up beneath the panel. Then the button steps off the panel to the right, the
+// sample text above the button and two textless switches on its lower edge (drawn at 2x like the button, so
+// they read as objects beside it, not artefacts). The Theme readout (R1) lands and holds (a breath); the THEME
+// switch flips and the button goes Blue to Orange over 6 f as a crossfade of two ButtonAtoms through the
+// Transparent Back (the blue fill clears, the orange fill fills, the label stays; no mixed hue, never mauve)
+// while the readout's lit column moves; his statement fades up beneath the panel. Then the button steps off the panel to the right, the
 // Mode readout (R2) lands, the MODE switch flips and the panel goes dark with its sample text light (surface and
 // text only; the button is never on the dark panel); the second statement fades up. Names and values through
 // tokenName(), TOKENS and MODES. Source: v6/V1-DIRECTION.md 4.6 B6, 5.2 B6; ILLUSTRATION.md 3.5.
@@ -91,9 +93,14 @@ export const quiet: Quiet[] = [
 const READOUT_X = PANEL.x;
 const READOUT_Y = PANEL.y - 164;
 const STATEMENT_Y = PANEL.y + PANEL.h + 40;
-const SWITCH_Y = PANEL.y + PANEL.h - 12;
-const SWITCH_W = 48;
+// The switches at 2x (96 x 48, the kit's 48 x 24 in a scale wrapper), straddling the panel's lower edge.
+const SWITCH_SCALE = 2;
+const SWITCH_W = 48 * SWITCH_SCALE;
+const SWITCH_H = 24 * SWITCH_SCALE;
+const SWITCH_Y = PANEL.y + PANEL.h - SWITCH_H / 2;
 const SWITCH_INSET = 24;
+/** The blue fill clears over the flip's first 4 f and the orange fill fills over its last 4 f (2 f of overlap). */
+const CLEAR_DUR = 4;
 const SLIDE_PX = 80;
 
 export type PanelViewProps = {
@@ -113,10 +120,37 @@ export const PanelView: React.FC<PanelViewProps> = ({ mode, theme, slide = 0, op
       {/* The button's slot in the panel's flex layout; the button itself is drawn outside so it can step off. */}
       <div style={{ width: BUTTON_2X.w, height: BUTTON_2X.h }} />
     </SurfacePanel>
-    <Switch x={PANEL.x + SWITCH_INSET} y={SWITCH_Y} on={theme} />
-    <Switch x={PANEL.x + PANEL.w - SWITCH_INSET - SWITCH_W} y={SWITCH_Y} on={mode} />
+    <ScaledSwitch x={PANEL.x + SWITCH_INSET} y={SWITCH_Y} on={theme} />
+    <ScaledSwitch x={PANEL.x + PANEL.w - SWITCH_INSET - SWITCH_W} y={SWITCH_Y} on={mode} />
   </div>
 );
+
+/** The kit's switch in a 2x wrapper at (x, y) of the drawn box's top-left. */
+const ScaledSwitch: React.FC<{ x: number; y: number; on: number }> = ({ x, y, on }) => (
+  <div style={{ position: "absolute", left: x, top: y, width: SWITCH_W / SWITCH_SCALE, height: SWITCH_H / SWITCH_SCALE, transform: `scale(${SWITCH_SCALE})`, transformOrigin: "0 0" }}>
+    <Switch x={0} y={0} on={on} />
+  </div>
+);
+
+/**
+ * The 2x button across the Theme flip: two ButtonAtoms on one box. The blue one's fill clears (the Transparent
+ * Back) as the orange one's fill fills; the border swaps at the knob's midpoint; the label is drawn once, on top.
+ * Every frame shows a tint of Blue or of Orange over the panel, never a mix of the two hexes.
+ */
+const ThemeButton: React.FC<{ x: number; y: number; theme: number; shadow: number }> = ({ x, y, theme, shadow }) => {
+  const t = Math.min(1, Math.max(0, theme));
+  const blueFill = 1 - Math.min(1, (t * FLIP_DUR) / CLEAR_DUR);
+  const orangeFill = Math.min(1, Math.max(0, (t * FLIP_DUR - (FLIP_DUR - CLEAR_DUR)) / CLEAR_DUR));
+  const orangeBorder = t >= 0.5;
+  if (t <= 0) return <ButtonAtom x={x} y={y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme="blue" elevation="low" shadow={shadow} />;
+  if (t >= 1) return <ButtonAtom x={x} y={y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme="orange" elevation="low" shadow={shadow} />;
+  return (
+    <>
+      <ButtonAtom x={x} y={y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme="blue" fillAlpha={blueFill} border={!orangeBorder} label="" />
+      <ButtonAtom x={x} y={y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme="orange" fillAlpha={orangeFill} border={orangeBorder} />
+    </>
+  );
+};
 
 export const Beat: React.FC = () => {
   const f = useCurrentFrame();
@@ -135,7 +169,7 @@ export const Beat: React.FC = () => {
       <PanelView mode={mode} theme={theme} slide={slide} opacity={arrive} />
       {/* The 2x button: on the panel (no shadow of its own), then on the floor beside it with a lowRaised shadow. */}
       <div style={{ position: "absolute", inset: 0, transform: slide ? `translateY(${slide.toFixed(2)}px)` : undefined, opacity: arrive, pointerEvents: "none" }}>
-        <ButtonAtom x={bx} y={BUTTON_ON_PANEL.y} scale={BUTTON_2X_SCALE} scaleOrigin="0 0" theme={theme} elevation="low" shadow={step} />
+        <ThemeButton x={bx} y={BUTTON_ON_PANEL.y} theme={theme} shadow={step} />
       </div>
       <Readout block={blocks[0]} x={READOUT_X} y={READOUT_Y} lit={theme} />
       <TextBlock block={blocks[1]} x={PANEL.x + PANEL.w / 2} y={STATEMENT_Y} align="center" width={1680} />
