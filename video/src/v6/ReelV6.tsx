@@ -13,9 +13,11 @@ import { K } from "./tokens";
 export const V6_CUES: (Cue & { g: number })[] = V6_SECTIONS.flatMap((s) => V6_SCENES[s.id].cues.map((c) => ({ ...c, g: s.from + c.f })));
 
 // Headroom: the raw render must not clip; loudness is mastered afterwards (render-v6.sh: loudnorm I=-14).
+// Every cue is authored chapter-local; V6_CUES flattens it to the film frame. The checker (scripts/check-holds.ts)
+// refuses a cue that starts inside one of V6_SILENCES, so the bed's silences stay silent.
 export const MUSIC_GAIN = 0.5;
 export const SFX_GAIN = 0.62;
-/** The bed, written by the sound lane (sound/compose_v6.py). Until it exists, render with music=false. */
+/** The bed, written by the sound lane (sound/compose_v6.py); it exists, so the V6 composition plays it by default (music=true). */
 export const BED_FILE = "music/bed-v6.wav";
 
 export const V6Scenes: React.FC = () => (
